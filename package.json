@@ -1,0 +1,25 @@
+{
+  "name": "glsl-ts",
+  "description": "",
+  "author": "",
+  "license": "ISC",
+  "keywords": [],
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "devDependencies": {
+    "tsup": "^8.3.6",
+    "typescript": "^5.7.3"
+  }
+}
