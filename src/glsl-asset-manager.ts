@@ -1,5 +1,23 @@
 import { setTextureParams, updateTexture } from "./utils";
-import type { UniformConfig, UniformValue } from "./types";
+import type {
+  UniformMap,
+  UniformConfig,
+  UniformConfigType,
+  UniformConfigValue,
+} from "./types";
+import {
+  isBool,
+  isNumber,
+  isString,
+  isVec2,
+  isVec3,
+  isVec4,
+} from "./validators";
+
+interface WebGLUniform {
+  type: UniformConfigType;
+  location: WebGLUniformLocation;
+}
 
 interface StaticTexture {
   asset: WebGLTexture;
@@ -13,14 +31,14 @@ interface DynamicTexture extends StaticTexture {
 class GlslAssetManager {
   readonly gl: WebGLRenderingContext;
   readonly program: WebGLProgram;
-  readonly uniforms: Map<string, WebGLUniformLocation | null> = new Map();
+  readonly uniforms: Map<string, WebGLUniform> = new Map();
   readonly staticTextures: Map<string, StaticTexture> = new Map();
   readonly dynamicTextures: Map<string, DynamicTexture> = new Map();
 
   constructor(
     gl: WebGLRenderingContext,
     program: WebGLProgram,
-    initialUniforms: UniformConfig = {}
+    initialUniforms: UniformMap = {}
   ) {
     this.gl = gl;
     this.program = program;
@@ -31,19 +49,27 @@ class GlslAssetManager {
 
   private initializeDefaultUniforms() {
     const uTime = this.gl.getUniformLocation(this.program, "u_time");
-    this.uniforms.set("u_time", uTime);
+    if (uTime) {
+      this.uniforms.set("u_time", { type: "float", location: uTime });
+    }
+
     const uRes = this.gl.getUniformLocation(this.program, "u_resolution");
-    this.uniforms.set("u_resolution", uRes);
+    if (uRes) {
+      this.uniforms.set("u_resolution", { type: "vec2", location: uRes });
+    }
+
     const uMouse = this.gl.getUniformLocation(this.program, "u_mouse");
-    this.uniforms.set("u_mouse", uMouse);
+    if (uMouse) {
+      this.uniforms.set("u_mouse", { type: "vec2", location: uMouse });
+    }
   }
 
-  private initializeCustomUniforms(uniforms: UniformConfig) {
+  private initializeCustomUniforms(uniforms: UniformMap) {
     for (const [name, config] of Object.entries(uniforms)) {
       const location = this.gl.getUniformLocation(this.program, name);
       if (!location) continue;
 
-      this.uniforms.set(name, location);
+      this.uniforms.set(name, { type: config.type, location });
       this.setUniform(name, config);
     }
   }
@@ -94,7 +120,7 @@ class GlslAssetManager {
         const sizeLocation = this.gl.getUniformLocation(this.program, sizeName);
 
         if (sizeLocation && texture) {
-          this.uniforms.set(sizeName, sizeLocation);
+          this.uniforms.set(sizeName, { type: "vec2", location: sizeLocation });
           this.gl.uniform2f(sizeLocation, image.width, image.height);
           this.gl.activeTexture(this.gl.TEXTURE0 + textureUnit);
           this.gl.bindTexture(this.gl.TEXTURE_2D, texture.asset);
@@ -135,7 +161,7 @@ class GlslAssetManager {
         const sizeLocation = this.gl.getUniformLocation(this.program, sizeName);
 
         if (sizeLocation && texture) {
-          this.uniforms.set(sizeName, sizeLocation);
+          this.uniforms.set(sizeName, { type: "vec2", location: sizeLocation });
           this.gl.uniform2f(sizeLocation, 640, 480);
           this.gl.activeTexture(this.gl.TEXTURE0 + textureUnit);
           this.gl.bindTexture(this.gl.TEXTURE_2D, texture.asset);
@@ -173,44 +199,77 @@ class GlslAssetManager {
     }
   }
 
-  public setUniform(name: string, config: UniformValue) {
-    const location = this.uniforms.get(name);
+  public setUniform(name: string, config: UniformConfig) {
+    const uni = this.uniforms.get(name);
 
-    if (!location) {
+    if (!uni) {
       console.warn(`Uniform ${name} not found`);
       return;
     }
 
-    switch (config.type) {
-      case "float":
-        this.gl.uniform1f(location, config.value);
-        break;
-      case "vec2":
-        this.gl.uniform2fv(location, config.value);
-        break;
-      case "vec3":
-        this.gl.uniform3fv(location, config.value);
-        break;
-      case "vec4":
-        this.gl.uniform4fv(location, config.value);
-        break;
-      case "int":
-        this.gl.uniform1i(location, config.value);
-        break;
-      case "bool":
-        this.gl.uniform1i(location, config.value ? 1 : 0);
-        break;
-      case "image":
-        this.loadStaticTexture(name, config.value);
-        break;
-      case "video":
-        this.loadDynamicTexture(name, config.value);
-        break;
-      case "webcam":
-        this.loadDynamicTexture(name);
-        break;
-      default:
-        console.warn(`Unsupported uniform type for ${name}`);
+    // TODO: write validator function for type
+
+    if (config.type === "float") {
+      this.gl.uniform1f(uni.location, config.value);
+    } else if (config.type === "vec2") {
+      this.gl.uniform2fv(uni.location, config.value);
+    } else if (config.type === "vec3") {
+      this.gl.uniform3fv(uni.location, config.value);
+    } else if (config.type === "vec4") {
+      this.gl.uniform4fv(uni.location, config.value);
+    } else if (config.type === "int") {
+      this.gl.uniform1i(uni.location, config.value);
+    } else if (config.type === "bool") {
+      this.gl.uniform1i(uni.location, config.value ? 1 : 0);
+    } else if (config.type === "image") {
+      this.loadStaticTexture(name, config.value);
+    } else if (config.type === "video") {
+      this.loadDynamicTexture(name, config.value);
+    } else if (config.type === "webcam") {
+      this.loadDynamicTexture(name);
+    } else {
+      console.warn(`Unsupported uniform type for ${name}`);
+    }
+  }
+
+  public setUniform2(name: string, value: UniformConfigValue) {
+    const uni = this.uniforms.get(name);
+
+    if (!uni) {
+      console.warn(`Uniform ${name} not found`);
+      return;
+    }
+
+    const { type, location } = uni;
+
+    if (type === "float") {
+      if (isNumber(value)) this.gl.uniform1f(location, value);
+      else console.warn(`Couldn't update ${name}, value must be a number`);
+    } else if (type === "vec2" && isVec2(value)) {
+      if (isVec2(value)) this.gl.uniform2fv(location, value);
+      else console.warn(`Couldn't update ${name}, value must be a Vec2`);
+    } else if (type === "vec3" && isVec3(value)) {
+      if (isVec3(value)) this.gl.uniform3fv(location, value);
+      else console.warn(`Couldn't update ${name}, value must be a Vec3`);
+    } else if (type === "vec4" && isVec4(value)) {
+      if (isVec4(value)) this.gl.uniform4fv(location, value);
+      else console.warn(`Couldn't update ${name}, value must be a Vec4`);
+    } else if (type === "int" && isNumber(value)) {
+      if (isNumber(value)) this.gl.uniform1i(location, value);
+      else console.warn(`Couldn't update ${name}, value must be a number`);
+    } else if (type === "bool" && isBool(value)) {
+      if (isBool(value)) this.gl.uniform1i(location, value ? 1 : 0);
+      else console.warn(`Couldn't update ${name}, value must be a boolean`);
+    } else if (type === "image" && isString(value)) {
+      if (isString(value)) this.loadStaticTexture(name, value);
+      else console.warn(`Couldn't update ${name}, value must be a string`);
+    } else if (type === "video" && isString(value)) {
+      if (isString(value)) this.loadDynamicTexture(name, value);
+      else console.warn(`Couldn't update ${name}, value must be a string`);
+    } else if (type === "webcam") {
+      this.loadDynamicTexture(name);
+    } else {
+      console.warn(`Unsupported uniform type for ${name}`);
     }
   }
 

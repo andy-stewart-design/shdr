@@ -1,10 +1,21 @@
+type Vec2 = [number, number];
+type Vec3 = [number, number, number];
+type Vec4 = [number, number, number, number];
 interface UniformNumber {
     type: "float" | "int";
     value: number;
 }
-interface UniformVector {
-    type: "vec2" | "vec3" | "vec4";
-    value: number[];
+interface UniformVec2 {
+    type: "vec2";
+    value: Vec2;
+}
+interface UniformVec3 {
+    type: "vec3";
+    value: Vec3;
+}
+interface UniformVec4 {
+    type: "vec4";
+    value: Vec4;
 }
 interface UniformBoolean {
     type: "bool";
@@ -21,11 +32,18 @@ interface UniformDynamicTexture {
 interface UniformWebcamTexture {
     type: "webcam";
 }
-type UniformValue = UniformNumber | UniformVector | UniformBoolean | UniformStaticTexture | UniformDynamicTexture | UniformWebcamTexture;
-interface UniformConfig {
-    [key: string]: UniformValue;
+type UpdatableUniformConfig = UniformNumber | UniformVec2 | UniformVec3 | UniformVec4 | UniformBoolean | UniformStaticTexture | UniformDynamicTexture;
+type UniformConfig = UpdatableUniformConfig | UniformWebcamTexture;
+interface UniformMap {
+    [key: string]: UniformConfig;
 }
+type UniformConfigType = UniformConfig["type"];
+type UniformConfigValue = UpdatableUniformConfig["value"];
 
+interface WebGLUniform {
+    type: UniformConfigType;
+    location: WebGLUniformLocation;
+}
 interface StaticTexture {
     asset: WebGLTexture;
     unit: number;
@@ -36,10 +54,10 @@ interface DynamicTexture extends StaticTexture {
 declare class GlslAssetManager {
     readonly gl: WebGLRenderingContext;
     readonly program: WebGLProgram;
-    readonly uniforms: Map<string, WebGLUniformLocation | null>;
+    readonly uniforms: Map<string, WebGLUniform>;
     readonly staticTextures: Map<string, StaticTexture>;
     readonly dynamicTextures: Map<string, DynamicTexture>;
-    constructor(gl: WebGLRenderingContext, program: WebGLProgram, initialUniforms?: UniformConfig);
+    constructor(gl: WebGLRenderingContext, program: WebGLProgram, initialUniforms?: UniformMap);
     private initializeDefaultUniforms;
     private initializeCustomUniforms;
     private getTextureUnit;
@@ -48,7 +66,8 @@ declare class GlslAssetManager {
     private loadStaticTexture;
     loadDynamicTexture(name: string, url?: string): Promise<void>;
     renderDynamicTextures(): void;
-    setUniform(name: string, config: UniformValue): void;
+    setUniform(name: string, config: UniformConfig): void;
+    setUniform2(name: string, value: UniformConfigValue): void;
     destroy(): void;
 }
 
@@ -67,16 +86,16 @@ declare class GlslCanvas {
 
 declare class GlslRenderer extends GlslCanvas {
     private mousePosition;
-    readonly assets: GlslAssetManager;
     private controller;
     private rafId;
-    constructor(container: HTMLElement, frag?: string, initialUniforms?: UniformConfig);
+    readonly assets: GlslAssetManager;
+    constructor(container: HTMLElement, frag?: string, initialUniforms?: UniformMap);
     private render;
     private handleResize;
     private addEventListeners;
     play(): void;
     pause(): void;
-    updateUniform(name: string, config: UniformValue): void;
+    updateUniform(name: string, value: UniformConfigValue): void;
     destroy(): void;
 }
 

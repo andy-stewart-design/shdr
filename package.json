@@ -1,9 +1,15 @@
 {
   "name": "glsl-ts",
-  "description": "",
-  "author": "",
-  "license": "ISC",
-  "keywords": [],
+  "description": "A zero-dependency shader renderer for the web, written in TypeScript",
+  "author": "Andy Stewart <andy.stewart1170@gmail.com> (andystew.art)",
+  "license": "MIT",
+  "keywords": [
+    "glsl",
+    "canvas",
+    "shader",
+    "fragment",
+    "web"
+  ],
   "version": "0.0.1",
   "type": "module",
   "main": "./dist/index.js",

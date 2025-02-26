@@ -1,17 +1,19 @@
+// TODO: refactor updateUniform function to remove need to redeclare type
+
 import GlslAssetManager from "./glsl-asset-manager";
 import GlslCanvas, { DEFAULT_VERTICES } from "./glsl-canvas";
-import type { UniformConfig, UniformValue } from "./types";
+import type { UniformMap, UniformConfigValue } from "./types";
 
 export default class GlslRenderer extends GlslCanvas {
   private mousePosition = [0, 0];
-  readonly assets: GlslAssetManager;
   private controller = new AbortController();
   private rafId: number | null = null;
+  readonly assets: GlslAssetManager;
 
   constructor(
     container: HTMLElement,
     frag?: string,
-    initialUniforms: UniformConfig = {}
+    initialUniforms: UniformMap = {}
   ) {
     super(container, frag);
     this.assets = new GlslAssetManager(this.gl, this.program, initialUniforms);
@@ -74,8 +76,8 @@ export default class GlslRenderer extends GlslCanvas {
     }
   }
 
-  public updateUniform(name: string, config: UniformValue) {
-    this.assets.setUniform(name, config);
+  public updateUniform(name: string, value: UniformConfigValue) {
+    this.assets.setUniform2(name, value);
   }
 
   public destroy() {

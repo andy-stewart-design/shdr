@@ -1,11 +1,25 @@
+type Vec2 = [number, number];
+type Vec3 = [number, number, number];
+type Vec4 = [number, number, number, number];
+
 interface UniformNumber {
   type: "float" | "int";
   value: number;
 }
 
-interface UniformVector {
-  type: "vec2" | "vec3" | "vec4";
-  value: number[];
+interface UniformVec2 {
+  type: "vec2";
+  value: Vec2;
+}
+
+interface UniformVec3 {
+  type: "vec3";
+  value: Vec3;
+}
+
+interface UniformVec4 {
+  type: "vec4";
+  value: Vec4;
 }
 
 interface UniformBoolean {
@@ -27,23 +41,30 @@ interface UniformWebcamTexture {
   type: "webcam";
 }
 
-type UniformValue =
+type UpdatableUniformConfig =
   | UniformNumber
-  | UniformVector
+  | UniformVec2
+  | UniformVec3
+  | UniformVec4
   | UniformBoolean
   | UniformStaticTexture
-  | UniformDynamicTexture
-  | UniformWebcamTexture;
+  | UniformDynamicTexture;
 
-interface UniformConfig {
-  [key: string]: UniformValue;
+type UniformConfig = UpdatableUniformConfig | UniformWebcamTexture;
+
+interface UniformMap {
+  [key: string]: UniformConfig;
 }
 
+type UniformConfigType = UniformConfig["type"];
+type UniformConfigValue = UpdatableUniformConfig["value"];
+
 export type {
-  UniformNumber,
-  UniformVector,
-  UniformBoolean,
-  UniformStaticTexture as UniformTexture,
-  UniformValue,
+  UniformMap,
   UniformConfig,
+  UniformConfigType,
+  UniformConfigValue,
+  Vec2,
+  Vec3,
+  Vec4,
 };
