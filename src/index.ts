@@ -5,7 +5,7 @@ import GlslCanvas, { DEFAULT_VERTICES } from "./glsl-canvas";
 import type { UniformMap, UniformConfigValue } from "./types";
 
 export default class GlslRenderer extends GlslCanvas {
-  private mousePosition = [0, 0];
+  private mousePos = [0, 0];
   private controller = new AbortController();
   private rafId: number | null = null;
   readonly assets: GlslAssetManager;
@@ -27,10 +27,14 @@ export default class GlslRenderer extends GlslCanvas {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
     // Pass uniforms
-    const uTime = this.assets.uniforms.get("u_time") ?? null;
-    this.gl.uniform1f(uTime, time * 0.001); // Time in seconds
-    const uMouse = this.assets.uniforms.get("u_mouse") ?? null;
-    this.gl.uniform2f(uMouse, this.mousePosition[0], this.mousePosition[1]);
+    const uTime = this.assets.uniforms.get("u_time");
+    if (uTime) {
+      this.gl.uniform1f(uTime.location, time * 0.001); // Time in seconds
+    }
+    const uMouse = this.assets.uniforms.get("u_mouse");
+    if (uMouse) {
+      this.gl.uniform2f(uMouse.location, this.mousePos[0], this.mousePos[1]);
+    }
 
     // render dynamic textures
     this.assets.renderDynamicTextures();
@@ -45,8 +49,16 @@ export default class GlslRenderer extends GlslCanvas {
     super.resizeCanvas();
 
     const uRes = this.assets.uniforms.get("u_resolution") ?? null;
+
+    if (!uRes) {
+      console.warn(
+        "Could not find resolution uniform (u_resolution) location when resizing canvas"
+      );
+      return;
+    }
+
     this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-    this.gl.uniform2f(uRes, this.canvas.width, this.canvas.height);
+    this.gl.uniform2f(uRes.location, this.canvas.width, this.canvas.height);
   }
 
   private addEventListeners() {
@@ -56,8 +68,8 @@ export default class GlslRenderer extends GlslCanvas {
       "mousemove",
       (event) => {
         const rect = this.canvas.getBoundingClientRect();
-        this.mousePosition[0] = event.clientX - rect.left;
-        this.mousePosition[1] = rect.height - (event.clientY - rect.top); // Flip Y-axis
+        this.mousePos[0] = event.clientX - rect.left;
+        this.mousePos[1] = rect.height - (event.clientY - rect.top); // Flip Y-axis
       },
       { signal }
     );
@@ -77,7 +89,7 @@ export default class GlslRenderer extends GlslCanvas {
   }
 
   public updateUniform(name: string, value: UniformConfigValue) {
-    this.assets.setUniform2(name, value);
+    this.assets.setUniformValue(name, value);
   }
 
   public destroy() {

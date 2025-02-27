@@ -60,14 +60,13 @@ declare class GlslAssetManager {
     constructor(gl: WebGLRenderingContext, program: WebGLProgram, initialUniforms?: UniformMap);
     private initializeDefaultUniforms;
     private initializeCustomUniforms;
+    setUniformValue(name: string, value?: UniformConfigValue): void;
     private getTextureUnit;
     private getUniformLocation;
     private initializeTexture;
     private loadStaticTexture;
     loadDynamicTexture(name: string, url?: string): Promise<void>;
     renderDynamicTextures(): void;
-    setUniform(name: string, config: UniformConfig): void;
-    setUniform2(name: string, value: UniformConfigValue): void;
     destroy(): void;
 }
 
@@ -85,7 +84,7 @@ declare class GlslCanvas {
 }
 
 declare class GlslRenderer extends GlslCanvas {
-    private mousePosition;
+    private mousePos;
     private controller;
     private rafId;
     readonly assets: GlslAssetManager;

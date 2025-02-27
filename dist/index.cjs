@@ -59,6 +59,7 @@ var GlslAssetManager = class {
     this.initializeDefaultUniforms();
     this.initializeCustomUniforms(initialUniforms);
   }
+  // UNIFORM METHODS ----------------------------------------------------
   initializeDefaultUniforms() {
     const uTime = this.gl.getUniformLocation(this.program, "u_time");
     if (uTime) {
@@ -78,9 +79,48 @@ var GlslAssetManager = class {
       const location = this.gl.getUniformLocation(this.program, name);
       if (!location) continue;
       this.uniforms.set(name, { type: config.type, location });
-      this.setUniform(name, config);
+      const value = "value" in config ? config.value : void 0;
+      this.setUniformValue(name, value);
     }
   }
+  setUniformValue(name, value) {
+    const uni = this.uniforms.get(name);
+    if (!uni) {
+      console.warn(`Uniform ${name} not found`);
+      return;
+    }
+    const { type, location } = uni;
+    if (type === "float") {
+      if (isNumber(value)) this.gl.uniform1f(location, value);
+      else console.warn(`Couldn't update ${name}, value must be a number`);
+    } else if (type === "vec2" && isVec2(value)) {
+      if (isVec2(value)) this.gl.uniform2fv(location, value);
+      else console.warn(`Couldn't update ${name}, value must be a Vec2`);
+    } else if (type === "vec3" && isVec3(value)) {
+      if (isVec3(value)) this.gl.uniform3fv(location, value);
+      else console.warn(`Couldn't update ${name}, value must be a Vec3`);
+    } else if (type === "vec4" && isVec4(value)) {
+      if (isVec4(value)) this.gl.uniform4fv(location, value);
+      else console.warn(`Couldn't update ${name}, value must be a Vec4`);
+    } else if (type === "int" && isNumber(value)) {
+      if (isNumber(value)) this.gl.uniform1i(location, value);
+      else console.warn(`Couldn't update ${name}, value must be a number`);
+    } else if (type === "bool" && isBool(value)) {
+      if (isBool(value)) this.gl.uniform1i(location, value ? 1 : 0);
+      else console.warn(`Couldn't update ${name}, value must be a boolean`);
+    } else if (type === "image" && isString(value)) {
+      if (isString(value)) this.loadStaticTexture(name, value);
+      else console.warn(`Couldn't update ${name}, value must be a string`);
+    } else if (type === "video" && isString(value)) {
+      if (isString(value)) this.loadDynamicTexture(name, value);
+      else console.warn(`Couldn't update ${name}, value must be a string`);
+    } else if (type === "webcam") {
+      this.loadDynamicTexture(name);
+    } else {
+      console.warn(`Unsupported uniform type for ${name}`);
+    }
+  }
+  // TEXTURE METHODS ----------------------------------------------------
   getTextureUnit() {
     return this.staticTextures.size + this.dynamicTextures.size;
   }
@@ -177,71 +217,6 @@ var GlslAssetManager = class {
         this.gl.UNSIGNED_BYTE,
         texture.video
       );
-    }
-  }
-  setUniform(name, config) {
-    const uni = this.uniforms.get(name);
-    if (!uni) {
-      console.warn(`Uniform ${name} not found`);
-      return;
-    }
-    if (config.type === "float") {
-      this.gl.uniform1f(uni.location, config.value);
-    } else if (config.type === "vec2") {
-      this.gl.uniform2fv(uni.location, config.value);
-    } else if (config.type === "vec3") {
-      this.gl.uniform3fv(uni.location, config.value);
-    } else if (config.type === "vec4") {
-      this.gl.uniform4fv(uni.location, config.value);
-    } else if (config.type === "int") {
-      this.gl.uniform1i(uni.location, config.value);
-    } else if (config.type === "bool") {
-      this.gl.uniform1i(uni.location, config.value ? 1 : 0);
-    } else if (config.type === "image") {
-      this.loadStaticTexture(name, config.value);
-    } else if (config.type === "video") {
-      this.loadDynamicTexture(name, config.value);
-    } else if (config.type === "webcam") {
-      this.loadDynamicTexture(name);
-    } else {
-      console.warn(`Unsupported uniform type for ${name}`);
-    }
-  }
-  setUniform2(name, value) {
-    const uni = this.uniforms.get(name);
-    if (!uni) {
-      console.warn(`Uniform ${name} not found`);
-      return;
-    }
-    const { type, location } = uni;
-    if (type === "float") {
-      if (isNumber(value)) this.gl.uniform1f(location, value);
-      else console.warn(`Couldn't update ${name}, value must be a number`);
-    } else if (type === "vec2" && isVec2(value)) {
-      if (isVec2(value)) this.gl.uniform2fv(location, value);
-      else console.warn(`Couldn't update ${name}, value must be a Vec2`);
-    } else if (type === "vec3" && isVec3(value)) {
-      if (isVec3(value)) this.gl.uniform3fv(location, value);
-      else console.warn(`Couldn't update ${name}, value must be a Vec3`);
-    } else if (type === "vec4" && isVec4(value)) {
-      if (isVec4(value)) this.gl.uniform4fv(location, value);
-      else console.warn(`Couldn't update ${name}, value must be a Vec4`);
-    } else if (type === "int" && isNumber(value)) {
-      if (isNumber(value)) this.gl.uniform1i(location, value);
-      else console.warn(`Couldn't update ${name}, value must be a number`);
-    } else if (type === "bool" && isBool(value)) {
-      if (isBool(value)) this.gl.uniform1i(location, value ? 1 : 0);
-      else console.warn(`Couldn't update ${name}, value must be a boolean`);
-    } else if (type === "image" && isString(value)) {
-      if (isString(value)) this.loadStaticTexture(name, value);
-      else console.warn(`Couldn't update ${name}, value must be a string`);
-    } else if (type === "video" && isString(value)) {
-      if (isString(value)) this.loadDynamicTexture(name, value);
-      else console.warn(`Couldn't update ${name}, value must be a string`);
-    } else if (type === "webcam") {
-      this.loadDynamicTexture(name);
-    } else {
-      console.warn(`Unsupported uniform type for ${name}`);
     }
   }
   destroy() {
@@ -375,7 +350,7 @@ var glsl_canvas_default = GlslCanvas;
 var GlslRenderer = class extends glsl_canvas_default {
   constructor(container, frag, initialUniforms = {}) {
     super(container, frag);
-    this.mousePosition = [0, 0];
+    this.mousePos = [0, 0];
     this.controller = new AbortController();
     this.rafId = null;
     this.assets = new glsl_asset_manager_default(this.gl, this.program, initialUniforms);
@@ -385,10 +360,14 @@ var GlslRenderer = class extends glsl_canvas_default {
   render(time) {
     this.gl.clearColor(0, 0, 0, 1);
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-    const uTime = this.assets.uniforms.get("u_time") ?? null;
-    this.gl.uniform1f(uTime, time * 1e-3);
-    const uMouse = this.assets.uniforms.get("u_mouse") ?? null;
-    this.gl.uniform2f(uMouse, this.mousePosition[0], this.mousePosition[1]);
+    const uTime = this.assets.uniforms.get("u_time");
+    if (uTime) {
+      this.gl.uniform1f(uTime.location, time * 1e-3);
+    }
+    const uMouse = this.assets.uniforms.get("u_mouse");
+    if (uMouse) {
+      this.gl.uniform2f(uMouse.location, this.mousePos[0], this.mousePos[1]);
+    }
     this.assets.renderDynamicTextures();
     this.gl.drawArrays(this.gl.TRIANGLES, 0, DEFAULT_VERTICES.length / 2);
     requestAnimationFrame((t) => this.render(t));
@@ -396,8 +375,14 @@ var GlslRenderer = class extends glsl_canvas_default {
   handleResize() {
     super.resizeCanvas();
     const uRes = this.assets.uniforms.get("u_resolution") ?? null;
+    if (!uRes) {
+      console.warn(
+        "Could not find resolution uniform (u_resolution) location when resizing canvas"
+      );
+      return;
+    }
     this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-    this.gl.uniform2f(uRes, this.canvas.width, this.canvas.height);
+    this.gl.uniform2f(uRes.location, this.canvas.width, this.canvas.height);
   }
   addEventListeners() {
     const { signal } = this.controller;
@@ -405,8 +390,8 @@ var GlslRenderer = class extends glsl_canvas_default {
       "mousemove",
       (event) => {
         const rect = this.canvas.getBoundingClientRect();
-        this.mousePosition[0] = event.clientX - rect.left;
-        this.mousePosition[1] = rect.height - (event.clientY - rect.top);
+        this.mousePos[0] = event.clientX - rect.left;
+        this.mousePos[1] = rect.height - (event.clientY - rect.top);
       },
       { signal }
     );
@@ -422,7 +407,7 @@ var GlslRenderer = class extends glsl_canvas_default {
     }
   }
   updateUniform(name, value) {
-    this.assets.setUniform2(name, value);
+    this.assets.setUniformValue(name, value);
   }
   destroy() {
     super.destroy();

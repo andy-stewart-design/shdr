@@ -1,7 +1,6 @@
 import { setTextureParams, updateTexture } from "./utils";
 import type {
   UniformMap,
-  UniformConfig,
   UniformConfigType,
   UniformConfigValue,
 } from "./types";
@@ -47,6 +46,8 @@ class GlslAssetManager {
     this.initializeCustomUniforms(initialUniforms);
   }
 
+  // UNIFORM METHODS ----------------------------------------------------
+
   private initializeDefaultUniforms() {
     const uTime = this.gl.getUniformLocation(this.program, "u_time");
     if (uTime) {
@@ -70,9 +71,54 @@ class GlslAssetManager {
       if (!location) continue;
 
       this.uniforms.set(name, { type: config.type, location });
-      this.setUniform(name, config);
+
+      const value = "value" in config ? config.value : undefined;
+      this.setUniformValue(name, value);
     }
   }
+
+  public setUniformValue(name: string, value?: UniformConfigValue) {
+    const uni = this.uniforms.get(name);
+
+    if (!uni) {
+      console.warn(`Uniform ${name} not found`);
+      return;
+    }
+
+    const { type, location } = uni;
+
+    if (type === "float") {
+      if (isNumber(value)) this.gl.uniform1f(location, value);
+      else console.warn(`Couldn't update ${name}, value must be a number`);
+    } else if (type === "vec2" && isVec2(value)) {
+      if (isVec2(value)) this.gl.uniform2fv(location, value);
+      else console.warn(`Couldn't update ${name}, value must be a Vec2`);
+    } else if (type === "vec3" && isVec3(value)) {
+      if (isVec3(value)) this.gl.uniform3fv(location, value);
+      else console.warn(`Couldn't update ${name}, value must be a Vec3`);
+    } else if (type === "vec4" && isVec4(value)) {
+      if (isVec4(value)) this.gl.uniform4fv(location, value);
+      else console.warn(`Couldn't update ${name}, value must be a Vec4`);
+    } else if (type === "int" && isNumber(value)) {
+      if (isNumber(value)) this.gl.uniform1i(location, value);
+      else console.warn(`Couldn't update ${name}, value must be a number`);
+    } else if (type === "bool" && isBool(value)) {
+      if (isBool(value)) this.gl.uniform1i(location, value ? 1 : 0);
+      else console.warn(`Couldn't update ${name}, value must be a boolean`);
+    } else if (type === "image" && isString(value)) {
+      if (isString(value)) this.loadStaticTexture(name, value);
+      else console.warn(`Couldn't update ${name}, value must be a string`);
+    } else if (type === "video" && isString(value)) {
+      if (isString(value)) this.loadDynamicTexture(name, value);
+      else console.warn(`Couldn't update ${name}, value must be a string`);
+    } else if (type === "webcam") {
+      this.loadDynamicTexture(name);
+    } else {
+      console.warn(`Unsupported uniform type for ${name}`);
+    }
+  }
+
+  // TEXTURE METHODS ----------------------------------------------------
 
   private getTextureUnit() {
     return this.staticTextures.size + this.dynamicTextures.size;
@@ -196,80 +242,6 @@ class GlslAssetManager {
         this.gl.UNSIGNED_BYTE,
         texture.video
       );
-    }
-  }
-
-  public setUniform(name: string, config: UniformConfig) {
-    const uni = this.uniforms.get(name);
-
-    if (!uni) {
-      console.warn(`Uniform ${name} not found`);
-      return;
-    }
-
-    // TODO: write validator function for type
-
-    if (config.type === "float") {
-      this.gl.uniform1f(uni.location, config.value);
-    } else if (config.type === "vec2") {
-      this.gl.uniform2fv(uni.location, config.value);
-    } else if (config.type === "vec3") {
-      this.gl.uniform3fv(uni.location, config.value);
-    } else if (config.type === "vec4") {
-      this.gl.uniform4fv(uni.location, config.value);
-    } else if (config.type === "int") {
-      this.gl.uniform1i(uni.location, config.value);
-    } else if (config.type === "bool") {
-      this.gl.uniform1i(uni.location, config.value ? 1 : 0);
-    } else if (config.type === "image") {
-      this.loadStaticTexture(name, config.value);
-    } else if (config.type === "video") {
-      this.loadDynamicTexture(name, config.value);
-    } else if (config.type === "webcam") {
-      this.loadDynamicTexture(name);
-    } else {
-      console.warn(`Unsupported uniform type for ${name}`);
-    }
-  }
-
-  public setUniform2(name: string, value: UniformConfigValue) {
-    const uni = this.uniforms.get(name);
-
-    if (!uni) {
-      console.warn(`Uniform ${name} not found`);
-      return;
-    }
-
-    const { type, location } = uni;
-
-    if (type === "float") {
-      if (isNumber(value)) this.gl.uniform1f(location, value);
-      else console.warn(`Couldn't update ${name}, value must be a number`);
-    } else if (type === "vec2" && isVec2(value)) {
-      if (isVec2(value)) this.gl.uniform2fv(location, value);
-      else console.warn(`Couldn't update ${name}, value must be a Vec2`);
-    } else if (type === "vec3" && isVec3(value)) {
-      if (isVec3(value)) this.gl.uniform3fv(location, value);
-      else console.warn(`Couldn't update ${name}, value must be a Vec3`);
-    } else if (type === "vec4" && isVec4(value)) {
-      if (isVec4(value)) this.gl.uniform4fv(location, value);
-      else console.warn(`Couldn't update ${name}, value must be a Vec4`);
-    } else if (type === "int" && isNumber(value)) {
-      if (isNumber(value)) this.gl.uniform1i(location, value);
-      else console.warn(`Couldn't update ${name}, value must be a number`);
-    } else if (type === "bool" && isBool(value)) {
-      if (isBool(value)) this.gl.uniform1i(location, value ? 1 : 0);
-      else console.warn(`Couldn't update ${name}, value must be a boolean`);
-    } else if (type === "image" && isString(value)) {
-      if (isString(value)) this.loadStaticTexture(name, value);
-      else console.warn(`Couldn't update ${name}, value must be a string`);
-    } else if (type === "video" && isString(value)) {
-      if (isString(value)) this.loadDynamicTexture(name, value);
-      else console.warn(`Couldn't update ${name}, value must be a string`);
-    } else if (type === "webcam") {
-      this.loadDynamicTexture(name);
-    } else {
-      console.warn(`Unsupported uniform type for ${name}`);
     }
   }
 
