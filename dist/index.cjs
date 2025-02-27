@@ -90,34 +90,44 @@ var GlslAssetManager = class {
       return;
     }
     const { type, location } = uni;
-    if (type === "float") {
-      if (isNumber(value)) this.gl.uniform1f(location, value);
-      else console.warn(`Couldn't update ${name}, value must be a number`);
-    } else if (type === "vec2" && isVec2(value)) {
-      if (isVec2(value)) this.gl.uniform2fv(location, value);
-      else console.warn(`Couldn't update ${name}, value must be a Vec2`);
-    } else if (type === "vec3" && isVec3(value)) {
-      if (isVec3(value)) this.gl.uniform3fv(location, value);
-      else console.warn(`Couldn't update ${name}, value must be a Vec3`);
-    } else if (type === "vec4" && isVec4(value)) {
-      if (isVec4(value)) this.gl.uniform4fv(location, value);
-      else console.warn(`Couldn't update ${name}, value must be a Vec4`);
-    } else if (type === "int" && isNumber(value)) {
-      if (isNumber(value)) this.gl.uniform1i(location, value);
-      else console.warn(`Couldn't update ${name}, value must be a number`);
-    } else if (type === "bool" && isBool(value)) {
-      if (isBool(value)) this.gl.uniform1i(location, value ? 1 : 0);
-      else console.warn(`Couldn't update ${name}, value must be a boolean`);
-    } else if (type === "image" && isString(value)) {
-      if (isString(value)) this.loadStaticTexture(name, value);
-      else console.warn(`Couldn't update ${name}, value must be a string`);
-    } else if (type === "video" && isString(value)) {
-      if (isString(value)) this.loadDynamicTexture(name, value);
-      else console.warn(`Couldn't update ${name}, value must be a string`);
-    } else if (type === "webcam") {
-      this.loadDynamicTexture(name);
-    } else {
-      console.warn(`Unsupported uniform type for ${name}`);
+    switch (type) {
+      case "float":
+        if (isNumber(value)) this.gl.uniform1f(location, value);
+        else console.warn(`Couldn't update ${name}, value must be a number`);
+        break;
+      case "vec2":
+        if (isVec2(value)) this.gl.uniform2fv(location, value);
+        else console.warn(`Couldn't update ${name}, value must be a Vec2`);
+        break;
+      case "vec3":
+        if (isVec3(value)) this.gl.uniform3fv(location, value);
+        else console.warn(`Couldn't update ${name}, value must be a Vec3`);
+        break;
+      case "vec4":
+        if (isVec4(value)) this.gl.uniform4fv(location, value);
+        else console.warn(`Couldn't update ${name}, value must be a Vec4`);
+        break;
+      case "int":
+        if (isNumber(value)) this.gl.uniform1i(location, value);
+        else console.warn(`Couldn't update ${name}, value must be a number`);
+        break;
+      case "bool":
+        if (isBool(value)) this.gl.uniform1i(location, value ? 1 : 0);
+        else console.warn(`Couldn't update ${name}, value must be a boolean`);
+        break;
+      case "image":
+        if (isString(value)) this.loadStaticTexture(name, value);
+        else console.warn(`Couldn't update ${name}, value must be a string`);
+        break;
+      case "video":
+        if (isString(value)) this.loadDynamicTexture(name, value);
+        else console.warn(`Couldn't update ${name}, value must be a string`);
+        break;
+      case "webcam":
+        this.loadDynamicTexture(name);
+        break;
+      default:
+        console.warn(`Unsupported uniform type for ${name}`);
     }
   }
   // TEXTURE METHODS ----------------------------------------------------
@@ -154,7 +164,7 @@ var GlslAssetManager = class {
         if (sizeLocation && texture2) {
           this.uniforms.set(sizeName, { type: "vec2", location: sizeLocation });
           this.gl.uniform2f(sizeLocation, image.width, image.height);
-          this.gl.activeTexture(this.gl.TEXTURE0 + textureUnit);
+          this.gl.activeTexture(this.gl.TEXTURE0 + texture2.unit);
           this.gl.bindTexture(this.gl.TEXTURE_2D, texture2.asset);
           setTextureParams(this.gl, image);
           updateTexture(this.gl, image);
@@ -171,30 +181,29 @@ var GlslAssetManager = class {
   async loadDynamicTexture(name, url) {
     const video = document.createElement("video");
     video.muted = true;
-    video.addEventListener("loadeddata", () => {
-      const [texture, textureUnit] = this.initializeTexture(name);
-      this.dynamicTextures.set(name, {
-        video,
-        asset: texture,
-        unit: textureUnit
-      });
+    video.onloadeddata = () => {
+      const [asset, unit] = this.initializeTexture(name);
+      this.dynamicTextures.set(name, { video, asset, unit });
       video.play();
       try {
-        const texture2 = this.dynamicTextures.get(name);
+        const texture = this.dynamicTextures.get(name);
         const sizeName = `${name}_size`;
         const sizeLocation = this.gl.getUniformLocation(this.program, sizeName);
-        if (sizeLocation && texture2) {
+        if (sizeLocation && texture) {
           this.uniforms.set(sizeName, { type: "vec2", location: sizeLocation });
           this.gl.uniform2f(sizeLocation, 640, 480);
-          this.gl.activeTexture(this.gl.TEXTURE0 + textureUnit);
-          this.gl.bindTexture(this.gl.TEXTURE_2D, texture2.asset);
-          setTextureParams(this.gl, video);
-          updateTexture(this.gl, video);
+          this.gl.activeTexture(this.gl.TEXTURE0 + texture.unit);
+          this.gl.bindTexture(this.gl.TEXTURE_2D, texture.asset);
+          setTextureParams(this.gl, texture.video);
+          updateTexture(this.gl, texture.video);
         }
       } catch (error) {
         console.error(`Error loading texture ${name}:`, error);
       }
-    });
+    };
+    video.onerror = () => {
+      console.error(`Failed to load texture: ${url}`);
+    };
     if (!url) {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       video.autoplay = true;

@@ -1,4 +1,4 @@
-// TODO: refactor updateUniform function to remove need to redeclare type
+// TODO: add demos for Basic, Uniform Updates, Static Textures, Dynamic Textures, Webcam Textures
 
 import GlslAssetManager from "./glsl-asset-manager";
 import GlslCanvas, { DEFAULT_VERTICES } from "./glsl-canvas";
