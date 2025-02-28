@@ -9,6 +9,6 @@ export default defineConfig({
   clean: true, // Clean output directory before building
   sourcemap: true,
   bundle: true,
-  minify: false,
+  minify: true,
   treeshake: true,
 });
