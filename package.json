@@ -14,10 +14,14 @@
   "type": "module",
   "main": "./dist/index.js",
   "scripts": {
-    "build": "tsup",
-    "dev:demo": "pnpm --dir demo dev",
+    "build:demo": "pnpm --dir demos build",
+    "build:pack": "tsup",
+    "build": "concurrently \"pnpm build:pack\" \"pnpm build:demo\"",
+    "dev:demo": "pnpm --dir demos dev",
     "dev:pack": "tsup --watch",
-    "dev": "concurrently \"pnpm dev:pack\" \"pnpm dev:demo\""
+    "dev": "concurrently \"pnpm dev:pack\" \"pnpm dev:demo\"",
+    "preview": "pnpm --dir demos preview",
+    "astro": "pnpm --dir demos astro"
   },
   "exports": {
     ".": {

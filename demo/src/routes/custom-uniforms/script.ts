@@ -1,9 +1,9 @@
-import GlslRenderer from "../../dist";
+import GlslRenderer from "@/../../dist";
 import frag from "./sketch.frag?raw";
-import "./reset.css";
+import "@/styles/reset.css";
+import "@/styles/demo.css";
 
 const container = document.querySelector("#app") as HTMLElement;
-container.style.height = "100vh";
 
 const gl = new GlslRenderer(container, frag, {
   u_gridSize: {

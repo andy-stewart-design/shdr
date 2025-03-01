@@ -1,0 +1,29 @@
+---
+import Layout from "@/layouts/Layout.astro";
+---
+
+<script>
+  import GlslRenderer from "@/../../dist";
+  import frag from "./_sketch.frag?raw";
+
+  const container = document.querySelector("#wrapper") as HTMLElement;
+
+  // Initialize static texture
+  const gl = new GlslRenderer(container, frag, {
+    u_texture: {
+      type: "image",
+      value: "https://picsum.photos/1920/1080",
+    },
+  });
+  gl.play();
+</script>
+
+<Layout>
+  <section id="wrapper"></section>
+</Layout>
+
+<style>
+  section {
+    height: 100vh;
+  }
+</style>
