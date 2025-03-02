@@ -65,7 +65,7 @@ declare class GlslAssetManager {
     private getUniformLocation;
     private initializeTexture;
     private loadStaticTexture;
-    loadDynamicTexture(name: string, url?: string): Promise<void>;
+    private loadDynamicTexture;
     renderDynamicTextures(): void;
     destroy(): void;
 }

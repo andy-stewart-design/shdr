@@ -203,7 +203,7 @@ class GlslAssetManager {
     image.src = url;
   }
 
-  public async loadDynamicTexture(name: string, url?: string) {
+  private async loadDynamicTexture(name: string, url?: string) {
     const video = document.createElement("video");
     video.muted = true;
 
@@ -222,7 +222,7 @@ class GlslAssetManager {
 
         if (sizeLocation && texture) {
           this.uniforms.set(sizeName, { type: "vec2", location: sizeLocation });
-          this.gl.uniform2f(sizeLocation, 640, 480); // TODO: append video to DOM to get size
+          this.gl.uniform2f(sizeLocation, video.videoWidth, video.videoHeight);
           this.gl.activeTexture(this.gl.TEXTURE0 + texture.unit);
           this.gl.bindTexture(this.gl.TEXTURE_2D, texture.asset);
           setTextureParams(this.gl, texture.video);
@@ -262,6 +262,8 @@ class GlslAssetManager {
       );
     }
   }
+
+  // LIFECYCLE METHODS ----------------------------------------------------
 
   public destroy() {
     this.staticTextures.forEach((txtr) => this.gl.deleteTexture(txtr.asset));
