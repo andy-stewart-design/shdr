@@ -15,6 +15,7 @@ class GlslCanvas {
     this.container = container;
     this.canvas = document.createElement("canvas");
     this.canvas.style.display = "block";
+    this.canvas.style.width = this.canvas.style.height = "100%";
     this.container.appendChild(this.canvas);
 
     this.gl = getContext(this.canvas);
