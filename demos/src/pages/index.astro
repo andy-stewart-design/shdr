@@ -1,6 +1,6 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-const sketches = import.meta.glob("./**/_sketch.frag");
+const sketches = import.meta.glob("./**/_sketch.frag", { query: "?raw" });
 const pages = Object.keys(sketches).map((path) => {
   const segments = path.split("/");
   const id = segments.at(-2);
@@ -28,6 +28,18 @@ const pages = Object.keys(sketches).map((path) => {
           </li>
         ))
       }
+      <!-- <li>
+        <a href="/custom-uniforms">Custom Uniforms</a>
+      </li>
+      <li>
+        <a href="/static-texture">Static Texture (Image)</a>
+      </li>
+      <li>
+        <a href="/dynamic-texture">Dynamic Texture (Video)</a>
+      </li>
+      <li>
+        <a href="/webcam">Webcam</a>
+      </li> -->
     </ul>
   </section>
 </Layout>
