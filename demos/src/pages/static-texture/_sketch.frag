@@ -6,7 +6,7 @@ uniform vec2 u_resolution;
 uniform vec2 u_mouse;
 uniform float u_time;
 uniform sampler2D u_texture;
-uniform vec2 u_texture_size; // Added texture size uniform
+uniform vec2 u_texture_size;
 
 void main() {
     // Get normalized coordinates
@@ -32,12 +32,17 @@ void main() {
     // Flip Y coordinate for proper orientation
     adjustedUV.y = 1.0 - adjustedUV.y;
 
-    // Clamp to [0,1] to avoid sampling outside the texture
-    adjustedUV = clamp(adjustedUV, 0.0, 1.0);
+    // Pixelation effect with square pixels
+    float pixelCount = floor(u_texture_size.y / 40.0); // Number of pixels along the shorter dimension
 
-    // Sample texture with adjusted coordinates
-    vec4 texColor = texture2D(u_texture, adjustedUV);
+    // Calculate pixel size based on resolution to ensure square pixels
+    vec2 pixelSize = vec2(1.0, u_texture_size.y / u_texture_size.x) * pixelCount;
 
-    // gl_FragColor = posterize(texColor);
+    // Calculate pixelated coordinates
+    vec2 pixelatedUV = floor(adjustedUV * pixelSize) / pixelSize;
+
+    // Sample texture with pixelated coordinates
+    vec4 texColor = texture2D(u_texture, pixelatedUV);
+
     gl_FragColor = texColor;
 }

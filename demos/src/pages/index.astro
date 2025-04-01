@@ -1,25 +1,33 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+const sketches = import.meta.glob("./**/_sketch.frag");
+const pages = Object.keys(sketches).map((path) => {
+  const segments = path.split("/");
+  const id = segments.at(-2);
+  const label = id
+    ?.split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+  const href = segments.reduce<string>((acc, seg, i) => {
+    if (i === 0 || i === segments.length - 1) {
+      return acc;
+    }
+    return `${acc}/${seg}`;
+  }, "");
+  return { id, href, label };
+});
 ---
 
 <Layout>
   <section>
     <ul>
-      <li>
-        <a href="/basic">Basic</a>
-      </li>
-      <li>
-        <a href="/custom-uniforms">Custom Uniforms</a>
-      </li>
-      <li>
-        <a href="/static-texture">Static Texture (Image)</a>
-      </li>
-      <li>
-        <a href="/dynamic-texture">Dynamic Texture (Video)</a>
-      </li>
-      <li>
-        <a href="/webcam">Webcam</a>
-      </li>
+      {
+        pages.map((page) => (
+          <li>
+            <a href={page.href}>{page.label}</a>
+          </li>
+        ))
+      }
     </ul>
   </section>
 </Layout>
