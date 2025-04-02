@@ -1,5 +1,4 @@
 ---
-import Layout from "@/layouts/Layout.astro";
 const sketches = import.meta.glob("@/pages/**/_sketch.frag", { query: "?raw" });
 const pages = Object.keys(sketches).map((path) => {
   const segments = path.split("/");
@@ -18,8 +17,8 @@ const pages = Object.keys(sketches).map((path) => {
 });
 ---
 
-<Layout>
-  <section>
+<div>
+  <div>
     <ul>
       {
         pages.map((page) => (
@@ -29,17 +28,6 @@ const pages = Object.keys(sketches).map((path) => {
         ))
       }
     </ul>
-  </section>
-</Layout>
-
-<style>
-  section {
-    padding: 2rem;
-  }
-
-  ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-</style>
+  </div>
+  <div><slot /></div>
+</div>
