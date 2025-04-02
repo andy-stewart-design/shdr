@@ -5,6 +5,7 @@ import Layout from "@/layouts/Layout.astro";
 <script>
   import GlslRenderer from "@/../../dist";
   import frag from "./_sketch.frag?raw";
+  import GUI from "lil-gui";
 
   const container = document.querySelector("#wrapper") as HTMLElement;
 
@@ -18,20 +19,19 @@ import Layout from "@/layouts/Layout.astro";
   gl.play();
 
   // Update custom uniforms
-  const input = document.querySelector("#size") as HTMLInputElement;
-  input.addEventListener("input", (e) => {
-    const { target } = e;
-    if (target instanceof HTMLInputElement) {
-      gl.updateUniform("u_gridSize", parseFloat(target.value));
-    }
+  const gui = new GUI();
+
+  const guiOptions = {
+    gridSize: 8,
+  };
+
+  gui.add(guiOptions, "gridSize", 4, 20, 1).onChange((value: number) => {
+    gl.updateUniform("u_gridSize", parseFloat(value.toString()));
   });
 </script>
 
 <Layout>
   <section id="wrapper"></section>
-  <div style="position: fixed; top: 2rem; left: 2rem">
-    <input id="size" type="range" min="4" max="20" />
-  </div>
 </Layout>
 
 <style>
