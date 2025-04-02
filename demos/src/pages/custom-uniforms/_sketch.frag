@@ -7,7 +7,7 @@ precision mediump float;
 uniform vec2 u_resolution;
 uniform vec2 u_mouse;
 uniform float u_time;
-uniform float u_gridSize;
+uniform float u_dpi;
 
 // float gridSize = 8.;
 float spreadFactor = 0.625;
@@ -28,13 +28,13 @@ void main() {
     // Save a copy of the original coordinate space
     vec2 uvScreen = uv;
     // Divide the space into a repeating grid
-    uv = fract(uv * u_gridSize);
+    uv = fract(uv * u_dpi);
     // Remap the coordiante space of each cell
     uv = uv * 2.0 - 1.0;
 
     // Calculate the grid cell center in original coordinates
-    vec2 cellIndex = floor(uvScreen * u_gridSize);
-    vec2 cellCenter = (cellIndex + 0.5) / u_gridSize;
+    vec2 cellIndex = floor(uvScreen * u_dpi);
+    vec2 cellCenter = (cellIndex + 0.5) / u_dpi;
     // Calculate distance of this cell from center of screen
     float distFromMouse = distance(cellCenter, mouse);
     // Normalize this distance for darkening

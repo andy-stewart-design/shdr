@@ -11,7 +11,7 @@ import Layout from "@/layouts/Layout.astro";
 
   // Initialize custom uniforms
   const gl = new GlslRenderer(container, frag, {
-    u_gridSize: {
+    u_dpi: {
       type: "float",
       value: 12,
     },
@@ -22,11 +22,11 @@ import Layout from "@/layouts/Layout.astro";
   const gui = new GUI();
 
   const guiOptions = {
-    gridSize: 8,
+    dpi: 8,
   };
 
-  gui.add(guiOptions, "gridSize", 4, 20, 1).onChange((value: number) => {
-    gl.updateUniform("u_gridSize", parseFloat(value.toString()));
+  gui.add(guiOptions, "dpi", 4, 20, 1).onChange((value: number) => {
+    gl.updateUniform("u_dpi", parseFloat(value.toString()));
   });
 </script>
 

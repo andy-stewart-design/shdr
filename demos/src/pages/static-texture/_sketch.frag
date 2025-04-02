@@ -7,6 +7,7 @@ uniform vec2 u_mouse;
 uniform float u_time;
 uniform sampler2D u_texture;
 uniform vec2 u_texture_size;
+uniform float u_pixelWidth;
 
 void main() {
     // Get normalized coordinates
@@ -32,8 +33,10 @@ void main() {
     // Flip Y coordinate for proper orientation
     adjustedUV.y = 1.0 - adjustedUV.y;
 
+    // float pixelWidth = 40.0;
+
     // Pixelation effect with square pixels
-    float pixelCount = floor(u_texture_size.y / 40.0); // Number of pixels along the shorter dimension
+    float pixelCount = floor(u_texture_size.y / u_pixelWidth); // Number of pixels along the shorter dimension
 
     // Calculate pixel size based on resolution to ensure square pixels
     vec2 pixelSize = vec2(1.0, u_texture_size.y / u_texture_size.x) * pixelCount;

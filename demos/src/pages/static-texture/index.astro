@@ -5,6 +5,7 @@ import Layout from "@/layouts/Layout.astro";
 <script>
   import GlslRenderer from "@/../../dist";
   import frag from "./_sketch.frag?raw";
+  import GUI from "lil-gui";
 
   const container = document.querySelector("#wrapper") as HTMLElement;
 
@@ -14,8 +15,24 @@ import Layout from "@/layouts/Layout.astro";
       type: "image",
       value: "/abstract.jpg",
     },
+    u_pixelWidth: {
+      type: "float",
+      value: 40,
+    },
   });
+
   gl.play();
+
+  // Update custom uniforms
+  const gui = new GUI();
+
+  const guiOptions = {
+    pixelWidth: 40,
+  };
+
+  gui.add(guiOptions, "pixelWidth", 1, 300, 1).onChange((value: number) => {
+    gl.updateUniform("u_pixelWidth", value);
+  });
 </script>
 
 <Layout>
