@@ -18,7 +18,14 @@ int modulateSize = 1;
 void main() {
     // Normalize the coordinate space
     vec2 uv = gl_FragCoord.xy / u_resolution.xy;
-    vec2 mouse = u_mouse / u_resolution;
+    // Use center coordinates if mouse hasn't moved yet
+    vec2 mouse;
+    if(u_mouse.x == 0.0 && u_mouse.y == 0.0) {
+        // Set to center of canvas
+        mouse = vec2(0.5, 0.5);
+    } else {
+        mouse = u_mouse / u_resolution;
+    }
     // Remap the coordinate space from 0,1 to -1,1
     uv = uv * 2.0 - 1.0;
     mouse = mouse * 2.0 - 1.0;
