@@ -40,7 +40,7 @@ const foo = Object.groupBy(pages, (page) => page.category.id ?? "undefined");
 
 <Layout>
   <section>
-    <h1>GLSL.TS</h1>
+    <h1>GLSL.<span class="nudge">TS</span> Demos</h1>
   </section>
   {
     Object.entries(foo).map(([category, pages]) => (
@@ -85,5 +85,9 @@ const foo = Object.groupBy(pages, (page) => page.category.id ?? "undefined");
     &:visited {
       color: CanvasText;
     }
+  }
+
+  .nudge {
+    margin-left: -0.25ch;
   }
 </style>

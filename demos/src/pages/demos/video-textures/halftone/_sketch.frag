@@ -32,18 +32,30 @@ void main() {
     // Flip Y coordinate for proper orientation
     adjustedUV.y = 1.0 - adjustedUV.y;
 
-    // Pixelation effect with square pixels
-    // float pixelCount = floor(u_texture_size.y / 40.0); // Number of pixels along the shorter dimension
-
-    // Calculate pixel size based on resolution to ensure square pixels
-    // vec2 pixelSize = vec2(1.0, u_texture_size.y / u_texture_size.x) * pixelCount;
-
-    // Calculate pixelated coordinates
-    // vec2 pixelatedUV = floor(adjustedUV * pixelSize) / pixelSize;
-
-    // Sample texture with pixelated coordinates
+    // Sample original texture for the color
     vec4 texColor = texture2D(u_texture, adjustedUV);
 
-    // gl_FragColor = posterize(texColor);
-    gl_FragColor = texColor;
+    // Convert to grayscale - using luminance coefficients
+    // float gray = dot(texColor.rgb, vec3(0.299, 0.587, 0.114));
+
+    // Halftone parameters
+    float dotSize = 40.0; // Size of the halftone grid
+    vec2 center = floor(gl_FragCoord.xy / dotSize) * dotSize + (dotSize / 2.0);
+
+    // Calculate distance from pixel to center of current cell
+    float dist = distance(gl_FragCoord.xy, center);
+
+    // Calculate dot radius based on original color intensity
+    // Darker areas get larger dots
+    // float radius = (1.0 - gray) * (dotSize / 2.0);
+    float radius = 10.0;
+
+    // Determine if this pixel is inside or outside the dot
+    float inDot = step(dist, radius);
+
+    // Option 1: Black and white halftone
+    // gl_FragColor = vec4(vec3(inDot), 1.0);
+
+    // Option 2 (commented out): Colored halftone - uncomment to use
+    gl_FragColor = vec4(texColor.rgb * inDot, 1.0);
 }
