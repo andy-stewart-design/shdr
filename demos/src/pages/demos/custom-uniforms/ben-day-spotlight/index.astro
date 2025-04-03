@@ -1,0 +1,41 @@
+---
+import Layout from "@/layouts/Layout.astro";
+---
+
+<script>
+  import GlslRenderer from "@/../../dist";
+  import frag from "./_sketch.frag?raw";
+  import GUI from "lil-gui";
+
+  const container = document.querySelector("#wrapper") as HTMLElement;
+
+  // Initialize custom uniforms
+  const gl = new GlslRenderer(container, frag, {
+    u_dpi: {
+      type: "float",
+      value: 12,
+    },
+  });
+  gl.play();
+
+  // Update custom uniforms
+  const gui = new GUI();
+
+  const guiOptions = {
+    dpi: 12,
+  };
+
+  gui.add(guiOptions, "dpi", 4, 20, 1).onChange((value: number) => {
+    gl.updateUniform("u_dpi", parseFloat(value.toString()));
+  });
+</script>
+
+<Layout>
+  <section id="wrapper"></section>
+</Layout>
+
+<style>
+  section {
+    height: 100vh;
+  }
+</style>

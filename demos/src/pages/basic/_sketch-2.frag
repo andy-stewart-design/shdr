@@ -27,9 +27,10 @@ void main() {
 
     // Use the normalized uv for mouse distance calculation
     float mouseDistance = length(mouseNorm - (gl_FragCoord.xy / u_resolution.xy));
-    float scale = 8.0 + sin(u_time * 0.5) * 2.0 + mouseDistance * 5.0;
+    // float scale = 8.0 + sin(u_time * 0.5) * 2.0 + mouseDistance * 5.0;
+    float scale = 10.;
 
-    uv = rotate2D(uv, u_time * 0.2);
+    // uv = rotate2D(uv, u_time * 0.2);
     vec2 grid = fract(uv * scale) - 0.5;
     float d = length(grid);
 
