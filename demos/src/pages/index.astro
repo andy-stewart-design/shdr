@@ -40,6 +40,9 @@ console.log(Object.entries(foo));
 ---
 
 <Layout>
+  <section>
+    <h1>GLSL.TS</h1>
+  </section>
   {
     Object.entries(foo).map(([category, pages]) => (
       <section>
@@ -73,5 +76,15 @@ console.log(Object.entries(foo));
     margin: 0;
     padding: 0;
     list-style: none;
+  }
+
+  a {
+    font-weight: 700;
+    text-decoration: none;
+    color: CanvasText;
+
+    &:visited {
+      color: CanvasText;
+    }
   }
 </style>
