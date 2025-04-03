@@ -36,7 +36,6 @@ function formatPaths(paths: string[]) {
 
 const pages = formatPaths(Object.keys(sketches));
 const foo = Object.groupBy(pages, (page) => page.category.id ?? "undefined");
-console.log(Object.entries(foo));
 ---
 
 <Layout>
