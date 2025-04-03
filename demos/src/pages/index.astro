@@ -1,45 +1,90 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 const sketches = import.meta.glob("@/pages/**/_sketch.frag", { query: "?raw" });
-const pages = Object.keys(sketches).map((path) => {
-  const segments = path.split("/");
-  const id = segments.at(-2);
-  const label = id
+
+function formatPathSegment(seg?: string) {
+  return seg
     ?.split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
-  const href = segments.reduce<string>((acc, seg, i) => {
-    if (i <= 2 || i === segments.length - 1) {
-      return acc;
-    }
-    return `${acc}/${seg}`;
-  }, "");
-  return { id, href, label };
-});
+}
+
+function formatPaths(paths: string[]) {
+  return paths.map((path) => {
+    const segments = path.split("/");
+
+    const id = segments.at(-2);
+    const label = formatPathSegment(id);
+    const categoryId = segments.at(-3);
+    const categoryLabel = formatPathSegment(categoryId);
+
+    const href = segments.reduce<string>((acc, seg, i) => {
+      if (i <= 2 || i === segments.length - 1) {
+        return acc;
+      }
+      return `${acc}/${seg}`;
+    }, "");
+
+    return {
+      id,
+      href,
+      category: { id: categoryId, label: categoryLabel },
+      label,
+    };
+  });
+}
+
+const pages = formatPaths(Object.keys(sketches));
+const foo = Object.groupBy(pages, (page) => page.category.id ?? "undefined");
+console.log(Object.entries(foo));
 ---
 
 <Layout>
   <section>
-    <ul>
-      {
-        pages.map((page) => (
-          <li>
-            <a href={page.href}>{page.label}</a>
-          </li>
-        ))
-      }
-    </ul>
+    <h1>GLSL.TS</h1>
   </section>
+  {
+    Object.entries(foo).map(([category, pages]) => (
+      <section>
+        <p>{formatPathSegment(category)}</p>
+        <ul>
+          {pages?.map((page) => (
+            <li>
+              <a href={page.href}>{page.label}</a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
 </Layout>
 
 <style>
   section {
-    padding: 2rem;
+    padding: 1.5rem 2rem 0;
+
+    &:first-of-type {
+      padding: 2rem 2rem 0;
+    }
+
+    &:last-of-type {
+      padding: 1.5rem 2rem 2rem;
+    }
   }
 
   ul {
     margin: 0;
     padding: 0;
     list-style: none;
+  }
+
+  a {
+    font-weight: 700;
+    text-decoration: none;
+    color: CanvasText;
+
+    &:visited {
+      color: CanvasText;
+    }
   }
 </style>

@@ -9,24 +9,29 @@ import Layout from "@/layouts/Layout.astro";
 
   const container = document.querySelector("#wrapper") as HTMLElement;
 
-  // Initialize custom uniforms
+  // Initialize static texture
   const gl = new GlslRenderer(container, frag, {
-    u_dpi: {
+    u_texture: {
+      type: "image",
+      value: "/abstract.jpg",
+    },
+    u_pixelWidth: {
       type: "float",
-      value: 12,
+      value: 40,
     },
   });
+
   gl.play();
 
   // Update custom uniforms
   const gui = new GUI();
 
   const guiOptions = {
-    dpi: 12,
+    pixelWidth: 40,
   };
 
-  gui.add(guiOptions, "dpi", 4, 20, 1).onChange((value: number) => {
-    gl.updateUniform("u_dpi", parseFloat(value.toString()));
+  gui.add(guiOptions, "pixelWidth", 1, 300, 1).onChange((value: number) => {
+    gl.updateUniform("u_pixelWidth", value);
   });
 </script>
 
