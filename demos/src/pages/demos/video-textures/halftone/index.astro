@@ -4,7 +4,8 @@ import Layout from "@/layouts/Layout.astro";
 
 <script>
   import GlslRenderer from "@/../../dist";
-  import frag from "./_sketch.frag?raw";
+  import frag from "./_sketch-2.frag?raw";
+  import GUI from "lil-gui";
 
   const container = document.querySelector("#wrapper") as HTMLElement;
 
@@ -15,8 +16,51 @@ import Layout from "@/layouts/Layout.astro";
       value:
         "https://res.cloudinary.com/andystewartdesign/video/upload/v1743723961/misc/2795731-hd_1920_1080_25fps.mp4",
     },
+    u_gridSize: {
+      type: "float",
+      value: 60,
+    },
+    u_radius: {
+      type: "float",
+      value: 0.33,
+    },
+    u_inverted: {
+      type: "bool",
+      value: true,
+    },
+    u_monotone: {
+      type: "bool",
+      value: false,
+    },
   });
+
   gl.play();
+
+  // Update custom uniforms
+  const gui = new GUI();
+
+  const guiOptions = {
+    gridSize: 60,
+    radius: 0.33,
+    inverted: true,
+    monotone: false,
+  };
+
+  gui.add(guiOptions, "gridSize", 4, 100, 1).onChange((value: number) => {
+    gl.updateUniform("u_gridSize", parseFloat(value.toString()));
+  });
+
+  gui.add(guiOptions, "radius", 0.25, 0.9, 0.01).onChange((value: number) => {
+    gl.updateUniform("u_radius", parseFloat(value.toString()));
+  });
+
+  gui.add(guiOptions, "inverted").onChange((value: boolean) => {
+    gl.updateUniform("u_inverted", value);
+  });
+
+  gui.add(guiOptions, "monotone").onChange((value: boolean) => {
+    gl.updateUniform("u_monotone", value);
+  });
 </script>
 
 <Layout>
