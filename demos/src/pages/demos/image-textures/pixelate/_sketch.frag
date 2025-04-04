@@ -30,20 +30,14 @@ void main() {
         adjustedUV.y = (uv.y - 0.5) * scale + 0.5;
     }
 
-    // Flip Y coordinate for proper orientation
-    adjustedUV.y = 1.0 - adjustedUV.y;
-
-    // Pixelation effect with square pixels
-    float pixelCount = floor(u_texture_size.y / u_pixelation); // Number of pixels along the shorter dimension
-
-    // Calculate pixel size based on resolution to ensure square pixels
-    vec2 pixelSize = vec2(1.0, u_texture_size.y / u_texture_size.x) * pixelCount;
-
-    // Calculate pixelated coordinates
-    vec2 pixelatedUV = floor(adjustedUV * pixelSize) / pixelSize;
+    float pixelSize = u_pixelation / u_resolution.y;
+    float dx = pixelSize;
+    float dy = pixelSize * textureAR;
+    float x = dx * (floor(adjustedUV.x / dx) + 0.5);
+    float y = dy * (floor(adjustedUV.y / dy) + 0.5);
 
     // Sample texture with pixelated coordinates
-    vec4 texColor = texture2D(u_texture, pixelatedUV);
+    vec4 texColor = texture2D(u_texture, vec2(x, y));
 
     gl_FragColor = texColor;
 }

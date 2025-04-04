@@ -28,7 +28,7 @@ import Layout from "@/layouts/Layout.astro";
     pixelation: 40,
   };
 
-  gui.add(guiOptions, "pixelation", 2, 120, 0.01).onChange((value: number) => {
+  gui.add(guiOptions, "pixelation", 1, 120, 1).onChange((value: number) => {
     gl.updateUniform("u_pixelation", value);
   });
 </script>
