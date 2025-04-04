@@ -7,6 +7,10 @@ uniform vec2 u_mouse;
 uniform float u_time;
 uniform sampler2D u_texture;
 uniform vec2 u_texture_size; // Added texture size uniform
+uniform float u_gridSize;
+uniform float u_radius;
+uniform int u_inverted;
+uniform int u_monotone;
 
 void main() {
     // Get normalized coordinates
@@ -35,27 +39,30 @@ void main() {
     // Sample original texture for the color
     vec4 texColor = texture2D(u_texture, adjustedUV);
 
-    // Convert to grayscale - using luminance coefficients
-    // float gray = dot(texColor.rgb, vec3(0.299, 0.587, 0.114));
+    // Remap the coordinate space from 0,1 to -1,1
+    uv = uv * 2.0 - 1.0;
+    // Fix aspect ratio of coordinates
+    uv.x *= u_resolution.x / u_resolution.y;
+    // Divide canvas into grid
+    uv = fract(uv * u_gridSize / 2.);
+    // Remap the coordinate space of each cell from 0,1 to -1,1
+    uv = uv * 2.0 - 1.0;
 
-    // Halftone parameters
-    float dotSize = 40.0; // Size of the halftone grid
-    vec2 center = floor(gl_FragCoord.xy / dotSize) * dotSize + (dotSize / 2.0);
+    // Calculate distance from center of cell
+    float d = length(uv);
+    // Set blur amount based on grid size
+    float blur = 0.0025 * u_gridSize;
+    // Create smooth circular mask with subtly soft edges to prevent pixelation
+    d = smoothstep(u_radius - blur, u_radius + blur, d);
+    // Invert the mask (1 inside circle, 0 outside)
+    d = u_inverted == 1 ? 1. - d : d;
 
-    // Calculate distance from pixel to center of current cell
-    float dist = distance(gl_FragCoord.xy, center);
+    // Multiply texture color by the circular mask
+    float b = (texColor.r + texColor.b + texColor.g) / 3.;
+    vec3 color = u_monotone == 1 ? vec3(b * d) : texColor.rgb * d;
 
-    // Calculate dot radius based on original color intensity
-    // Darker areas get larger dots
-    // float radius = (1.0 - gray) * (dotSize / 2.0);
-    float radius = 10.0;
+    // gl_FragColor = vec4(d, d, d, 1.);  // Debug: Show only the mask
+    // Output final color with full opacity
+    gl_FragColor = vec4(color, 1.0);
 
-    // Determine if this pixel is inside or outside the dot
-    float inDot = step(dist, radius);
-
-    // Option 1: Black and white halftone
-    // gl_FragColor = vec4(vec3(inDot), 1.0);
-
-    // Option 2 (commented out): Colored halftone - uncomment to use
-    gl_FragColor = vec4(texColor.rgb * inDot, 1.0);
 }

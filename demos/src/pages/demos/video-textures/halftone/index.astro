@@ -4,34 +4,20 @@ import Layout from "@/layouts/Layout.astro";
 
 <script>
   import GlslRenderer from "@/../../dist";
-  import frag from "./_sketch-2.frag?raw";
+  import frag from "./_sketch.frag?raw";
   import GUI from "lil-gui";
 
   const container = document.querySelector("#wrapper") as HTMLElement;
+  const vidSrc =
+    "https://res.cloudinary.com/andystewartdesign/video/upload/v1743723961/misc/2795731-hd_1920_1080_25fps.mp4";
 
   // Initialize dynamic (video) texture
   const gl = new GlslRenderer(container, frag, {
-    u_texture: {
-      type: "video",
-      value:
-        "https://res.cloudinary.com/andystewartdesign/video/upload/v1743723961/misc/2795731-hd_1920_1080_25fps.mp4",
-    },
-    u_gridSize: {
-      type: "float",
-      value: 60,
-    },
-    u_radius: {
-      type: "float",
-      value: 0.33,
-    },
-    u_inverted: {
-      type: "bool",
-      value: true,
-    },
-    u_monotone: {
-      type: "bool",
-      value: false,
-    },
+    u_texture: { type: "video", value: vidSrc },
+    u_gridSize: { type: "float", value: 60 },
+    u_radius: { type: "float", value: 0.33 },
+    u_inverted: { type: "bool", value: true },
+    u_monotone: { type: "bool", value: false },
   });
 
   gl.play();
