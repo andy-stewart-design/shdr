@@ -1,0 +1,81 @@
+---
+import Layout from "@/layouts/Layout.astro";
+---
+
+<script>
+  import GlslRenderer from "@/../../dist";
+  import frag from "./_sketch.frag?raw";
+  import GUI from "lil-gui";
+
+  const container = document.querySelector("#wrapper") as HTMLElement;
+
+  // Initialize static texture
+  const gl = new GlslRenderer(container, frag, {
+    u_texture: {
+      type: "image",
+      value: "/abstract.jpg",
+    },
+    u_highColor: {
+      type: "vec3",
+      value: [0, 0.5, 1],
+    },
+    u_lowColor: {
+      type: "vec3",
+      value: [0, 0, 0],
+    },
+  });
+
+  gl.play();
+
+  // Update custom uniforms
+  const gui = new GUI();
+
+  const guiOptions = {
+    highColor: `rgb(${Math.floor(255 * 0)}, ${Math.floor(255 * 0.5)}, ${Math.floor(255 * 1)})`,
+    lowColor: `rgb(${Math.floor(255 * 0)}, ${Math.floor(255 * 0)}, ${Math.floor(255 * 0)})`,
+  };
+
+  gui.addColor(guiOptions, "highColor").onChange((value: string) => {
+    gl.updateUniform("u_highColor", hexToRgb(value));
+  });
+
+  gui.addColor(guiOptions, "lowColor").onChange((value: string) => {
+    gl.updateUniform("u_lowColor", hexToRgb(value));
+  });
+
+  function hexToRgb(hex: string): [number, number, number] {
+    // Remove the hash if it exists
+    hex = hex.replace(/^#/, "");
+
+    // Parse different hex formats
+    let r: number, g: number, b: number;
+
+    if (hex.length === 3) {
+      // Short format #rgb
+      r = parseInt(hex[0] + hex[0], 16);
+      g = parseInt(hex[1] + hex[1], 16);
+      b = parseInt(hex[2] + hex[2], 16);
+    } else if (hex.length === 6) {
+      // Standard format #rrggbb
+      r = parseInt(hex.substring(0, 2), 16);
+      g = parseInt(hex.substring(2, 4), 16);
+      b = parseInt(hex.substring(4, 6), 16);
+    } else {
+      // Invalid format
+      throw new Error("Invalid hex format");
+    }
+
+    // Convert from 0-255 to 0-1 range
+    return [r / 255, g / 255, b / 255];
+  }
+</script>
+
+<Layout>
+  <section id="wrapper"></section>
+</Layout>
+
+<style>
+  section {
+    height: 100vh;
+  }
+</style>
