@@ -10,7 +10,7 @@ uniform vec2 u_texture_size;
 uniform vec3 u_highColor;
 uniform vec3 u_lowColor;
 
-vec4 desaturated(vec4 color) {
+vec4 desaturate(vec4 color) {
     vec3 luma = vec3(0.2126, 0.7152, 0.0722);
     float gray = dot(color.rgb, luma);
     vec3 rgb = vec3(gray);
@@ -19,7 +19,7 @@ vec4 desaturated(vec4 color) {
 
 vec4 duotone(vec4 fragColor, vec4 lowColor, vec4 highColor) {
     // Mix between low and high colors based on gray value
-    return mix(lowColor, highColor, desaturated(fragColor));
+    return mix(lowColor, highColor, desaturate(fragColor));
 }
 
 void main() {
