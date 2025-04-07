@@ -1,0 +1,57 @@
+---
+import Layout from "@/layouts/Layout.astro";
+---
+
+<script>
+  import GlslRenderer from "@/../../dist";
+  import frag from "./_sketch.frag?raw";
+  import GUI from "lil-gui";
+
+  const container = document.querySelector("#wrapper") as HTMLElement;
+
+  // Initialize static texture
+  const gl = new GlslRenderer(container, frag, {
+    u_texture_1: {
+      type: "image",
+      value: "/blend-earth.jpg",
+    },
+    u_texture_2: {
+      type: "image",
+      value: "/blend-water.jpg",
+    },
+    u_texture_3: {
+      type: "image",
+      value: "/simplex.jpg",
+    },
+    u_threshold: { type: "float", value: 0.5 },
+    u_range: { type: "float", value: 0.05 },
+  });
+
+  gl.play();
+
+  // Update custom uniforms
+  const gui = new GUI();
+
+  const guiOptions = {
+    threshold: 0.5,
+    range: 0.05,
+  };
+
+  gui.add(guiOptions, "threshold", 0, 1, 0.01).onChange((value: number) => {
+    gl.updateUniform("u_threshold", value);
+  });
+
+  gui.add(guiOptions, "range", 0, 1, 0.01).onChange((value: number) => {
+    gl.updateUniform("u_range", value);
+  });
+</script>
+
+<Layout>
+  <section id="wrapper"></section>
+</Layout>
+
+<style>
+  section {
+    height: 100vh;
+  }
+</style>

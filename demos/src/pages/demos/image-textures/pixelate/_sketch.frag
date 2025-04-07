@@ -9,6 +9,18 @@ uniform sampler2D u_texture;
 uniform vec2 u_texture_size;
 uniform float u_pixelation;
 
+vec2 adjustUV(float textureAR, float canvasAR, vec2 uv) {
+    if(canvasAR < textureAR) {
+        // Canvas is wider than texture - crop sides
+        float scale = canvasAR / textureAR;
+        return vec2((uv.x - 0.5) * scale + 0.5, uv.y);
+    } else {
+        // Canvas is taller than texture - crop top/bottom
+        float scale = textureAR / canvasAR;
+        return vec2(uv.x, (uv.y - 0.5) * scale + 0.5);
+    }
+}
+
 void main() {
     // Get normalized coordinates
     vec2 uv = gl_FragCoord.xy / u_resolution.xy;
@@ -16,19 +28,7 @@ void main() {
     // Calculate aspect ratios
     float textureAR = u_texture_size.x / u_texture_size.y;
     float canvasAR = u_resolution.x / u_resolution.y;
-
-    // Adjust UVs to maintain aspect ratio (cover)
-    vec2 adjustedUV = uv;
-
-    if(canvasAR < textureAR) {
-        // Canvas is wider than texture - crop sides
-        float scale = canvasAR / textureAR;
-        adjustedUV.x = (uv.x - 0.5) * scale + 0.5;
-    } else {
-        // Canvas is taller than texture - crop top/bottom
-        float scale = textureAR / canvasAR;
-        adjustedUV.y = (uv.y - 0.5) * scale + 0.5;
-    }
+    vec2 adjustedUV = adjustUV(textureAR, canvasAR, uv);
 
     float pixelSize = u_pixelation / u_resolution.y;
     float dx = pixelSize;
