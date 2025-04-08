@@ -45,7 +45,7 @@ const foo = Object.groupBy(pages, (page) => page.category.id ?? "undefined");
   {
     Object.entries(foo).map(([category, pages]) => (
       <section>
-        <p>{formatPathSegment(category)}</p>
+        <p class="category">{formatPathSegment(category)}</p>
         <ul>
           {pages?.map((page) => (
             <li>
@@ -71,7 +71,15 @@ const foo = Object.groupBy(pages, (page) => page.category.id ?? "undefined");
     }
   }
 
+  .category {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    opacity: 0.6;
+  }
+
   ul {
+    display: grid;
+    gap: 0.5rem;
     margin: 0;
     padding: 0;
     list-style: none;

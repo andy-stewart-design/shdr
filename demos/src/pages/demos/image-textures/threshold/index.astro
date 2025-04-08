@@ -1,0 +1,73 @@
+---
+import Layout from "@/layouts/Layout.astro";
+---
+
+<script>
+  import GlslRenderer from "@/../../dist";
+  import frag from "./_sketch.frag?raw";
+  import GUI from "lil-gui";
+
+  const container = document.querySelector("#wrapper") as HTMLElement;
+
+  // Initialize static texture
+  const gl = new GlslRenderer(container, frag, {
+    u_texture: {
+      type: "image",
+      value: "/abstract.jpg",
+    },
+    u_stepCount: {
+      type: "float",
+      value: 2,
+    },
+    u_offset: {
+      type: "float",
+      value: 0,
+    },
+    u_noise: {
+      type: "bool",
+      value: false,
+    },
+    u_noiseAmount: {
+      type: "float",
+      value: 0.25,
+    },
+  });
+
+  gl.play();
+
+  // Update custom uniforms
+  const gui = new GUI();
+
+  const guiOptions = {
+    stepCount: 2,
+    offset: 0,
+    noise: false,
+    noiseAmount: 0.25,
+  };
+
+  gui.add(guiOptions, "stepCount", 2, 5, 1).onChange((value: number) => {
+    gl.updateUniform("u_stepCount", value);
+  });
+
+  gui.add(guiOptions, "offset", -0.5, 0.5, 0.1).onChange((value: number) => {
+    gl.updateUniform("u_offset", value);
+  });
+
+  gui.add(guiOptions, "noise").onChange((value: boolean) => {
+    gl.updateUniform("u_noise", value);
+  });
+
+  gui.add(guiOptions, "noiseAmount", 0, 1, 0.01).onChange((value: number) => {
+    gl.updateUniform("u_noiseAmount", value);
+  });
+</script>
+
+<Layout>
+  <section id="wrapper"></section>
+</Layout>
+
+<style>
+  section {
+    height: 100vh;
+  }
+</style>

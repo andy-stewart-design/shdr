@@ -7,18 +7,16 @@ uniform vec2 u_mouse;
 uniform float u_time;
 uniform sampler2D u_texture;
 uniform vec2 u_texture_size;
-uniform vec3 u_highColor;
-uniform vec3 u_lowColor;
+uniform float u_threshold;
+uniform float u_stepCount;
+uniform float u_offset;
+uniform int u_noise;
+uniform float u_noiseAmount;
 
 vec4 desaturate(vec4 color) {
     vec3 luma = vec3(0.2126, 0.7152, 0.0722);
     float gray = dot(color.rgb, luma);
     return vec4(vec3(gray), color.a);
-}
-
-vec4 duotone(vec4 fragColor, vec4 lowColor, vec4 highColor) {
-    // Mix between low and high colors based on gray value
-    return mix(lowColor, highColor, desaturate(fragColor));
 }
 
 vec2 adjustUV(float textureAR, float canvasAR, vec2 uv) {
@@ -33,6 +31,16 @@ vec2 adjustUV(float textureAR, float canvasAR, vec2 uv) {
     }
 }
 
+float threshold(float color) {
+    return floor(color * u_stepCount - u_offset) / (u_stepCount - 1.);
+}
+
+float rand(vec2 uv) {
+    return fract(sin(dot(uv.xy, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
+float grainMultiplier = 1.2;
+
 void main() {
     // Get normalized coordinates
     vec2 uv = gl_FragCoord.xy / u_resolution.xy;
@@ -43,9 +51,9 @@ void main() {
     vec2 adjustedUV = adjustUV(textureAR, canvasAR, uv);
 
     vec4 texColor = texture2D(u_texture, adjustedUV);
-    vec4 low = vec4(u_lowColor, 1.0);
-    vec4 high = vec4(u_highColor, 1.0);
-    vec4 duo = duotone(texColor, low, high);  // You can use either texColor or desat as input
+    vec4 gray = desaturate(texColor);
+    float inColor = u_noise == 1 ? gray.r + rand(adjustedUV) * u_noiseAmount : gray.r;
+    vec3 outRgb = vec3(threshold(inColor));
 
-    gl_FragColor = duo;  // Use the duotone result
+    gl_FragColor = vec4(outRgb, 1.);
 }
