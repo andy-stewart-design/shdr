@@ -45,7 +45,7 @@ import Layout from "@/layouts/Layout.astro";
     noiseAmount: 0.25,
   };
 
-  gui.add(guiOptions, "stepCount", 2, 5, 1).onChange((value: number) => {
+  gui.add(guiOptions, "stepCount", 2, 10, 1).onChange((value: number) => {
     gl.updateUniform("u_stepCount", value);
   });
 
@@ -55,11 +55,15 @@ import Layout from "@/layouts/Layout.astro";
 
   gui.add(guiOptions, "noise").onChange((value: boolean) => {
     gl.updateUniform("u_noise", value);
+    noiseAmountController.disable(!value);
   });
 
-  gui.add(guiOptions, "noiseAmount", 0, 1, 0.01).onChange((value: number) => {
-    gl.updateUniform("u_noiseAmount", value);
-  });
+  const noiseAmountController = gui
+    .add(guiOptions, "noiseAmount", 0, 1, 0.01)
+    .onChange((value: number) => {
+      gl.updateUniform("u_noiseAmount", value);
+    })
+    .disable(!guiOptions.noise);
 </script>
 
 <Layout>
