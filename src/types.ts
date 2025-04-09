@@ -2,6 +2,17 @@ type Vec2 = [number, number];
 type Vec3 = [number, number, number];
 type Vec4 = [number, number, number, number];
 
+type UniformType =
+  | "float"
+  | "int"
+  | "vec2"
+  | "vec3"
+  | "vec4"
+  | "bool"
+  | "image"
+  | "video"
+  | "webcam";
+
 interface UniformNumber {
   type: "float" | "int";
   value: number;
@@ -59,7 +70,14 @@ interface UniformMap {
 type UniformConfigType = UniformConfig["type"];
 type UniformConfigValue = UpdatableUniformConfig["value"];
 
+type UniformMapValue = number | boolean | string | Array<number> | "webcam";
+
+interface UnstableUniformMap {
+  [key: string]: UniformMapValue;
+}
+
 export type {
+  UniformType,
   UniformMap,
   UniformConfig,
   UniformConfigType,
@@ -67,4 +85,6 @@ export type {
   Vec2,
   Vec3,
   Vec4,
+  UnstableUniformMap,
+  UniformMapValue,
 };

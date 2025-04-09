@@ -34,11 +34,12 @@ interface UniformWebcamTexture {
 }
 type UpdatableUniformConfig = UniformNumber | UniformVec2 | UniformVec3 | UniformVec4 | UniformBoolean | UniformStaticTexture | UniformDynamicTexture;
 type UniformConfig = UpdatableUniformConfig | UniformWebcamTexture;
-interface UniformMap {
-    [key: string]: UniformConfig;
-}
 type UniformConfigType = UniformConfig["type"];
 type UniformConfigValue = UpdatableUniformConfig["value"];
+type UniformMapValue = number | boolean | string | Array<number> | "webcam";
+interface UnstableUniformMap {
+    [key: string]: UniformMapValue;
+}
 
 interface WebGLUniform {
     type: UniformConfigType;
@@ -57,10 +58,10 @@ declare class GlslAssetManager {
     readonly uniforms: Map<string, WebGLUniform>;
     readonly staticTextures: Map<string, StaticTexture>;
     readonly dynamicTextures: Map<string, DynamicTexture>;
-    constructor(gl: WebGLRenderingContext, program: WebGLProgram, initialUniforms?: UniformMap);
+    constructor(gl: WebGLRenderingContext, program: WebGLProgram, initialUniforms?: UnstableUniformMap);
     private initializeDefaultUniforms;
     private initializeCustomUniforms;
-    setUniformValue(name: string, value?: UniformConfigValue): void;
+    setUniformValue(name: string, value: UniformMapValue): void;
     private getTextureUnit;
     private getUniformLocation;
     private initializeTexture;
@@ -88,7 +89,7 @@ declare class GlslRenderer extends GlslCanvas {
     private controller;
     private rafId;
     readonly assets: GlslAssetManager;
-    constructor(container: HTMLElement, frag?: string, initialUniforms?: UniformMap);
+    constructor(container: HTMLElement, frag?: string, initialUniforms?: UnstableUniformMap);
     private render;
     private handleResize;
     private addEventListeners;

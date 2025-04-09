@@ -1,8 +1,10 @@
-import { setTextureParams, updateTexture } from "./utils";
+import { getUniformType, setTextureParams, updateTexture } from "./utils";
 import type {
   UniformMap,
   UniformConfigType,
   UniformConfigValue,
+  UnstableUniformMap,
+  UniformMapValue,
 } from "./types";
 import {
   isBool,
@@ -37,7 +39,7 @@ class GlslAssetManager {
   constructor(
     gl: WebGLRenderingContext,
     program: WebGLProgram,
-    initialUniforms: UniformMap = {}
+    initialUniforms: UnstableUniformMap = {}
   ) {
     this.gl = gl;
     this.program = program;
@@ -65,19 +67,25 @@ class GlslAssetManager {
     }
   }
 
-  private initializeCustomUniforms(uniforms: UniformMap) {
-    for (const [name, config] of Object.entries(uniforms)) {
+  private initializeCustomUniforms(uniforms: UnstableUniformMap) {
+    for (const [name, val] of Object.entries(uniforms)) {
       const location = this.gl.getUniformLocation(this.program, name);
-      if (!location) continue;
+      if (!location) continue; // TODO: add error message
 
-      this.uniforms.set(name, { type: config.type, location });
+      const inferred = getUniformType(val);
 
-      const value = "value" in config ? config.value : undefined;
-      this.setUniformValue(name, value);
+      if (!inferred.valid) {
+        console.error(inferred.message);
+        continue;
+      }
+
+      this.uniforms.set(name, { type: inferred.type, location });
+
+      this.setUniformValue(name, val);
     }
   }
 
-  public setUniformValue(name: string, value?: UniformConfigValue) {
+  public setUniformValue(name: string, value: UniformMapValue) {
     const uni = this.uniforms.get(name);
     if (!uni) {
       console.warn(`Uniform ${name} not found`);

@@ -13,11 +13,11 @@ import Layout from "@/layouts/Layout.astro";
 
   // Initialize dynamic (video) texture
   const gl = new GlslRenderer(container, frag, {
-    u_texture: { type: "video", value: vidSrc },
-    u_gridSize: { type: "float", value: 60 },
-    u_radius: { type: "float", value: 0.33 },
-    u_inverted: { type: "bool", value: true },
-    u_monotone: { type: "bool", value: false },
+    u_texture: vidSrc,
+    u_gridSize: 60,
+    u_radius: 0.33,
+    u_inverted: true,
+    u_monotone: false,
   });
 
   gl.play();

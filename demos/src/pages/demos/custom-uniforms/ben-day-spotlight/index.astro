@@ -11,10 +11,7 @@ import Layout from "@/layouts/Layout.astro";
 
   // Initialize custom uniforms
   const gl = new GlslRenderer(container, frag, {
-    u_dpi: {
-      type: "float",
-      value: 12,
-    },
+    u_dpi: 12,
   });
   gl.play();
 

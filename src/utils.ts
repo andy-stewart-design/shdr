@@ -1,3 +1,6 @@
+import type { UniformType } from "./types";
+import { isImageFile, isVideoFile } from "./validators";
+
 function getContext(canvas: HTMLCanvasElement) {
   const gl = canvas.getContext("webgl");
 
@@ -40,4 +43,50 @@ function isPowerOf2(value: number): boolean {
   return value > 0 && (value & (value - 1)) === 0;
 }
 
-export { getContext, updateTexture, setTextureParams };
+interface ValidInferredUniform {
+  valid: true;
+  type: UniformType;
+}
+
+interface InvalidInferredUniform {
+  valid: false;
+  message: string;
+}
+
+type InferredUniform = ValidInferredUniform | InvalidInferredUniform;
+
+function getUniformType(uniform: unknown): InferredUniform {
+  if (typeof uniform === "string") {
+    if (isImageFile(uniform)) {
+      return { valid: true, type: "image" };
+    } else if (isVideoFile(uniform)) {
+      return { valid: true, type: "video" };
+    } else if (uniform === "webcam") {
+      return { valid: true, type: "webcam" };
+    } else if (!isNaN(Number(uniform)) && uniform.includes(".")) {
+      return { valid: true, type: "float" };
+    } else if (!isNaN(Number(uniform)) && !uniform.includes(".")) {
+      return { valid: true, type: "int" };
+    } else {
+      return { valid: false, message: `Unknown uniform type: ${uniform}` };
+    }
+  } else if (Array.isArray(uniform)) {
+    if (uniform.length >= 2 && uniform.length <= 4) {
+      const type = `vec${uniform.length}` as "vec2" | "vec3" | "vec4";
+      return { valid: true, type };
+    } else {
+      return {
+        valid: false,
+        message: `Invalid vector length: ${uniform.length}`,
+      };
+    }
+  } else if (typeof uniform === "number") {
+    return { valid: true, type: "float" };
+  } else if (typeof uniform === "boolean") {
+    return { valid: true, type: "bool" };
+  } else {
+    return { valid: false, message: `Unknown uniform type: ${uniform}` };
+  }
+}
+
+export { getContext, updateTexture, setTextureParams, getUniformType };
