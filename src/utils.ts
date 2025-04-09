@@ -1,4 +1,4 @@
-import type { UniformType } from "./types";
+import type { UniformConfigType } from "./types";
 import { isImageFile, isVideoFile } from "./validators";
 
 function getContext(canvas: HTMLCanvasElement) {
@@ -45,7 +45,7 @@ function isPowerOf2(value: number): boolean {
 
 interface ValidInferredUniform {
   valid: true;
-  type: UniformType;
+  type: UniformConfigType;
 }
 
 interface InvalidInferredUniform {

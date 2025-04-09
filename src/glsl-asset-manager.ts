@@ -1,10 +1,8 @@
 import { getUniformType, setTextureParams, updateTexture } from "./utils";
 import type {
-  UniformMap,
   UniformConfigType,
   UniformConfigValue,
   UnstableUniformMap,
-  UniformMapValue,
 } from "./types";
 import {
   isBool,
@@ -85,7 +83,7 @@ class GlslAssetManager {
     }
   }
 
-  public setUniformValue(_name: string, value: UniformMapValue) {
+  public setUniformValue(_name: string, value: UniformConfigValue) {
     const uni = this.uniforms.get(_name);
     if (!uni) {
       console.warn(`Uniform ${_name} not found`);

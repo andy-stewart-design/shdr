@@ -2,11 +2,7 @@
 
 import GlslAssetManager from "./glsl-asset-manager";
 import GlslCanvas, { DEFAULT_VERTICES } from "./glsl-canvas";
-import type {
-  UniformMap,
-  UniformConfigValue,
-  UnstableUniformMap,
-} from "./types";
+import type { UniformConfigValue, UnstableUniformMap } from "./types";
 
 export default class GlslRenderer extends GlslCanvas {
   private mousePos = [0, 0];
