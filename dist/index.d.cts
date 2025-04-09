@@ -61,7 +61,7 @@ declare class GlslAssetManager {
     constructor(gl: WebGLRenderingContext, program: WebGLProgram, initialUniforms?: UnstableUniformMap);
     private initializeDefaultUniforms;
     private initializeCustomUniforms;
-    setUniformValue(name: string, value: UniformMapValue): void;
+    setUniformValue(_name: string, value: UniformMapValue): void;
     private getTextureUnit;
     private getUniformLocation;
     private initializeTexture;

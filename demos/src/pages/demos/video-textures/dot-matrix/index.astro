@@ -13,11 +13,11 @@ import Layout from "@/layouts/Layout.astro";
 
   // Initialize dynamic (video) texture
   const gl = new GlslRenderer(container, frag, {
-    u_texture: vidSrc,
-    u_gridSize: 60,
-    u_radius: 0.33,
-    u_inverted: true,
-    u_monotone: false,
+    texture: vidSrc,
+    gridSize: 60,
+    radius: 0.33,
+    inverted: true,
+    monotone: false,
   });
 
   gl.play();
@@ -33,19 +33,19 @@ import Layout from "@/layouts/Layout.astro";
   };
 
   gui.add(guiOptions, "gridSize", 4, 100, 1).onChange((value: number) => {
-    gl.updateUniform("u_gridSize", parseFloat(value.toString()));
+    gl.updateUniform("gridSize", parseFloat(value.toString()));
   });
 
   gui.add(guiOptions, "radius", 0.25, 0.9, 0.01).onChange((value: number) => {
-    gl.updateUniform("u_radius", parseFloat(value.toString()));
+    gl.updateUniform("radius", parseFloat(value.toString()));
   });
 
   gui.add(guiOptions, "inverted").onChange((value: boolean) => {
-    gl.updateUniform("u_inverted", value);
+    gl.updateUniform("inverted", value);
   });
 
   gui.add(guiOptions, "monotone").onChange((value: boolean) => {
-    gl.updateUniform("u_monotone", value);
+    gl.updateUniform("monotone", value);
   });
 </script>
 

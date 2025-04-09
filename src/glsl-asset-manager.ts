@@ -69,7 +69,7 @@ class GlslAssetManager {
 
   private initializeCustomUniforms(uniforms: UnstableUniformMap) {
     for (const [name, val] of Object.entries(uniforms)) {
-      const location = this.gl.getUniformLocation(this.program, name);
+      const location = this.gl.getUniformLocation(this.program, `u_${name}`);
       if (!location) continue; // TODO: add error message
 
       const inferred = getUniformType(val);
@@ -85,12 +85,14 @@ class GlslAssetManager {
     }
   }
 
-  public setUniformValue(name: string, value: UniformMapValue) {
-    const uni = this.uniforms.get(name);
+  public setUniformValue(_name: string, value: UniformMapValue) {
+    const uni = this.uniforms.get(_name);
     if (!uni) {
-      console.warn(`Uniform ${name} not found`);
+      console.warn(`Uniform ${_name} not found`);
       return;
     }
+
+    const name = `u_${_name}`;
 
     const { type, location } = uni;
 

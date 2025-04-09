@@ -11,11 +11,11 @@ import Layout from "@/layouts/Layout.astro";
 
   // Initialize static texture
   const gl = new GlslRenderer(container, frag, {
-    u_texture_1: "/blend-earth.jpg",
-    u_texture_2: "/blend-water.jpg",
-    u_texture_3: "/simplex.jpg",
-    u_threshold: 0.5,
-    u_range: 0.05,
+    texture_1: "/blend-earth.jpg",
+    texture_2: "/blend-water.jpg",
+    texture_3: "/simplex.jpg",
+    threshold: 0.5,
+    range: 0.05,
   });
 
   gl.play();
@@ -29,11 +29,11 @@ import Layout from "@/layouts/Layout.astro";
   };
 
   gui.add(guiOptions, "threshold", 0, 1, 0.01).onChange((value: number) => {
-    gl.updateUniform("u_threshold", value);
+    gl.updateUniform("threshold", value);
   });
 
   gui.add(guiOptions, "range", 0, 1, 0.01).onChange((value: number) => {
-    gl.updateUniform("u_range", value);
+    gl.updateUniform("range", value);
   });
 </script>
 

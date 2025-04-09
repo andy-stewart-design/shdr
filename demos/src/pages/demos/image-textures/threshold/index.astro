@@ -11,11 +11,11 @@ import Layout from "@/layouts/Layout.astro";
 
   // Initialize static texture
   const gl = new GlslRenderer(container, frag, {
-    u_texture: "/abstract.jpg",
-    u_stepCount: 2,
-    u_offset: 0,
-    u_noise: false,
-    u_noiseAmount: 0.25,
+    texture: "/abstract.jpg",
+    stepCount: 2,
+    offset: 0,
+    noise: false,
+    noiseAmount: 0.25,
   });
 
   gl.play();
@@ -31,22 +31,22 @@ import Layout from "@/layouts/Layout.astro";
   };
 
   gui.add(guiOptions, "stepCount", 2, 10, 1).onChange((value: number) => {
-    gl.updateUniform("u_stepCount", value);
+    gl.updateUniform("stepCount", value);
   });
 
   gui.add(guiOptions, "offset", -0.5, 0.5, 0.1).onChange((value: number) => {
-    gl.updateUniform("u_offset", value);
+    gl.updateUniform("offset", value);
   });
 
   gui.add(guiOptions, "noise").onChange((value: boolean) => {
-    gl.updateUniform("u_noise", value);
+    gl.updateUniform("noise", value);
     noiseAmountController.disable(!value);
   });
 
   const noiseAmountController = gui
     .add(guiOptions, "noiseAmount", 0, 1, 0.01)
     .onChange((value: number) => {
-      gl.updateUniform("u_noiseAmount", value);
+      gl.updateUniform("noiseAmount", value);
     })
     .disable(!guiOptions.noise);
 </script>

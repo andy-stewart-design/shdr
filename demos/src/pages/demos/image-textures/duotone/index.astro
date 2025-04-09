@@ -11,9 +11,9 @@ import Layout from "@/layouts/Layout.astro";
 
   // Initialize static texture
   const gl = new GlslRenderer(container, frag, {
-    u_texture: "/abstract.jpg",
-    u_highColor: [0, 0.5, 1],
-    u_lowColor: [0, 0, 0],
+    texture: "/abstract.jpg",
+    highColor: [0, 0.5, 1],
+    lowColor: [0, 0, 0],
   });
 
   gl.play();
@@ -27,11 +27,11 @@ import Layout from "@/layouts/Layout.astro";
   };
 
   gui.addColor(guiOptions, "highColor").onChange((value: string) => {
-    gl.updateUniform("u_highColor", hexToRgb(value));
+    gl.updateUniform("highColor", hexToRgb(value));
   });
 
   gui.addColor(guiOptions, "lowColor").onChange((value: string) => {
-    gl.updateUniform("u_lowColor", hexToRgb(value));
+    gl.updateUniform("lowColor", hexToRgb(value));
   });
 
   function hexToRgb(hex: string): [number, number, number] {
