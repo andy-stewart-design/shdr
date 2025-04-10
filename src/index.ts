@@ -74,6 +74,17 @@ export default class GlslRenderer extends GlslCanvas {
       { signal }
     );
 
+    this.canvas.addEventListener(
+      "touchmove",
+      (event) => {
+        const { clientX, clientY } = event.touches[0];
+        const rect = this.canvas.getBoundingClientRect();
+        this.mousePos[0] = clientX - rect.left;
+        this.mousePos[1] = rect.height - (clientY - rect.top); // Flip Y-axis
+      },
+      { signal }
+    );
+
     window.addEventListener("resize", () => this.handleResize(), { signal });
   }
 
