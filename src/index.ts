@@ -6,6 +6,7 @@ interface GlslRendererConstructorProps {
   container: HTMLElement;
   frag?: string;
   uniforms?: UniformMap;
+  uniformPrefix?: string;
 }
 
 export default class GlslRenderer extends GlslCanvas {
@@ -14,9 +15,19 @@ export default class GlslRenderer extends GlslCanvas {
   private rafId: number | null = null;
   readonly assets: GlslAssetManager;
 
-  constructor({ container, frag, uniforms }: GlslRendererConstructorProps) {
+  constructor({
+    container,
+    frag,
+    uniforms = {},
+    uniformPrefix = "u_",
+  }: GlslRendererConstructorProps) {
     super(container, frag);
-    this.assets = new GlslAssetManager(this.gl, this.program, uniforms);
+    this.assets = new GlslAssetManager(
+      this.gl,
+      this.program,
+      uniforms,
+      uniformPrefix
+    );
 
     this.handleResize();
     this.addEventListeners();
@@ -27,11 +38,13 @@ export default class GlslRenderer extends GlslCanvas {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
     // Pass uniforms
-    const uTime = this.assets.uniforms.get("u_time");
+    const uTime = this.assets.uniforms.get(`${this.assets.uniformPrefix}time`);
     if (uTime) {
       this.gl.uniform1f(uTime.location, time * 0.001); // Time in seconds
     }
-    const uMouse = this.assets.uniforms.get("u_mouse");
+    const uMouse = this.assets.uniforms.get(
+      `${this.assets.uniformPrefix}mouse`
+    );
     if (uMouse) {
       this.gl.uniform2f(uMouse.location, this.mousePos[0], this.mousePos[1]);
     }
@@ -48,11 +61,13 @@ export default class GlslRenderer extends GlslCanvas {
   private handleResize() {
     super.resizeCanvas();
 
-    const uRes = this.assets.uniforms.get("u_resolution") ?? null;
+    const uRes =
+      this.assets.uniforms.get(`${this.assets.uniformPrefix}resolution`) ??
+      null;
 
     if (!uRes) {
       console.warn(
-        "Could not find resolution uniform (u_resolution) location when resizing canvas"
+        `Could not find resolution uniform (${this.assets.uniformPrefix}resolution) location when resizing canvas`
       );
       return;
     }

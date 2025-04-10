@@ -21,7 +21,8 @@ declare class GlslAssetManager {
     readonly uniforms: Map<string, WebGLUniform>;
     readonly staticTextures: Map<string, StaticTexture>;
     readonly dynamicTextures: Map<string, DynamicTexture>;
-    constructor(gl: WebGLRenderingContext, program: WebGLProgram, initialUniforms?: UniformMap);
+    readonly uniformPrefix: string;
+    constructor(gl: WebGLRenderingContext, program: WebGLProgram, initialUniforms: UniformMap, uniformPrefix: string);
     private initializeDefaultUniforms;
     private initializeCustomUniforms;
     setUniformValue(_name: string, value: UniformValue): void;
@@ -51,13 +52,14 @@ interface GlslRendererConstructorProps {
     container: HTMLElement;
     frag?: string;
     uniforms?: UniformMap;
+    uniformPrefix?: string;
 }
 declare class GlslRenderer extends GlslCanvas {
     private mousePos;
     private controller;
     private rafId;
     readonly assets: GlslAssetManager;
-    constructor({ container, frag, uniforms }: GlslRendererConstructorProps);
+    constructor({ container, frag, uniforms, uniformPrefix, }: GlslRendererConstructorProps);
     private render;
     private handleResize;
     private addEventListeners;

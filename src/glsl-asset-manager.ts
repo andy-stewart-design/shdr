@@ -29,14 +29,17 @@ class GlslAssetManager {
   readonly uniforms: Map<string, WebGLUniform> = new Map();
   readonly staticTextures: Map<string, StaticTexture> = new Map();
   readonly dynamicTextures: Map<string, DynamicTexture> = new Map();
+  readonly uniformPrefix: string = "u_";
 
   constructor(
     gl: WebGLRenderingContext,
     program: WebGLProgram,
-    initialUniforms: UniformMap = {}
+    initialUniforms: UniformMap,
+    uniformPrefix: string
   ) {
     this.gl = gl;
     this.program = program;
+    this.uniformPrefix = uniformPrefix;
 
     this.initializeDefaultUniforms();
     this.initializeCustomUniforms(initialUniforms);
@@ -45,25 +48,46 @@ class GlslAssetManager {
   // UNIFORM METHODS ----------------------------------------------------
 
   private initializeDefaultUniforms() {
-    const uTime = this.gl.getUniformLocation(this.program, "u_time");
+    const uTime = this.gl.getUniformLocation(
+      this.program,
+      `${this.uniformPrefix}time`
+    );
     if (uTime) {
-      this.uniforms.set("u_time", { type: "float", location: uTime });
+      this.uniforms.set(`${this.uniformPrefix}time`, {
+        type: "float",
+        location: uTime,
+      });
     }
 
-    const uRes = this.gl.getUniformLocation(this.program, "u_resolution");
+    const uRes = this.gl.getUniformLocation(
+      this.program,
+      `${this.uniformPrefix}resolution`
+    );
     if (uRes) {
-      this.uniforms.set("u_resolution", { type: "vec2", location: uRes });
+      this.uniforms.set(`${this.uniformPrefix}resolution`, {
+        type: "vec2",
+        location: uRes,
+      });
     }
 
-    const uMouse = this.gl.getUniformLocation(this.program, "u_mouse");
+    const uMouse = this.gl.getUniformLocation(
+      this.program,
+      `${this.uniformPrefix}mouse`
+    );
     if (uMouse) {
-      this.uniforms.set("u_mouse", { type: "vec2", location: uMouse });
+      this.uniforms.set(`${this.uniformPrefix}mouse`, {
+        type: "vec2",
+        location: uMouse,
+      });
     }
   }
 
   private initializeCustomUniforms(uniforms: UniformMap) {
     for (const [name, val] of Object.entries(uniforms)) {
-      const location = this.gl.getUniformLocation(this.program, `u_${name}`);
+      const location = this.gl.getUniformLocation(
+        this.program,
+        `${this.uniformPrefix}${name}`
+      );
       if (!location) {
         console.warn(`Couldn't init uniform (${name}). Did you set it?`);
         continue;
@@ -89,7 +113,7 @@ class GlslAssetManager {
       return;
     }
 
-    const name = `u_${_name}`;
+    const name = `${this.uniformPrefix}${_name}`;
 
     const { type, location } = uni;
 
