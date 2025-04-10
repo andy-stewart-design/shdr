@@ -1,8 +1,13 @@
-// TODO: add demos for Basic, Uniform Updates, Static Textures, Dynamic Textures, Webcam Textures
-
 import GlslAssetManager from "./glsl-asset-manager";
 import GlslCanvas, { DEFAULT_VERTICES } from "./glsl-canvas";
-import type { UniformMap, UniformConfigValue } from "./types";
+import type { UniformValue, UniformMap } from "./types";
+
+interface GlslRendererConstructorProps {
+  container: HTMLElement;
+  frag?: string;
+  uniforms?: UniformMap;
+  uniformPrefix?: string;
+}
 
 export default class GlslRenderer extends GlslCanvas {
   private mousePos = [0, 0];
@@ -10,13 +15,19 @@ export default class GlslRenderer extends GlslCanvas {
   private rafId: number | null = null;
   readonly assets: GlslAssetManager;
 
-  constructor(
-    container: HTMLElement,
-    frag?: string,
-    initialUniforms: UniformMap = {}
-  ) {
+  constructor({
+    container,
+    frag,
+    uniforms = {},
+    uniformPrefix = "u_",
+  }: GlslRendererConstructorProps) {
     super(container, frag);
-    this.assets = new GlslAssetManager(this.gl, this.program, initialUniforms);
+    this.assets = new GlslAssetManager(
+      this.gl,
+      this.program,
+      uniforms,
+      uniformPrefix
+    );
 
     this.handleResize();
     this.addEventListeners();
@@ -27,11 +38,13 @@ export default class GlslRenderer extends GlslCanvas {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
     // Pass uniforms
-    const uTime = this.assets.uniforms.get("u_time");
+    const uTime = this.assets.uniforms.get(`${this.assets.uniformPrefix}time`);
     if (uTime) {
       this.gl.uniform1f(uTime.location, time * 0.001); // Time in seconds
     }
-    const uMouse = this.assets.uniforms.get("u_mouse");
+    const uMouse = this.assets.uniforms.get(
+      `${this.assets.uniformPrefix}mouse`
+    );
     if (uMouse) {
       this.gl.uniform2f(uMouse.location, this.mousePos[0], this.mousePos[1]);
     }
@@ -48,11 +61,13 @@ export default class GlslRenderer extends GlslCanvas {
   private handleResize() {
     super.resizeCanvas();
 
-    const uRes = this.assets.uniforms.get("u_resolution") ?? null;
+    const uRes =
+      this.assets.uniforms.get(`${this.assets.uniformPrefix}resolution`) ??
+      null;
 
     if (!uRes) {
       console.warn(
-        "Could not find resolution uniform (u_resolution) location when resizing canvas"
+        `Could not find resolution uniform (${this.assets.uniformPrefix}resolution) location when resizing canvas`
       );
       return;
     }
@@ -74,6 +89,17 @@ export default class GlslRenderer extends GlslCanvas {
       { signal }
     );
 
+    this.canvas.addEventListener(
+      "touchmove",
+      (event) => {
+        const { clientX, clientY } = event.touches[0];
+        const rect = this.canvas.getBoundingClientRect();
+        this.mousePos[0] = clientX - rect.left;
+        this.mousePos[1] = rect.height - (clientY - rect.top); // Flip Y-axis
+      },
+      { signal }
+    );
+
     window.addEventListener("resize", () => this.handleResize(), { signal });
   }
 
@@ -88,7 +114,7 @@ export default class GlslRenderer extends GlslCanvas {
     }
   }
 
-  public updateUniform(name: string, value: UniformConfigValue) {
+  public updateUniform(name: string, value: UniformValue) {
     this.assets.setUniformValue(name, value);
   }
 

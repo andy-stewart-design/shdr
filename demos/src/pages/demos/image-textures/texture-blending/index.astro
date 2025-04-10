@@ -8,41 +8,28 @@ import Layout from "@/layouts/Layout.astro";
   import GUI from "lil-gui";
 
   const container = document.querySelector("#wrapper") as HTMLElement;
+  const uniforms = {
+    texture_1: "/blend-earth.jpg",
+    texture_2: "/blend-water.jpg",
+    texture_3: "/simplex.jpg",
+    threshold: 0.5,
+    range: 0.05,
+  };
 
   // Initialize static texture
-  const gl = new GlslRenderer(container, frag, {
-    u_texture_1: {
-      type: "image",
-      value: "/blend-earth.jpg",
-    },
-    u_texture_2: {
-      type: "image",
-      value: "/blend-water.jpg",
-    },
-    u_texture_3: {
-      type: "image",
-      value: "/simplex.jpg",
-    },
-    u_threshold: { type: "float", value: 0.5 },
-    u_range: { type: "float", value: 0.05 },
-  });
+  const gl = new GlslRenderer({ container, frag, uniforms });
 
   gl.play();
 
   // Update custom uniforms
   const gui = new GUI();
 
-  const guiOptions = {
-    threshold: 0.5,
-    range: 0.05,
-  };
-
-  gui.add(guiOptions, "threshold", 0, 1, 0.01).onChange((value: number) => {
-    gl.updateUniform("u_threshold", value);
+  gui.add(uniforms, "threshold", 0, 1, 0.01).onChange((value: number) => {
+    gl.updateUniform("threshold", value);
   });
 
-  gui.add(guiOptions, "range", 0, 1, 0.01).onChange((value: number) => {
-    gl.updateUniform("u_range", value);
+  gui.add(uniforms, "range", 0, 1, 0.01).onChange((value: number) => {
+    gl.updateUniform("range", value);
   });
 </script>
 
@@ -52,6 +39,7 @@ import Layout from "@/layouts/Layout.astro";
 
 <style>
   section {
-    height: 100vh;
+    height: 100svh;
+    touch-action: none;
   }
 </style>

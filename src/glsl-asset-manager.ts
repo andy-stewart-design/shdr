@@ -1,9 +1,5 @@
-import { setTextureParams, updateTexture } from "./utils";
-import type {
-  UniformMap,
-  UniformConfigType,
-  UniformConfigValue,
-} from "./types";
+import { getUniformType, setTextureParams, updateTexture } from "./utils";
+import type { UniformType, UniformValue, UniformMap } from "./types";
 import {
   isBool,
   isNumber,
@@ -14,7 +10,7 @@ import {
 } from "./validators";
 
 interface WebGLUniform {
-  type: UniformConfigType;
+  type: UniformType;
   location: WebGLUniformLocation;
 }
 
@@ -33,14 +29,17 @@ class GlslAssetManager {
   readonly uniforms: Map<string, WebGLUniform> = new Map();
   readonly staticTextures: Map<string, StaticTexture> = new Map();
   readonly dynamicTextures: Map<string, DynamicTexture> = new Map();
+  readonly uniformPrefix: string = "u_";
 
   constructor(
     gl: WebGLRenderingContext,
     program: WebGLProgram,
-    initialUniforms: UniformMap = {}
+    initialUniforms: UniformMap,
+    uniformPrefix: string
   ) {
     this.gl = gl;
     this.program = program;
+    this.uniformPrefix = uniformPrefix;
 
     this.initializeDefaultUniforms();
     this.initializeCustomUniforms(initialUniforms);
@@ -49,40 +48,72 @@ class GlslAssetManager {
   // UNIFORM METHODS ----------------------------------------------------
 
   private initializeDefaultUniforms() {
-    const uTime = this.gl.getUniformLocation(this.program, "u_time");
+    const uTime = this.gl.getUniformLocation(
+      this.program,
+      `${this.uniformPrefix}time`
+    );
     if (uTime) {
-      this.uniforms.set("u_time", { type: "float", location: uTime });
+      this.uniforms.set(`${this.uniformPrefix}time`, {
+        type: "float",
+        location: uTime,
+      });
     }
 
-    const uRes = this.gl.getUniformLocation(this.program, "u_resolution");
+    const uRes = this.gl.getUniformLocation(
+      this.program,
+      `${this.uniformPrefix}resolution`
+    );
     if (uRes) {
-      this.uniforms.set("u_resolution", { type: "vec2", location: uRes });
+      this.uniforms.set(`${this.uniformPrefix}resolution`, {
+        type: "vec2",
+        location: uRes,
+      });
     }
 
-    const uMouse = this.gl.getUniformLocation(this.program, "u_mouse");
+    const uMouse = this.gl.getUniformLocation(
+      this.program,
+      `${this.uniformPrefix}mouse`
+    );
     if (uMouse) {
-      this.uniforms.set("u_mouse", { type: "vec2", location: uMouse });
+      this.uniforms.set(`${this.uniformPrefix}mouse`, {
+        type: "vec2",
+        location: uMouse,
+      });
     }
   }
 
   private initializeCustomUniforms(uniforms: UniformMap) {
-    for (const [name, config] of Object.entries(uniforms)) {
-      const location = this.gl.getUniformLocation(this.program, name);
-      if (!location) continue;
+    for (const [name, val] of Object.entries(uniforms)) {
+      const location = this.gl.getUniformLocation(
+        this.program,
+        `${this.uniformPrefix}${name}`
+      );
+      if (!location) {
+        console.warn(`Couldn't init uniform (${name}). Did you set it?`);
+        continue;
+      }
 
-      this.uniforms.set(name, { type: config.type, location });
+      const inferred = getUniformType(val);
 
-      const value = "value" in config ? config.value : undefined;
-      this.setUniformValue(name, value);
+      if (!inferred.valid) {
+        console.error(inferred.message);
+        continue;
+      }
+
+      this.uniforms.set(name, { type: inferred.type, location });
+
+      this.setUniformValue(name, val);
     }
   }
 
-  public setUniformValue(name: string, value?: UniformConfigValue) {
-    const uni = this.uniforms.get(name);
+  public setUniformValue(_name: string, value: UniformValue) {
+    const uni = this.uniforms.get(_name);
     if (!uni) {
-      console.warn(`Uniform ${name} not found`);
+      console.warn(`Uniform ${_name} not found`);
       return;
     }
+
+    const name = `${this.uniformPrefix}${_name}`;
 
     const { type, location } = uni;
 
@@ -243,8 +274,11 @@ class GlslAssetManager {
       video.srcObject = stream;
     } else {
       video.loop = true;
+      video.autoplay = true;
+      video.playsInline = true;
       video.crossOrigin = "anonymous";
       video.src = url;
+      console.log(video);
     }
   }
 

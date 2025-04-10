@@ -8,62 +8,41 @@ import Layout from "@/layouts/Layout.astro";
   import GUI from "lil-gui";
 
   const container = document.querySelector("#wrapper") as HTMLElement;
-
-  // Initialize static texture
-  const gl = new GlslRenderer(container, frag, {
-    u_texture: {
-      type: "image",
-      value: "/abstract.jpg",
-    },
-    u_stepCount: {
-      type: "float",
-      value: 2,
-    },
-    u_offset: {
-      type: "float",
-      value: 0,
-    },
-    u_noise: {
-      type: "bool",
-      value: false,
-    },
-    u_noiseAmount: {
-      type: "float",
-      value: 0.25,
-    },
-  });
-
-  gl.play();
-
-  // Update custom uniforms
-  const gui = new GUI();
-
-  const guiOptions = {
+  const uniforms = {
+    texture: "/abstract.jpg",
     stepCount: 2,
     offset: 0,
     noise: false,
     noiseAmount: 0.25,
   };
 
-  gui.add(guiOptions, "stepCount", 2, 10, 1).onChange((value: number) => {
-    gl.updateUniform("u_stepCount", value);
+  // Initialize static texture
+  const gl = new GlslRenderer({ container, frag, uniforms });
+
+  gl.play();
+
+  // Update custom uniforms
+  const gui = new GUI();
+
+  gui.add(uniforms, "stepCount", 2, 10, 1).onChange((value: number) => {
+    gl.updateUniform("stepCount", value);
   });
 
-  gui.add(guiOptions, "offset", -0.5, 0.5, 0.1).onChange((value: number) => {
-    gl.updateUniform("u_offset", value);
+  gui.add(uniforms, "offset", -0.5, 0.5, 0.1).onChange((value: number) => {
+    gl.updateUniform("offset", value);
   });
 
-  gui.add(guiOptions, "noise").onChange((value: boolean) => {
-    gl.updateUniform("u_noise", value);
+  gui.add(uniforms, "noise").onChange((value: boolean) => {
+    gl.updateUniform("noise", value);
     noiseAmountController.disable(!value);
   });
 
   const noiseAmountController = gui
-    .add(guiOptions, "noiseAmount", 0, 1, 0.01)
+    .add(uniforms, "noiseAmount", 0, 1, 0.01)
     .onChange((value: number) => {
-      gl.updateUniform("u_noiseAmount", value);
+      gl.updateUniform("noiseAmount", value);
     })
-    .disable(!guiOptions.noise);
+    .disable(!uniforms.noise);
 </script>
 
 <Layout>
@@ -72,6 +51,7 @@ import Layout from "@/layouts/Layout.astro";
 
 <style>
   section {
-    height: 100vh;
+    height: 100svh;
+    touch-action: none;
   }
 </style>

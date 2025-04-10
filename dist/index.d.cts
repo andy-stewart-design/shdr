@@ -1,47 +1,11 @@
-type Vec2 = [number, number];
-type Vec3 = [number, number, number];
-type Vec4 = [number, number, number, number];
-interface UniformNumber {
-    type: "float" | "int";
-    value: number;
-}
-interface UniformVec2 {
-    type: "vec2";
-    value: Vec2;
-}
-interface UniformVec3 {
-    type: "vec3";
-    value: Vec3;
-}
-interface UniformVec4 {
-    type: "vec4";
-    value: Vec4;
-}
-interface UniformBoolean {
-    type: "bool";
-    value: boolean;
-}
-interface UniformStaticTexture {
-    type: "image";
-    value: string;
-}
-interface UniformDynamicTexture {
-    type: "video";
-    value: string;
-}
-interface UniformWebcamTexture {
-    type: "webcam";
-}
-type UpdatableUniformConfig = UniformNumber | UniformVec2 | UniformVec3 | UniformVec4 | UniformBoolean | UniformStaticTexture | UniformDynamicTexture;
-type UniformConfig = UpdatableUniformConfig | UniformWebcamTexture;
+type UniformType = "float" | "int" | "vec2" | "vec3" | "vec4" | "bool" | "image" | "video" | "webcam";
+type UniformValue = number | number[] | boolean | string;
 interface UniformMap {
-    [key: string]: UniformConfig;
+    [key: string]: UniformValue;
 }
-type UniformConfigType = UniformConfig["type"];
-type UniformConfigValue = UpdatableUniformConfig["value"];
 
 interface WebGLUniform {
-    type: UniformConfigType;
+    type: UniformType;
     location: WebGLUniformLocation;
 }
 interface StaticTexture {
@@ -57,10 +21,11 @@ declare class GlslAssetManager {
     readonly uniforms: Map<string, WebGLUniform>;
     readonly staticTextures: Map<string, StaticTexture>;
     readonly dynamicTextures: Map<string, DynamicTexture>;
-    constructor(gl: WebGLRenderingContext, program: WebGLProgram, initialUniforms?: UniformMap);
+    readonly uniformPrefix: string;
+    constructor(gl: WebGLRenderingContext, program: WebGLProgram, initialUniforms: UniformMap, uniformPrefix: string);
     private initializeDefaultUniforms;
     private initializeCustomUniforms;
-    setUniformValue(name: string, value?: UniformConfigValue): void;
+    setUniformValue(_name: string, value: UniformValue): void;
     private getTextureUnit;
     private getUniformLocation;
     private initializeTexture;
@@ -83,18 +48,24 @@ declare class GlslCanvas {
     destroy(): void;
 }
 
+interface GlslRendererConstructorProps {
+    container: HTMLElement;
+    frag?: string;
+    uniforms?: UniformMap;
+    uniformPrefix?: string;
+}
 declare class GlslRenderer extends GlslCanvas {
     private mousePos;
     private controller;
     private rafId;
     readonly assets: GlslAssetManager;
-    constructor(container: HTMLElement, frag?: string, initialUniforms?: UniformMap);
+    constructor({ container, frag, uniforms, uniformPrefix, }: GlslRendererConstructorProps);
     private render;
     private handleResize;
     private addEventListeners;
     play(): void;
     pause(): void;
-    updateUniform(name: string, value: UniformConfigValue): void;
+    updateUniform(name: string, value: UniformValue): void;
     destroy(): void;
 }
 

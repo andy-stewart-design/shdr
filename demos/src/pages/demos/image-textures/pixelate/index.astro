@@ -8,28 +8,21 @@ import Layout from "@/layouts/Layout.astro";
   import GUI from "lil-gui";
 
   const container = document.querySelector("#wrapper") as HTMLElement;
+  const uniforms = {
+    texture: "/abstract.jpg",
+    pixelation: 40,
+  };
 
   // Initialize static texture
-  const gl = new GlslRenderer(container, frag, {
-    u_texture: {
-      type: "image",
-      value: "/abstract.jpg",
-    },
-    u_pixelWidth: { type: "float", value: 40 },
-    u_pixelation: { type: "float", value: 40 },
-  });
+  const gl = new GlslRenderer({ container, frag, uniforms });
 
   gl.play();
 
   // Update custom uniforms
   const gui = new GUI();
 
-  const guiOptions = {
-    pixelation: 40,
-  };
-
-  gui.add(guiOptions, "pixelation", 1, 120, 1).onChange((value: number) => {
-    gl.updateUniform("u_pixelation", value);
+  gui.add(uniforms, "pixelation", 1, 120, 1).onChange((value: number) => {
+    gl.updateUniform("pixelation", value);
   });
 </script>
 
@@ -39,6 +32,7 @@ import Layout from "@/layouts/Layout.astro";
 
 <style>
   section {
-    height: 100vh;
+    height: 100svh;
+    touch-action: none;
   }
 </style>

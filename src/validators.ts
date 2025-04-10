@@ -24,4 +24,46 @@ function isVec4(value: unknown): value is Vec4 {
   return Array.isArray(value) && value.length === 4 && value.every(isNumber);
 }
 
-export { isNumber, isString, isBool, isVec2, isVec3, isVec4 };
+function isImageFile(fileName: string): boolean {
+  const imageExtensions = [
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".gif",
+    ".bmp",
+    ".webp",
+    ".svg",
+    ".tiff",
+    ".ico",
+  ];
+  const lowerCaseFileName = fileName.toLowerCase();
+
+  return imageExtensions.some((ext) => lowerCaseFileName.endsWith(ext));
+}
+
+function isVideoFile(fileName: string): boolean {
+  const videoExtensions = [
+    ".mp4",
+    ".avi",
+    ".mov",
+    ".mkv",
+    ".wmv",
+    ".flv",
+    ".webm",
+    ".ts",
+  ];
+  const lowerCaseFileName = fileName.toLowerCase();
+
+  return videoExtensions.some((ext) => lowerCaseFileName.endsWith(ext));
+}
+
+export {
+  isNumber,
+  isString,
+  isBool,
+  isVec2,
+  isVec3,
+  isVec4,
+  isImageFile,
+  isVideoFile,
+};

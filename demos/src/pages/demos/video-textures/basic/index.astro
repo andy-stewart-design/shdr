@@ -5,23 +5,17 @@ import Layout from "@/layouts/Layout.astro";
 <script>
   import GlslRenderer from "@/../../dist";
   import frag from "./_sketch.frag?raw";
-  import GUI from "lil-gui";
 
   const container = document.querySelector("#wrapper") as HTMLElement;
   const uniforms = {
-    dpi: 12,
+    texture:
+      "https://res.cloudinary.com/andystewartdesign/video/upload/v1743723961/misc/2795731-hd_1920_1080_25fps.mp4",
   };
 
-  // Initialize custom uniforms
+  // Initialize dynamic (video) texture
   const gl = new GlslRenderer({ container, frag, uniforms });
+
   gl.play();
-
-  // Update custom uniforms
-  const gui = new GUI();
-
-  gui.add(uniforms, "dpi", 4, 20, 1).onChange((value: number) => {
-    gl.updateUniform("dpi", parseFloat(value.toString()));
-  });
 </script>
 
 <Layout>
