@@ -237,6 +237,8 @@ class GlslAssetManager {
   private async loadDynamicTexture(name: string, url?: string) {
     const video = document.createElement("video");
     video.muted = true;
+    video.autoplay = true;
+    video.playsInline = true;
 
     video.onloadeddata = () => {
       const [asset, unit] = this.initializeTexture(name);
@@ -270,12 +272,9 @@ class GlslAssetManager {
 
     if (!url) {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      video.autoplay = true;
-      video.playsInline = true;
       video.srcObject = stream;
     } else {
       video.loop = true;
-      video.autoplay = true;
       video.crossOrigin = "anonymous";
       video.src = url;
       console.log(video);
