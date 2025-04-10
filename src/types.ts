@@ -13,7 +13,7 @@ type UniformType =
   | "video"
   | "webcam";
 
-type UniformValue = number | Vec2 | Vec3 | Vec4 | boolean | string;
+type UniformValue = number | number[] | boolean | string;
 
 interface UniformMap {
   [key: string]: UniformValue;

@@ -8,13 +8,14 @@ import Layout from "@/layouts/Layout.astro";
   import GUI from "lil-gui";
 
   const container = document.querySelector("#wrapper") as HTMLElement;
-
-  // Initialize static texture
-  const gl = new GlslRenderer(container, frag, {
+  const uniforms = {
     texture: "/abstract.jpg",
     highColor: [0, 0.5, 1],
     lowColor: [0, 0, 0],
-  });
+  };
+
+  // Initialize static texture
+  const gl = new GlslRenderer({ container, frag, uniforms });
 
   gl.play();
 

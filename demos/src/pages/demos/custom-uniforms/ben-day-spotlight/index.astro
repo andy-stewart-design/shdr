@@ -8,21 +8,18 @@ import Layout from "@/layouts/Layout.astro";
   import GUI from "lil-gui";
 
   const container = document.querySelector("#wrapper") as HTMLElement;
+  const uniforms = {
+    dpi: 12,
+  };
 
   // Initialize custom uniforms
-  const gl = new GlslRenderer(container, frag, {
-    dpi: 12,
-  });
+  const gl = new GlslRenderer({ container, frag, uniforms });
   gl.play();
 
   // Update custom uniforms
   const gui = new GUI();
 
-  const guiOptions = {
-    dpi: 12,
-  };
-
-  gui.add(guiOptions, "dpi", 4, 20, 1).onChange((value: number) => {
+  gui.add(uniforms, "dpi", 4, 20, 1).onChange((value: number) => {
     gl.updateUniform("dpi", parseFloat(value.toString()));
   });
 </script>

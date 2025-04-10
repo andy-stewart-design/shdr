@@ -1,8 +1,12 @@
-// TODO: add demos for Basic, Uniform Updates, Static Textures, Dynamic Textures, Webcam Textures
-
 import GlslAssetManager from "./glsl-asset-manager";
 import GlslCanvas, { DEFAULT_VERTICES } from "./glsl-canvas";
 import type { UniformValue, UniformMap } from "./types";
+
+interface GlslRendererConstructorProps {
+  container: HTMLElement;
+  frag?: string;
+  uniforms?: UniformMap;
+}
 
 export default class GlslRenderer extends GlslCanvas {
   private mousePos = [0, 0];
@@ -10,13 +14,9 @@ export default class GlslRenderer extends GlslCanvas {
   private rafId: number | null = null;
   readonly assets: GlslAssetManager;
 
-  constructor(
-    container: HTMLElement,
-    frag?: string,
-    initialUniforms: UniformMap = {}
-  ) {
+  constructor({ container, frag, uniforms }: GlslRendererConstructorProps) {
     super(container, frag);
-    this.assets = new GlslAssetManager(this.gl, this.program, initialUniforms);
+    this.assets = new GlslAssetManager(this.gl, this.program, uniforms);
 
     this.handleResize();
     this.addEventListeners();

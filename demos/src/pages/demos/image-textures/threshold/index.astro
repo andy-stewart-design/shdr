@@ -8,47 +8,41 @@ import Layout from "@/layouts/Layout.astro";
   import GUI from "lil-gui";
 
   const container = document.querySelector("#wrapper") as HTMLElement;
-
-  // Initialize static texture
-  const gl = new GlslRenderer(container, frag, {
+  const uniforms = {
     texture: "/abstract.jpg",
-    stepCount: 2,
-    offset: 0,
-    noise: false,
-    noiseAmount: 0.25,
-  });
-
-  gl.play();
-
-  // Update custom uniforms
-  const gui = new GUI();
-
-  const guiOptions = {
     stepCount: 2,
     offset: 0,
     noise: false,
     noiseAmount: 0.25,
   };
 
-  gui.add(guiOptions, "stepCount", 2, 10, 1).onChange((value: number) => {
+  // Initialize static texture
+  const gl = new GlslRenderer({ container, frag, uniforms });
+
+  gl.play();
+
+  // Update custom uniforms
+  const gui = new GUI();
+
+  gui.add(uniforms, "stepCount", 2, 10, 1).onChange((value: number) => {
     gl.updateUniform("stepCount", value);
   });
 
-  gui.add(guiOptions, "offset", -0.5, 0.5, 0.1).onChange((value: number) => {
+  gui.add(uniforms, "offset", -0.5, 0.5, 0.1).onChange((value: number) => {
     gl.updateUniform("offset", value);
   });
 
-  gui.add(guiOptions, "noise").onChange((value: boolean) => {
+  gui.add(uniforms, "noise").onChange((value: boolean) => {
     gl.updateUniform("noise", value);
     noiseAmountController.disable(!value);
   });
 
   const noiseAmountController = gui
-    .add(guiOptions, "noiseAmount", 0, 1, 0.01)
+    .add(uniforms, "noiseAmount", 0, 1, 0.01)
     .onChange((value: number) => {
       gl.updateUniform("noiseAmount", value);
     })
-    .disable(!guiOptions.noise);
+    .disable(!uniforms.noise);
 </script>
 
 <Layout>

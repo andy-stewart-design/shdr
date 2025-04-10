@@ -8,24 +8,20 @@ import Layout from "@/layouts/Layout.astro";
   import GUI from "lil-gui";
 
   const container = document.querySelector("#wrapper") as HTMLElement;
+  const uniforms = {
+    texture: "/abstract.jpg",
+    pixelation: 40,
+  };
 
   // Initialize static texture
-  const gl = new GlslRenderer(container, frag, {
-    texture: "/abstract.jpg",
-    pixelWidth: 40,
-    pixelation: 40,
-  });
+  const gl = new GlslRenderer({ container, frag, uniforms });
 
   gl.play();
 
   // Update custom uniforms
   const gui = new GUI();
 
-  const guiOptions = {
-    pixelation: 40,
-  };
-
-  gui.add(guiOptions, "pixelation", 1, 120, 1).onChange((value: number) => {
+  gui.add(uniforms, "pixelation", 1, 120, 1).onChange((value: number) => {
     gl.updateUniform("pixelation", value);
   });
 </script>

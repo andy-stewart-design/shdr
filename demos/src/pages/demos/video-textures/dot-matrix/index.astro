@@ -8,43 +8,36 @@ import Layout from "@/layouts/Layout.astro";
   import GUI from "lil-gui";
 
   const container = document.querySelector("#wrapper") as HTMLElement;
-  const vidSrc =
-    "https://res.cloudinary.com/andystewartdesign/video/upload/v1743723961/misc/2795731-hd_1920_1080_25fps.mp4";
-
-  // Initialize dynamic (video) texture
-  const gl = new GlslRenderer(container, frag, {
-    texture: vidSrc,
-    gridSize: 60,
-    radius: 0.33,
-    inverted: true,
-    monotone: false,
-  });
-
-  gl.play();
-
-  // Update custom uniforms
-  const gui = new GUI();
-
-  const guiOptions = {
+  const uniforms = {
+    texture:
+      "https://res.cloudinary.com/andystewartdesign/video/upload/v1743723961/misc/2795731-hd_1920_1080_25fps.mp4",
     gridSize: 60,
     radius: 0.33,
     inverted: true,
     monotone: false,
   };
 
-  gui.add(guiOptions, "gridSize", 4, 100, 1).onChange((value: number) => {
+  // Initialize dynamic (video) texture
+  const gl = new GlslRenderer({ container, frag, uniforms });
+
+  gl.play();
+
+  // Update custom uniforms
+  const gui = new GUI();
+
+  gui.add(uniforms, "gridSize", 4, 100, 1).onChange((value: number) => {
     gl.updateUniform("gridSize", parseFloat(value.toString()));
   });
 
-  gui.add(guiOptions, "radius", 0.25, 0.9, 0.01).onChange((value: number) => {
+  gui.add(uniforms, "radius", 0.25, 0.9, 0.01).onChange((value: number) => {
     gl.updateUniform("radius", parseFloat(value.toString()));
   });
 
-  gui.add(guiOptions, "inverted").onChange((value: boolean) => {
+  gui.add(uniforms, "inverted").onChange((value: boolean) => {
     gl.updateUniform("inverted", value);
   });
 
-  gui.add(guiOptions, "monotone").onChange((value: boolean) => {
+  gui.add(uniforms, "monotone").onChange((value: boolean) => {
     gl.updateUniform("monotone", value);
   });
 </script>

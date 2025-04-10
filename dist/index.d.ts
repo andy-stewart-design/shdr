@@ -1,8 +1,5 @@
-type Vec2 = [number, number];
-type Vec3 = [number, number, number];
-type Vec4 = [number, number, number, number];
 type UniformType = "float" | "int" | "vec2" | "vec3" | "vec4" | "bool" | "image" | "video" | "webcam";
-type UniformValue = number | Vec2 | Vec3 | Vec4 | boolean | string;
+type UniformValue = number | number[] | boolean | string;
 interface UniformMap {
     [key: string]: UniformValue;
 }
@@ -50,12 +47,17 @@ declare class GlslCanvas {
     destroy(): void;
 }
 
+interface GlslRendererConstructorProps {
+    container: HTMLElement;
+    frag?: string;
+    uniforms?: UniformMap;
+}
 declare class GlslRenderer extends GlslCanvas {
     private mousePos;
     private controller;
     private rafId;
     readonly assets: GlslAssetManager;
-    constructor(container: HTMLElement, frag?: string, initialUniforms?: UniformMap);
+    constructor({ container, frag, uniforms }: GlslRendererConstructorProps);
     private render;
     private handleResize;
     private addEventListeners;

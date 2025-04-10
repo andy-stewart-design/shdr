@@ -7,13 +7,13 @@ import Layout from "@/layouts/Layout.astro";
   import frag from "./_sketch.frag?raw";
 
   const container = document.querySelector("#wrapper") as HTMLElement;
-  const vidSrc =
-    "https://res.cloudinary.com/andystewartdesign/video/upload/v1743723961/misc/2795731-hd_1920_1080_25fps.mp4";
+  const uniforms = {
+    texture:
+      "https://res.cloudinary.com/andystewartdesign/video/upload/v1743723961/misc/2795731-hd_1920_1080_25fps.mp4",
+  };
 
   // Initialize dynamic (video) texture
-  const gl = new GlslRenderer(container, frag, {
-    texture: vidSrc,
-  });
+  const gl = new GlslRenderer({ container, frag, uniforms });
 
   gl.play();
 </script>

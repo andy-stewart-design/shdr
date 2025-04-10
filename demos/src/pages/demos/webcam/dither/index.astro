@@ -7,11 +7,10 @@ import Layout from "@/layouts/Layout.astro";
   import frag from "./_sketch.frag?raw";
 
   const container = document.querySelector("#wrapper") as HTMLElement;
+  const uniforms = { webcam: "webcam" };
 
   // Initialize webcam as a texture
-  const gl = new GlslRenderer(container, frag, {
-    webcam: "webcam",
-  });
+  const gl = new GlslRenderer({ container, frag, uniforms });
 
   gl.play();
 </script>
