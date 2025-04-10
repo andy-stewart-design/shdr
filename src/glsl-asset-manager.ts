@@ -251,8 +251,11 @@ class GlslAssetManager {
       video.srcObject = stream;
     } else {
       video.loop = true;
+      video.autoplay = true;
+      video.playsInline = true;
       video.crossOrigin = "anonymous";
       video.src = url;
+      console.log(video);
     }
   }
 
