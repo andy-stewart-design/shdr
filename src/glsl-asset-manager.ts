@@ -277,7 +277,6 @@ class GlslAssetManager {
       video.loop = true;
       video.crossOrigin = "anonymous";
       video.src = url;
-      console.log(video);
     }
   }
 
