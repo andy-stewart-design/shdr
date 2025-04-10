@@ -271,11 +271,11 @@ class GlslAssetManager {
     if (!url) {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       video.autoplay = true;
+      video.playsInline = true;
       video.srcObject = stream;
     } else {
       video.loop = true;
       video.autoplay = true;
-      video.playsInline = true;
       video.crossOrigin = "anonymous";
       video.src = url;
       console.log(video);
