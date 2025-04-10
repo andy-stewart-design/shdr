@@ -1,9 +1,5 @@
 import { getUniformType, setTextureParams, updateTexture } from "./utils";
-import type {
-  UniformConfigType,
-  UniformConfigValue,
-  UnstableUniformMap,
-} from "./types";
+import type { UniformType, UniformValue, UniformMap } from "./types";
 import {
   isBool,
   isNumber,
@@ -14,7 +10,7 @@ import {
 } from "./validators";
 
 interface WebGLUniform {
-  type: UniformConfigType;
+  type: UniformType;
   location: WebGLUniformLocation;
 }
 
@@ -37,7 +33,7 @@ class GlslAssetManager {
   constructor(
     gl: WebGLRenderingContext,
     program: WebGLProgram,
-    initialUniforms: UnstableUniformMap = {}
+    initialUniforms: UniformMap = {}
   ) {
     this.gl = gl;
     this.program = program;
@@ -65,10 +61,13 @@ class GlslAssetManager {
     }
   }
 
-  private initializeCustomUniforms(uniforms: UnstableUniformMap) {
+  private initializeCustomUniforms(uniforms: UniformMap) {
     for (const [name, val] of Object.entries(uniforms)) {
       const location = this.gl.getUniformLocation(this.program, `u_${name}`);
-      if (!location) continue; // TODO: add error message
+      if (!location) {
+        console.warn(`Couldn't init uniform (${name}). Did you set it?`);
+        continue;
+      }
 
       const inferred = getUniformType(val);
 
@@ -83,7 +82,7 @@ class GlslAssetManager {
     }
   }
 
-  public setUniformValue(_name: string, value: UniformConfigValue) {
+  public setUniformValue(_name: string, value: UniformValue) {
     const uni = this.uniforms.get(_name);
     if (!uni) {
       console.warn(`Uniform ${_name} not found`);

@@ -1,14 +1,14 @@
 type Vec2 = [number, number];
 type Vec3 = [number, number, number];
 type Vec4 = [number, number, number, number];
-type UniformConfigType = "float" | "int" | "vec2" | "vec3" | "vec4" | "bool" | "image" | "video" | "webcam";
-type UniformConfigValue = number | Vec2 | Vec3 | Vec4 | boolean | string;
-interface UnstableUniformMap {
-    [key: string]: UniformConfigValue;
+type UniformType = "float" | "int" | "vec2" | "vec3" | "vec4" | "bool" | "image" | "video" | "webcam";
+type UniformValue = number | Vec2 | Vec3 | Vec4 | boolean | string;
+interface UniformMap {
+    [key: string]: UniformValue;
 }
 
 interface WebGLUniform {
-    type: UniformConfigType;
+    type: UniformType;
     location: WebGLUniformLocation;
 }
 interface StaticTexture {
@@ -24,10 +24,10 @@ declare class GlslAssetManager {
     readonly uniforms: Map<string, WebGLUniform>;
     readonly staticTextures: Map<string, StaticTexture>;
     readonly dynamicTextures: Map<string, DynamicTexture>;
-    constructor(gl: WebGLRenderingContext, program: WebGLProgram, initialUniforms?: UnstableUniformMap);
+    constructor(gl: WebGLRenderingContext, program: WebGLProgram, initialUniforms?: UniformMap);
     private initializeDefaultUniforms;
     private initializeCustomUniforms;
-    setUniformValue(_name: string, value: UniformConfigValue): void;
+    setUniformValue(_name: string, value: UniformValue): void;
     private getTextureUnit;
     private getUniformLocation;
     private initializeTexture;
@@ -55,13 +55,13 @@ declare class GlslRenderer extends GlslCanvas {
     private controller;
     private rafId;
     readonly assets: GlslAssetManager;
-    constructor(container: HTMLElement, frag?: string, initialUniforms?: UnstableUniformMap);
+    constructor(container: HTMLElement, frag?: string, initialUniforms?: UniformMap);
     private render;
     private handleResize;
     private addEventListeners;
     play(): void;
     pause(): void;
-    updateUniform(name: string, value: UniformConfigValue): void;
+    updateUniform(name: string, value: UniformValue): void;
     destroy(): void;
 }
 

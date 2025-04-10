@@ -2,7 +2,7 @@
 
 import GlslAssetManager from "./glsl-asset-manager";
 import GlslCanvas, { DEFAULT_VERTICES } from "./glsl-canvas";
-import type { UniformConfigValue, UnstableUniformMap } from "./types";
+import type { UniformValue, UniformMap } from "./types";
 
 export default class GlslRenderer extends GlslCanvas {
   private mousePos = [0, 0];
@@ -13,7 +13,7 @@ export default class GlslRenderer extends GlslCanvas {
   constructor(
     container: HTMLElement,
     frag?: string,
-    initialUniforms: UnstableUniformMap = {}
+    initialUniforms: UniformMap = {}
   ) {
     super(container, frag);
     this.assets = new GlslAssetManager(this.gl, this.program, initialUniforms);
@@ -99,7 +99,7 @@ export default class GlslRenderer extends GlslCanvas {
     }
   }
 
-  public updateUniform(name: string, value: UniformConfigValue) {
+  public updateUniform(name: string, value: UniformValue) {
     this.assets.setUniformValue(name, value);
   }
 

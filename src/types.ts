@@ -2,7 +2,7 @@ type Vec2 = [number, number];
 type Vec3 = [number, number, number];
 type Vec4 = [number, number, number, number];
 
-type UniformConfigType =
+type UniformType =
   | "float"
   | "int"
   | "vec2"
@@ -13,17 +13,10 @@ type UniformConfigType =
   | "video"
   | "webcam";
 
-type UniformConfigValue = number | Vec2 | Vec3 | Vec4 | boolean | string;
+type UniformValue = number | Vec2 | Vec3 | Vec4 | boolean | string;
 
-interface UnstableUniformMap {
-  [key: string]: UniformConfigValue;
+interface UniformMap {
+  [key: string]: UniformValue;
 }
 
-export type {
-  UniformConfigType,
-  UniformConfigValue,
-  Vec2,
-  Vec3,
-  Vec4,
-  UnstableUniformMap,
-};
+export type { UniformType, UniformValue, Vec2, Vec3, Vec4, UniformMap };
