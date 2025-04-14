@@ -2,6 +2,11 @@
   "name": "glsl-ts",
   "description": "A zero-dependency shader renderer for the web, written in TypeScript",
   "author": "Andy Stewart <andy.stewart1170@gmail.com> (andystew.art)",
+  "homepage": "https://github.com/andy-stewart-design/glsl-ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andy-stewart-design/glsl-ts.git"
+  },
   "license": "MIT",
   "keywords": [
     "glsl",
