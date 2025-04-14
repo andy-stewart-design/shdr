@@ -17,7 +17,10 @@
   ],
   "version": "0.0.1",
   "type": "module",
-  "main": "./dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.js",
   "scripts": {
     "build:demo": "pnpm --dir demos build",
     "build:pack": "tsup",
@@ -26,16 +29,18 @@
     "dev:pack": "tsup --watch",
     "dev": "concurrently \"pnpm dev:pack\" \"pnpm dev:demo\"",
     "preview": "pnpm --dir demos preview",
-    "astro": "pnpm --dir demos astro"
+    "astro": "pnpm --dir demos astro",
+    "check-exports": "attw --pack ."
   },
   "exports": {
+    "./package.json": "./package.json",
     ".": {
-      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "default": "./dist/index.cjs"
     }
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.17.4",
     "concurrently": "^9.1.2",
     "tsup": "^8.3.6",
     "typescript": "^5.7.3"
