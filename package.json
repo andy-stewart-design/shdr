@@ -1,8 +1,9 @@
 {
   "name": "glsl-ts",
+  "version": "0.1.0",
   "description": "A zero-dependency shader renderer for the web, written in TypeScript",
   "author": "Andy Stewart <andy.stewart1170@gmail.com> (andystew.art)",
-  "homepage": "https://github.com/andy-stewart-design/glsl-ts",
+  "homepage": "https://glsl-ts.vercel.app/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/andy-stewart-design/glsl-ts.git"
@@ -15,7 +16,6 @@
     "fragment",
     "web"
   ],
-  "version": "0.0.1",
   "type": "module",
   "files": [
     "dist"
