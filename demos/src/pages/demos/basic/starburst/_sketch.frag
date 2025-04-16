@@ -31,11 +31,11 @@ void main() {
         // Fix aspect ratio
         p.x *= u_resolution.x / u_resolution.y;
 
-        // Slightly offset the time for each iteration
-        animTime += timeScale;
-
         // Calculate the distance from center
         len = length(p);
+
+        // Slightly offset the time for each iteration
+        animTime += timeScale;
 
         // Create wave effect based on time and distance
         // This creates the flowing visual pattern

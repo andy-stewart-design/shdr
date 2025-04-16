@@ -74,7 +74,7 @@ vec3 circles(vec2 xy, vec2 C, float R, float r, float ph) {
     // Color based on the circle's position in the sequence
     vec3 hsl = vec3(i / float(n), 1.0, 0.75);
 
-    return circle(xy, c, r, true) * hue(hsl);
+    return vec3(circle(xy, c, r, true)) * hue(hsl);
 }
 
 void main() {

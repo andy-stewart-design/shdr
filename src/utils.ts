@@ -2,7 +2,7 @@ import type { UniformType } from "./types";
 import { isImageFile, isVideoFile } from "./validators";
 
 function getContext(canvas: HTMLCanvasElement) {
-  const gl = canvas.getContext("webgl");
+  const gl = canvas.getContext("webgl2");
 
   if (!gl) throw new Error("WebGL not supported");
 
