@@ -13,7 +13,7 @@ import Layout from "@/layouts/Layout.astro";
   };
 
   // Initialize custom uniforms
-  const gl = new GlslRenderer({ container, frag, uniforms });
+  const gl = new GlslRenderer({ container, frag, uniforms, glVersion: 1 });
   gl.play();
 
   // Update custom uniforms

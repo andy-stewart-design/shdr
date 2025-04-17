@@ -8,7 +8,7 @@ import Layout from "@/layouts/Layout.astro";
 
   const container = document.querySelector("#wrapper") as HTMLElement;
 
-  const gl = new GlslRenderer({ container, frag });
+  const gl = new GlslRenderer({ container, frag, glVersion: 1 });
   gl.play();
 </script>
 

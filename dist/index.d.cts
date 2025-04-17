@@ -16,13 +16,13 @@ interface DynamicTexture extends StaticTexture {
     video: HTMLVideoElement;
 }
 declare class GlslAssetManager {
-    readonly gl: WebGLRenderingContext;
+    readonly gl: WebGL2RenderingContext;
     readonly program: WebGLProgram;
     readonly uniforms: Map<string, WebGLUniform>;
     readonly staticTextures: Map<string, StaticTexture>;
     readonly dynamicTextures: Map<string, DynamicTexture>;
     readonly uniformPrefix: string;
-    constructor(gl: WebGLRenderingContext, program: WebGLProgram, initialUniforms: UniformMap, uniformPrefix: string);
+    constructor(gl: WebGL2RenderingContext, program: WebGLProgram, initialUniforms: UniformMap, uniformPrefix: string);
     private initializeDefaultUniforms;
     private initializeCustomUniforms;
     setUniformValue(_name: string, value: UniformValue): void;
@@ -38,9 +38,9 @@ declare class GlslAssetManager {
 declare class GlslCanvas {
     readonly container: HTMLElement;
     readonly canvas: HTMLCanvasElement;
-    readonly gl: WebGLRenderingContext;
+    readonly gl: WebGL2RenderingContext;
     readonly program: WebGLProgram;
-    constructor(container: HTMLElement, frag?: string);
+    constructor(container: HTMLElement, version: 1 | 3, frag?: string);
     private compileShader;
     private createProgram;
     private createBuffer;
@@ -53,13 +53,14 @@ interface GlslRendererConstructorProps {
     frag?: string;
     uniforms?: UniformMap;
     uniformPrefix?: string;
+    glVersion?: 1 | 3;
 }
 declare class GlslRenderer extends GlslCanvas {
     private mousePos;
     private controller;
     private rafId;
     readonly assets: GlslAssetManager;
-    constructor({ container, frag, uniforms, uniformPrefix, }: GlslRendererConstructorProps);
+    constructor({ container, frag, uniforms, uniformPrefix, glVersion, }: GlslRendererConstructorProps);
     private render;
     private handleResize;
     private addEventListeners;
