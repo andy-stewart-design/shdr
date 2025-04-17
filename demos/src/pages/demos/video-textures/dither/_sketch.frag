@@ -1,12 +1,13 @@
-#ifdef GL_ES
+#version 300 es
 precision mediump float;
-#endif
 
 uniform vec2 u_resolution;
 uniform vec2 u_mouse;
 uniform float u_time;
 uniform sampler2D u_texture;
 uniform vec2 u_texture_size;
+
+out vec4 outColor;
 
 vec2 adjustUV(float textureAR, float canvasAR, vec2 uv) {
     if(canvasAR < textureAR) {
@@ -26,63 +27,25 @@ vec4 desaturate(vec4 color) {
     return vec4(vec3(gray), color.a);
 }
 
-// 2x2 Bayer threshold matrix normalized to 0.0–1.0
-float bayer2x2(vec2 pos) {
-    int x = int(mod(pos.x, 2.0));
-    int y = int(mod(pos.y, 2.0));
+const int dither_matrix_2x2[4] = int[](0, 3, 2, 1);
+const int dither_matrix_4x4[16] = int[](0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5);
 
-    if(x == 0 && y == 0)
-        return 0.0 / 4.0;
-    if(x == 1 && y == 0)
-        return 2.0 / 4.0;
-    if(x == 0 && y == 1)
-        return 3.0 / 4.0;
-    return 1.0 / 4.0; // (x == 1 && y == 1)
+float dither2x2(vec2 uv, float luma) {
+    float dither_amount = 2.0;
+    int x = int(mod(uv.x, dither_amount));
+    int y = int(mod(uv.y, dither_amount));
+    int index = x + y * int(dither_amount);
+    float limit = (float(dither_matrix_2x2[index]) + 1.0) / (1.0 + 4.0);
+    return luma < limit ? 0. : 1.;
 }
 
-float bayer4x4(vec2 pos) {
-    int x = int(mod(pos.x, 4.0));
-    int y = int(mod(pos.y, 4.0));
-
-    if(x == 0 && y == 0)
-        return 0.0 / 16.0;
-    if(x == 1 && y == 0)
-        return 8.0 / 16.0;
-    if(x == 2 && y == 0)
-        return 2.0 / 16.0;
-    if(x == 3 && y == 0)
-        return 10.0 / 16.0;
-
-    if(x == 0 && y == 1)
-        return 12.0 / 16.0;
-    if(x == 1 && y == 1)
-        return 4.0 / 16.0;
-    if(x == 2 && y == 1)
-        return 14.0 / 16.0;
-    if(x == 3 && y == 1)
-        return 6.0 / 16.0;
-
-    if(x == 0 && y == 2)
-        return 3.0 / 16.0;
-    if(x == 1 && y == 2)
-        return 11.0 / 16.0;
-    if(x == 2 && y == 2)
-        return 1.0 / 16.0;
-    if(x == 3 && y == 2)
-        return 9.0 / 16.0;
-
-    if(x == 0 && y == 3)
-        return 15.0 / 16.0;
-    if(x == 1 && y == 3)
-        return 7.0 / 16.0;
-    if(x == 2 && y == 3)
-        return 13.0 / 16.0;
-    return 5.0 / 16.0; // (x == 3 && y == 3)
-}
-
-float dither(vec2 pos, float brightness) {
-    float threshold = bayer4x4(pos);
-    return brightness < threshold ? 0.0 : 1.0;
+float dither4x4(vec2 uv, float luma) {
+    float dither_amount = 4.0;
+    int x = int(mod(uv.x, dither_amount));
+    int y = int(mod(uv.y, dither_amount));
+    int index = x + y * int(dither_amount);
+    float limit = (float(dither_matrix_4x4[index]) + 1.0) / (1.0 + 16.0);
+    return luma < limit ? 0.0 : 1.0;
 }
 
 void main() {
@@ -99,10 +62,10 @@ void main() {
     adjustedUV.y = 1.0 - adjustedUV.y;
 
     // Sample original texture and convert to grayscale
-    vec4 texColor = texture2D(u_texture, adjustedUV);
+    vec4 texColor = texture(u_texture, adjustedUV);
     vec4 gray = desaturate(texColor);
     // Apply Bayer dithering
-    float dithered = dither(gl_FragCoord.xy, gray.r);
+    float dithered = dither4x4(gl_FragCoord.xy, gray.r);
 
-    gl_FragColor = vec4(vec3(dithered), 1.0);
+    outColor = vec4(vec3(dithered), 1.0);
 }

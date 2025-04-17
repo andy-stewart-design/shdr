@@ -10,7 +10,7 @@ function getContext(canvas: HTMLCanvasElement) {
 }
 
 function updateTexture(
-  gl: WebGLRenderingContext,
+  gl: WebGL2RenderingContext,
   texture?: HTMLImageElement | HTMLVideoElement
 ) {
   const { TEXTURE_2D, RGBA, UNSIGNED_BYTE } = gl;
@@ -24,7 +24,7 @@ function updateTexture(
 }
 
 function setTextureParams(
-  gl: WebGLRenderingContext,
+  gl: WebGL2RenderingContext,
   texture: HTMLImageElement | HTMLVideoElement
 ) {
   if (isPowerOf2(texture.width) && isPowerOf2(texture.height)) {

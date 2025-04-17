@@ -24,7 +24,7 @@ interface DynamicTexture extends StaticTexture {
 }
 
 class GlslAssetManager {
-  readonly gl: WebGLRenderingContext;
+  readonly gl: WebGL2RenderingContext;
   readonly program: WebGLProgram;
   readonly uniforms: Map<string, WebGLUniform> = new Map();
   readonly staticTextures: Map<string, StaticTexture> = new Map();
@@ -32,7 +32,7 @@ class GlslAssetManager {
   readonly uniformPrefix: string = "u_";
 
   constructor(
-    gl: WebGLRenderingContext,
+    gl: WebGL2RenderingContext,
     program: WebGLProgram,
     initialUniforms: UniformMap,
     uniformPrefix: string

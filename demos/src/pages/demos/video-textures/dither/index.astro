@@ -5,41 +5,17 @@ import Layout from "@/layouts/Layout.astro";
 <script>
   import GlslRenderer from "@glsl-ts";
   import frag from "./_sketch.frag?raw";
-  // import GUI from "lil-gui";
 
   const container = document.querySelector("#wrapper") as HTMLElement;
   const uniforms = {
     texture:
       "https://res.cloudinary.com/andystewartdesign/video/upload/v1743723961/misc/2795731-hd_1920_1080_25fps.mp4",
-    // gridSize: 60,
-    // radius: 0.33,
-    // inverted: true,
-    // monotone: false,
   };
 
   // Initialize dynamic (video) texture
-  const gl = new GlslRenderer({ container, frag, uniforms });
+  const gl = new GlslRenderer({ container, frag, uniforms, glVersion: 3 });
 
   gl.play();
-
-  // Update custom uniforms
-  // const gui = new GUI();
-
-  // gui.add(uniforms, "gridSize", 4, 100, 1).onChange((value: number) => {
-  //   gl.updateUniform("gridSize", parseFloat(value.toString()));
-  // });
-
-  // gui.add(uniforms, "radius", 0.25, 0.9, 0.01).onChange((value: number) => {
-  //   gl.updateUniform("radius", parseFloat(value.toString()));
-  // });
-
-  // gui.add(uniforms, "inverted").onChange((value: boolean) => {
-  //   gl.updateUniform("inverted", value);
-  // });
-
-  // gui.add(uniforms, "monotone").onChange((value: boolean) => {
-  //   gl.updateUniform("monotone", value);
-  // });
 </script>
 
 <Layout>

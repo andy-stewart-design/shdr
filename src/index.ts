@@ -7,6 +7,7 @@ interface GlslRendererConstructorProps {
   frag?: string;
   uniforms?: UniformMap;
   uniformPrefix?: string;
+  glVersion?: 1 | 3;
 }
 
 export default class GlslRenderer extends GlslCanvas {
@@ -20,8 +21,9 @@ export default class GlslRenderer extends GlslCanvas {
     frag,
     uniforms = {},
     uniformPrefix = "u_",
+    glVersion = 3,
   }: GlslRendererConstructorProps) {
-    super(container, frag);
+    super(container, glVersion, frag);
     this.assets = new GlslAssetManager(
       this.gl,
       this.program,

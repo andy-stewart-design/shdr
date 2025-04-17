@@ -1,5 +1,10 @@
 import { getContext } from "./utils";
-import { fragmentShaderSource, vertexShaderSource } from "./shaders";
+import {
+  fragmentShaderSourceV1,
+  vertexShaderSourceV1,
+  fragmentShaderSourceV3,
+  vertexShaderSourceV3,
+} from "./shaders";
 
 const DEFAULT_VERTICES = new Float32Array([
   -1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1,
@@ -8,10 +13,10 @@ const DEFAULT_VERTICES = new Float32Array([
 class GlslCanvas {
   readonly container: HTMLElement;
   readonly canvas: HTMLCanvasElement;
-  readonly gl: WebGLRenderingContext;
+  readonly gl: WebGL2RenderingContext;
   readonly program: WebGLProgram;
 
-  constructor(container: HTMLElement, frag?: string) {
+  constructor(container: HTMLElement, version: 1 | 3, frag?: string) {
     this.container = container;
     this.canvas = document.createElement("canvas");
     this.canvas.style.display = "block";
@@ -19,15 +24,15 @@ class GlslCanvas {
     this.container.appendChild(this.canvas);
 
     this.gl = getContext(this.canvas);
+    const fShader =
+      version === 3 ? fragmentShaderSourceV3 : fragmentShaderSourceV1;
+    const vShader = version === 3 ? vertexShaderSourceV3 : vertexShaderSourceV1;
 
-    const vertexShader = this.compileShader(
-      this.gl.VERTEX_SHADER,
-      vertexShaderSource
-    );
+    const vertexShader = this.compileShader(this.gl.VERTEX_SHADER, vShader);
 
     const fragmentShader = this.compileShader(
       this.gl.FRAGMENT_SHADER,
-      frag ?? fragmentShaderSource
+      frag ?? fShader
     );
 
     this.program = this.createProgram(vertexShader, fragmentShader);
@@ -47,10 +52,11 @@ class GlslCanvas {
     this.gl.compileShader(shader);
 
     if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
+      const message = `Shader compilation error: ${this.gl.getShaderInfoLog(
+        shader
+      )}`;
       this.gl.deleteShader(shader);
-      throw new Error(
-        `Shader compilation error: ${this.gl.getShaderInfoLog(shader)}`
-      );
+      throw new Error(message);
     }
 
     return shader;

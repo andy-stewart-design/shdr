@@ -10,7 +10,7 @@ import Layout from "@/layouts/Layout.astro";
   const uniforms = { webcam: "webcam" };
 
   // Initialize webcam as a texture
-  const gl = new GlslRenderer({ container, frag, uniforms });
+  const gl = new GlslRenderer({ container, frag, uniforms, glVersion: 1 });
 
   gl.play();
 </script>
