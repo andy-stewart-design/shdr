@@ -30,9 +30,14 @@ void main() {
     float canvasAR = u_resolution.x / u_resolution.y;
     vec2 adjustedUV = adjustUV(textureAR, canvasAR, uv);
 
-    float pixelSize = u_pixelation / u_resolution.y;
-    float dx = pixelSize;
-    float dy = pixelSize * textureAR;
+    // Calculate how many pixels we want vertically
+    float numPixelsY = floor(u_resolution.y / u_pixelation);
+    // Ensure we have a whole number of pixels by adjusting pixel size
+    float pixelSize = 1.0 / numPixelsY;
+    // Calculate grid coordinates with square pixels
+    float dx = pixelSize / textureAR;
+    float dy = pixelSize;
+    // Find the center of each pixel
     float x = dx * (floor(adjustedUV.x / dx) + 0.5);
     float y = dy * (floor(adjustedUV.y / dy) + 0.5);
 
