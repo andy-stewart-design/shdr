@@ -13,7 +13,7 @@ import Layout from "@/layouts/Layout.astro";
   };
 
   // Initialize dynamic (video) texture
-  const gl = new GlslRenderer({ container, frag, uniforms, glVersion: 1 });
+  const gl = new GlslRenderer({ container, frag, uniforms, glVersion: 3 });
 
   gl.play();
 </script>
