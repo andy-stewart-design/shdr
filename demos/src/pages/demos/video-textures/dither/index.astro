@@ -12,6 +12,7 @@ import Layout from "@/layouts/Layout.astro";
     texture:
       "https://res.cloudinary.com/andystewartdesign/video/upload/v1743723961/misc/2795731-hd_1920_1080_25fps.mp4",
     ditherType: 2,
+    monotone: true,
   };
 
   // Initialize dynamic (video) texture
@@ -32,6 +33,9 @@ import Layout from "@/layouts/Layout.astro";
     .onChange((value: number) => {
       gl.updateUniform("ditherType", value);
     });
+  gui.add(uniforms, "monotone").onChange((value: boolean) => {
+    gl.updateUniform("monotone", value);
+  });
 </script>
 
 <Layout>
