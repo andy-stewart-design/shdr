@@ -102,7 +102,7 @@ class GlslAssetManager {
 
       this.uniforms.set(name, { type: inferred.type, location });
 
-      this.setUniformValue(name, val);
+      this.setUniformValue(name, inferred.value);
     }
   }
 

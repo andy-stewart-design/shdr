@@ -11,7 +11,7 @@ import Layout from "@/layouts/Layout.astro";
   const uniforms = {
     texture:
       "https://res.cloudinary.com/andystewartdesign/video/upload/v1743723961/misc/2795731-hd_1920_1080_25fps.mp4",
-    ditherType: 2,
+    ditherType: "2",
     monotone: true,
   };
 
@@ -25,10 +25,10 @@ import Layout from "@/layouts/Layout.astro";
 
   gui
     .add(uniforms, "ditherType", {
-      ["Bayer 2x2"]: 2,
-      ["Bayer 4x4"]: 4,
-      ["Bayer 8x8"]: 8,
-      ["Cluster"]: 10,
+      ["Bayer 2x2"]: "2",
+      ["Bayer 4x4"]: "4",
+      ["Bayer 8x8"]: "8",
+      ["Cluster"]: "10",
     })
     .onChange((value: number) => {
       gl.updateUniform("ditherType", value);

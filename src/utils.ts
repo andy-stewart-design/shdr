@@ -1,4 +1,4 @@
-import type { UniformType } from "./types";
+import type { UniformType, UniformValue } from "./types";
 import { isImageFile, isVideoFile } from "./validators";
 
 function getContext(canvas: HTMLCanvasElement) {
@@ -46,6 +46,7 @@ function isPowerOf2(value: number): boolean {
 interface ValidInferredUniform {
   valid: true;
   type: UniformType;
+  value: UniformValue;
 }
 
 interface InvalidInferredUniform {
@@ -58,22 +59,22 @@ type InferredUniform = ValidInferredUniform | InvalidInferredUniform;
 function getUniformType(uniform: unknown): InferredUniform {
   if (typeof uniform === "string") {
     if (isImageFile(uniform)) {
-      return { valid: true, type: "image" };
+      return { valid: true, type: "image", value: uniform };
     } else if (isVideoFile(uniform)) {
-      return { valid: true, type: "video" };
+      return { valid: true, type: "video", value: uniform };
     } else if (uniform === "webcam") {
-      return { valid: true, type: "webcam" };
+      return { valid: true, type: "webcam", value: uniform };
     } else if (!isNaN(Number(uniform)) && uniform.includes(".")) {
-      return { valid: true, type: "float" };
+      return { valid: true, type: "float", value: parseFloat(uniform) };
     } else if (!isNaN(Number(uniform)) && !uniform.includes(".")) {
-      return { valid: true, type: "int" };
+      return { valid: true, type: "int", value: parseInt(uniform) };
     } else {
       return { valid: false, message: `Unknown uniform type: ${uniform}` };
     }
   } else if (Array.isArray(uniform)) {
     if (uniform.length >= 2 && uniform.length <= 4) {
       const type = `vec${uniform.length}` as "vec2" | "vec3" | "vec4";
-      return { valid: true, type };
+      return { valid: true, type, value: uniform };
     } else {
       return {
         valid: false,
@@ -81,9 +82,9 @@ function getUniformType(uniform: unknown): InferredUniform {
       };
     }
   } else if (typeof uniform === "number") {
-    return { valid: true, type: "float" };
+    return { valid: true, type: "float", value: uniform };
   } else if (typeof uniform === "boolean") {
-    return { valid: true, type: "bool" };
+    return { valid: true, type: "bool", value: uniform };
   } else {
     return { valid: false, message: `Unknown uniform type: ${uniform}` };
   }

@@ -1,6 +1,7 @@
 import GlslAssetManager from "./glsl-asset-manager";
 import GlslCanvas, { DEFAULT_VERTICES } from "./glsl-canvas";
 import type { UniformValue, UniformMap } from "./types";
+import { getUniformType } from "./utils";
 
 interface GlslRendererConstructorProps {
   container: HTMLElement;
@@ -117,7 +118,14 @@ export default class GlslRenderer extends GlslCanvas {
   }
 
   public updateUniform(name: string, value: UniformValue) {
-    this.assets.setUniformValue(name, value);
+    const inferred = getUniformType(value);
+
+    if (!inferred.valid) {
+      console.warn(inferred.message);
+      return;
+    }
+
+    this.assets.setUniformValue(name, inferred.value);
   }
 
   public destroy() {

@@ -6,7 +6,7 @@ uniform vec2 u_mouse;
 uniform float u_time;
 uniform sampler2D u_texture;
 uniform vec2 u_texture_size;
-uniform float u_ditherType;
+uniform int u_ditherType;
 uniform int u_monotone;
 
 out vec4 outColor;
@@ -57,10 +57,10 @@ void main() {
     vec4 texColor = texture(u_texture, adjustedUV);
     vec4 gray = desaturate(texColor);
     // Apply Bayer dithering
-    float dithered = dither(gl_FragCoord.xy, gray.r, int(u_ditherType));
-    float r = texColor.r * dither(gl_FragCoord.xy, gray.r, int(u_ditherType));
-    float g = texColor.g * dither(gl_FragCoord.xy, gray.r, int(u_ditherType));
-    float b = texColor.b * dither(gl_FragCoord.xy, gray.r, int(u_ditherType));
+    float dithered = dither(gl_FragCoord.xy, gray.r, u_ditherType);
+    float r = texColor.r * dither(gl_FragCoord.xy, gray.r + 0.25, int(u_ditherType));
+    float g = texColor.g * dither(gl_FragCoord.xy, gray.r + 0.25, int(u_ditherType));
+    float b = texColor.b * dither(gl_FragCoord.xy, gray.r + 0.25, int(u_ditherType));
     vec3 rgb = u_monotone == 1 ? vec3(dithered) : vec3(r, g, b);
 
     outColor = vec4(rgb, 1.0);
