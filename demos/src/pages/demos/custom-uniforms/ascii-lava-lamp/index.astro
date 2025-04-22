@@ -1,0 +1,45 @@
+---
+import Layout from "@/layouts/Layout.astro";
+---
+
+<script>
+  import GlslRenderer from "@glsl-ts";
+  import frag from "./_sketch.frag?raw";
+  import GUI from "lil-gui";
+
+  const container = document.querySelector("#wrapper") as HTMLElement;
+  const uniforms = {
+    noiseScale: 2,
+    // brightness: 0,
+    speed: 0.75,
+  };
+
+  // Initialize custom uniforms
+  const gl = new GlslRenderer({ container, frag, uniforms, glVersion: 3 });
+  gl.play();
+
+  // Update custom uniforms
+  const gui = new GUI();
+
+  gui.add(uniforms, "noiseScale", 1, 10, 0.1).onChange((value: number) => {
+    gl.updateUniform("noiseScale", value);
+  });
+
+  gui.add(uniforms, "speed", 0, 1, 0.01).onChange((value: number) => {
+    gl.updateUniform("speed", value);
+  });
+</script>
+
+<Layout>
+  <section id="wrapper"></section>
+</Layout>
+
+<style>
+  section {
+    height: 100svh;
+    touch-action: none;
+  }
+  canvas {
+    border: 2px solid green;
+  }
+</style>

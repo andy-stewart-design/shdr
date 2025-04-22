@@ -83,7 +83,7 @@ void main() {
     vec4 texel = texture(u_texture, imageUV);
 
     float lum = dot(vec3(0.2126, 0.7152, 0.0722), texel.rgb);
-    float threshold = texture(u_noise, mod((gl_FragCoord.xy / u_noise_size) * 4., 1.0)).r;
+    float threshold = texture(u_noise, mod((gl_FragCoord.xy / u_noise_size) * 3., 1.0)).r;
     // threshold = pseudoblue(int(gl_FragCoord.x), int(gl_FragCoord.y));
     float value = lum < (threshold) ? 0. : 1.;
 
