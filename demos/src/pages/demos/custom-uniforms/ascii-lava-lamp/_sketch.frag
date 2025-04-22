@@ -4,7 +4,7 @@ precision mediump float;
 uniform float u_time;
 uniform vec2 u_resolution;
 uniform float u_noiseScale;
-// uniform float u_brightness;
+uniform float u_asciiScale;
 uniform float u_speed;
 
 out vec4 fragColor;
@@ -136,7 +136,7 @@ void main() {
     if(gray > 0.8)
         n = 11512810; // #
 
-    vec2 p = mod(gl_FragCoord.xy / 8.0, 2.0) - vec2(1.0);
+    vec2 p = mod(gl_FragCoord.xy / u_asciiScale, 2.0) - vec2(1.0);
     col = col * character(n, p);
     fragColor = vec4(col, 1.0);
 
