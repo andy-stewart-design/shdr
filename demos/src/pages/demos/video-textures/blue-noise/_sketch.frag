@@ -76,7 +76,7 @@ void main() {
     vec2 noiseUV = adjustUV(noiseAR, canvasAR, uv);
 
     // Flip Y coordinate for proper orientation
-    imageUV.y = 1.0 - imageUV.y;
+    // imageUV.y = 1.0 - imageUV.y;
 
     // Sample noise texture directly with adjusted UVs
     // Could also use mod(adjustedUV * 4., 1.) in place of fract

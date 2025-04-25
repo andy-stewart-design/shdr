@@ -63,7 +63,7 @@ void main() {
     }
 
     // Flip Y coordinate for proper orientation
-    adjustedUV.y = 1.0 - adjustedUV.y;
+    adjustedUV.x = 1.0 - adjustedUV.x;
 
     // Clamp to [0,1] to avoid sampling outside the texture
     adjustedUV = clamp(adjustedUV, 0.0, 1.0);

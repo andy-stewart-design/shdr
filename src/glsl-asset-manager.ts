@@ -89,7 +89,9 @@ class GlslAssetManager {
         `${this.uniformPrefix}${name}`
       );
       if (!location) {
-        console.warn(`Couldn't init uniform (${name}). Did you set it?`);
+        console.warn(
+          `[GLSL.TS]: couldn't init uniform (${name}). Most likely, it was not used in shader and was optimized out.`
+        );
         continue;
       }
 
@@ -109,7 +111,7 @@ class GlslAssetManager {
   public setUniformValue(_name: string, value: UniformValue) {
     const uni = this.uniforms.get(_name);
     if (!uni) {
-      console.warn(`Uniform ${_name} not found`);
+      console.warn(`[GLSL.TS]: uniform ${_name} not found`);
       return;
     }
 
@@ -120,42 +122,66 @@ class GlslAssetManager {
     switch (type) {
       case "float":
         if (isNumber(value)) this.gl.uniform1f(location, value);
-        else console.warn(`Couldn't update ${name}, value must be a number`);
+        else
+          console.warn(
+            `[GLSL.TS]: Couldn't update ${name}, value must be a number`
+          );
         break;
 
       case "vec2":
         if (isVec2(value)) this.gl.uniform2fv(location, value);
-        else console.warn(`Couldn't update ${name}, value must be a Vec2`);
+        else
+          console.warn(
+            `[GLSL.TS]: Couldn't update ${name}, value must be a Vec2`
+          );
         break;
 
       case "vec3":
         if (isVec3(value)) this.gl.uniform3fv(location, value);
-        else console.warn(`Couldn't update ${name}, value must be a Vec3`);
+        else
+          console.warn(
+            `[GLSL.TS]: Couldn't update ${name}, value must be a Vec3`
+          );
         break;
 
       case "vec4":
         if (isVec4(value)) this.gl.uniform4fv(location, value);
-        else console.warn(`Couldn't update ${name}, value must be a Vec4`);
+        else
+          console.warn(
+            `[GLSL.TS]: Couldn't update ${name}, value must be a Vec4`
+          );
         break;
 
       case "int":
         if (isNumber(value)) this.gl.uniform1i(location, value);
-        else console.warn(`Couldn't update ${name}, value must be a number`);
+        else
+          console.warn(
+            `[GLSL.TS]: Couldn't update ${name}, value must be a number`
+          );
         break;
 
       case "bool":
         if (isBool(value)) this.gl.uniform1i(location, value ? 1 : 0);
-        else console.warn(`Couldn't update ${name}, value must be a boolean`);
+        else
+          console.warn(
+            `[GLSL.TS]: Couldn't update ${name}, value must be a boolean`
+          );
         break;
 
       case "image":
         if (isString(value)) this.loadStaticTexture(name, value);
-        else console.warn(`Couldn't update ${name}, value must be a string`);
+        else
+          console.warn(
+            `[GLSL.TS]: Couldn't update ${name}, value must be a string`
+          );
         break;
 
       case "video":
         if (isString(value)) this.loadDynamicTexture(name, value);
-        else console.warn(`Couldn't update ${name}, value must be a string`);
+        else
+          console.warn(
+            `[GLSL.TS]: Couldn't update ${name}, value must be a string`
+          );
         break;
 
       case "webcam":
@@ -214,21 +240,37 @@ class GlslAssetManager {
         const sizeName = `${name}_size`;
         const sizeLocation = this.gl.getUniformLocation(this.program, sizeName);
 
-        if (sizeLocation && texture) {
-          this.uniforms.set(sizeName, { type: "vec2", location: sizeLocation });
-          this.gl.uniform2f(sizeLocation, image.width, image.height);
+        if (texture) {
+          if (sizeLocation) {
+            this.uniforms.set(sizeName, {
+              type: "vec2",
+              location: sizeLocation,
+            });
+            this.gl.uniform2f(sizeLocation, image.width, image.height);
+          } else {
+            console.info(
+              `[GLSL.TS]: Could not set "${sizeName}" Uniform. Most likely, it was not used in shader and was optimized out.`
+            );
+          }
+
           this.gl.activeTexture(this.gl.TEXTURE0 + texture.unit);
           this.gl.bindTexture(this.gl.TEXTURE_2D, texture.asset);
+          this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
           setTextureParams(this.gl, image);
           updateTexture(this.gl, image);
+
+          const location = this.getUniformLocation(name);
+          this.gl.uniform1i(location, texture.unit);
+        } else {
+          console.warn(`[GLSL.TS]: no texture found for name: ${name}`);
         }
       } catch (error) {
-        console.error(`Error loading texture ${name}:`, error);
+        console.error(`[GLSL.TS]: error loading texture ${name}:`, error);
       }
     };
 
-    image.onerror = () => {
-      console.error(`Failed to load texture: ${url}`);
+    image.onerror = (error) => {
+      console.error(`[GLSL.TS]: error loading texture ${name}:`, error);
     };
 
     image.src = url;
@@ -252,10 +294,25 @@ class GlslAssetManager {
         const texture = this.dynamicTextures.get(name);
         const sizeName = `${name}_size`;
         const sizeLocation = this.gl.getUniformLocation(this.program, sizeName);
+        this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
 
-        if (sizeLocation && texture) {
-          this.uniforms.set(sizeName, { type: "vec2", location: sizeLocation });
-          this.gl.uniform2f(sizeLocation, video.videoWidth, video.videoHeight);
+        if (texture) {
+          if (sizeLocation) {
+            this.uniforms.set(sizeName, {
+              type: "vec2",
+              location: sizeLocation,
+            });
+            this.gl.uniform2f(
+              sizeLocation,
+              video.videoWidth,
+              video.videoHeight
+            );
+          } else {
+            console.info(
+              `[GLSL.TS]: Could not set "${sizeName}" Uniform. Most likely, it was not used in shader and was optimized out.`
+            );
+          }
+
           this.gl.activeTexture(this.gl.TEXTURE0 + texture.unit);
           this.gl.bindTexture(this.gl.TEXTURE_2D, texture.asset);
           setTextureParams(this.gl, texture.video);

@@ -34,7 +34,7 @@ void main() {
     }
 
     // Flip Y coordinate for proper orientation
-    adjustedUV.y = 1.0 - adjustedUV.y;
+    // adjustedUV.y = 1.0 - adjustedUV.y;
 
     // Sample original texture for the color
     vec4 texColor = texture2D(u_texture, adjustedUV);

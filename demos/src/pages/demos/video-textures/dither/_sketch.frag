@@ -51,7 +51,7 @@ void main() {
     // Adjust UVs to maintain aspect ratio (cover)
     vec2 adjustedUV = adjustUV(textureAR, canvasAR, uv);
     // Flip Y coordinate for proper orientation
-    adjustedUV.y = 1.0 - adjustedUV.y;
+    // adjustedUV.y = 1.0 - adjustedUV.y;
 
     // Sample original texture and convert to grayscale
     vec4 texColor = texture(u_texture, adjustedUV);
