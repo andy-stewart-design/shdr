@@ -90,4 +90,8 @@ function getUniformType(uniform: unknown): InferredUniform {
   }
 }
 
+function setUniformWarning(name: string, type: string) {
+  return `[GLSL.TS]: Couldn't update ${name}, value must be a ${type}`;
+}
+
 export { getContext, updateTexture, setTextureParams, getUniformType };

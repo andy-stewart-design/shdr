@@ -8,6 +8,7 @@ import {
   isVec3,
   isVec4,
 } from "./validators";
+import { setUniformWarning } from "./warn";
 
 interface WebGLUniform {
   type: UniformType;
@@ -122,66 +123,42 @@ class GlslAssetManager {
     switch (type) {
       case "float":
         if (isNumber(value)) this.gl.uniform1f(location, value);
-        else
-          console.warn(
-            `[GLSL.TS]: Couldn't update ${name}, value must be a number`
-          );
+        else console.warn(setUniformWarning(name, "number"));
         break;
 
       case "vec2":
         if (isVec2(value)) this.gl.uniform2fv(location, value);
-        else
-          console.warn(
-            `[GLSL.TS]: Couldn't update ${name}, value must be a Vec2`
-          );
+        else console.warn(setUniformWarning(name, "Vec2"));
         break;
 
       case "vec3":
         if (isVec3(value)) this.gl.uniform3fv(location, value);
-        else
-          console.warn(
-            `[GLSL.TS]: Couldn't update ${name}, value must be a Vec3`
-          );
+        else console.warn(setUniformWarning(name, "Vec3"));
         break;
 
       case "vec4":
         if (isVec4(value)) this.gl.uniform4fv(location, value);
-        else
-          console.warn(
-            `[GLSL.TS]: Couldn't update ${name}, value must be a Vec4`
-          );
+        else console.warn(setUniformWarning(name, "Vec4"));
         break;
 
       case "int":
         if (isNumber(value)) this.gl.uniform1i(location, value);
-        else
-          console.warn(
-            `[GLSL.TS]: Couldn't update ${name}, value must be a number`
-          );
+        else console.warn(setUniformWarning(name, "number"));
         break;
 
       case "bool":
         if (isBool(value)) this.gl.uniform1i(location, value ? 1 : 0);
-        else
-          console.warn(
-            `[GLSL.TS]: Couldn't update ${name}, value must be a boolean`
-          );
+        else console.warn(setUniformWarning(name, "boolean"));
         break;
 
       case "image":
         if (isString(value)) this.loadStaticTexture(name, value);
-        else
-          console.warn(
-            `[GLSL.TS]: Couldn't update ${name}, value must be a string`
-          );
+        else console.warn(setUniformWarning(name, "string"));
         break;
 
       case "video":
         if (isString(value)) this.loadDynamicTexture(name, value);
-        else
-          console.warn(
-            `[GLSL.TS]: Couldn't update ${name}, value must be a string`
-          );
+        else console.warn(setUniformWarning(name, "string"));
         break;
 
       case "webcam":
