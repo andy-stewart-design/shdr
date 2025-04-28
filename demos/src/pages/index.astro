@@ -10,32 +10,37 @@ function formatPathSegment(seg?: string) {
 }
 
 function formatPaths(paths: string[]) {
-  return paths.map((path) => {
-    const segments = path.split("/");
+  return paths
+    .map((path) => {
+      const segments = path.split("/");
 
-    const id = segments.at(-2);
-    const label = formatPathSegment(id);
-    const categoryId = segments.at(-3);
-    const categoryLabel = formatPathSegment(categoryId);
+      const id = segments.at(-2);
+      const label = formatPathSegment(id);
+      const categoryId = segments.at(-3);
+      const categoryLabel = formatPathSegment(categoryId);
 
-    const href = segments.reduce<string>((acc, seg, i) => {
-      if (i <= 2 || i === segments.length - 1) {
-        return acc;
-      }
-      return `${acc}/${seg}`;
-    }, "");
+      const href = segments.reduce<string>((acc, seg, i) => {
+        if (i <= 2 || i === segments.length - 1) {
+          return acc;
+        }
+        return `${acc}/${seg}`;
+      }, "");
 
-    return {
-      id,
-      href,
-      category: { id: categoryId, label: categoryLabel },
-      label,
-    };
-  });
+      return {
+        id,
+        href,
+        category: { id: categoryId, label: categoryLabel },
+        label,
+      };
+    })
+    .filter((path) => !path.href.includes("_archive"));
 }
 
 const pages = formatPaths(Object.keys(sketches));
-const foo = Object.groupBy(pages, (page) => page.category.id ?? "undefined");
+const pagesByCategory = Object.groupBy(
+  pages,
+  (page) => page.category.id ?? "undefined"
+);
 ---
 
 <Layout>
@@ -43,7 +48,7 @@ const foo = Object.groupBy(pages, (page) => page.category.id ?? "undefined");
     <h1>GLSL.<span class="nudge">TS</span> Demos</h1>
   </section>
   {
-    Object.entries(foo).map(([category, pages]) => (
+    Object.entries(pagesByCategory).map(([category, pages]) => (
       <section>
         <p class="category">{formatPathSegment(category)}</p>
         <ul>
