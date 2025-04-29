@@ -8,7 +8,13 @@ import Layout from "@/layouts/Layout.astro";
   import GUI from "lil-gui";
 
   const container = document.querySelector("#wrapper") as HTMLElement;
-  const uniforms = { webcam: "webcam", dpi: 64 };
+  const uniforms = {
+    webcam: "webcam",
+    dpi: 64,
+    color_theme: "1",
+    pattern_modulation: 0.25,
+    invert_pattern: false,
+  };
 
   // Initialize webcam as a texture
   const gl = new GlslRenderer({ container, frag, uniforms, glVersion: 1 });
@@ -18,8 +24,28 @@ import Layout from "@/layouts/Layout.astro";
   // Update custom uniforms
   const gui = new GUI();
 
+  gui
+    .add(uniforms, "color_theme", {
+      ["Natural"]: "1",
+      ["Grayscale"]: "2",
+      ["Monotone"]: "3",
+    })
+    .onChange((value: number) => {
+      gl.updateUniform("color_theme", value);
+    });
+
   gui.add(uniforms, "dpi", 4, 120, 1).onChange((value: number) => {
     gl.updateUniform("dpi", parseFloat(value.toString()));
+  });
+
+  gui
+    .add(uniforms, "pattern_modulation", 0, 1, 0.01)
+    .onChange((value: number) => {
+      gl.updateUniform("pattern_modulation", value);
+    });
+
+  gui.add(uniforms, "invert_pattern", 4, 120, 1).onChange((value: boolean) => {
+    gl.updateUniform("invert_pattern", value);
   });
 </script>
 
