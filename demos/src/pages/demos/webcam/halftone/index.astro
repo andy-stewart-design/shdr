@@ -12,7 +12,8 @@ import Layout from "@/layouts/Layout.astro";
     webcam: "webcam",
     dpi: 64,
     color_theme: "1",
-    pattern_modulation: 0.25,
+    pattern_density: 1.0,
+    radius_modulation: 0.75,
     invert_pattern: false,
   };
 
@@ -39,9 +40,15 @@ import Layout from "@/layouts/Layout.astro";
   });
 
   gui
-    .add(uniforms, "pattern_modulation", 0, 1, 0.01)
+    .add(uniforms, "pattern_density", 0.5, 1, 0.01)
     .onChange((value: number) => {
-      gl.updateUniform("pattern_modulation", value);
+      gl.updateUniform("pattern_density", value);
+    });
+
+  gui
+    .add(uniforms, "radius_modulation", 0, 1, 0.01)
+    .onChange((value: number) => {
+      gl.updateUniform("radius_modulation", value);
     });
 
   gui.add(uniforms, "invert_pattern", 4, 120, 1).onChange((value: boolean) => {

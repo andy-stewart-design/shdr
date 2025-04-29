@@ -10,7 +10,8 @@ uniform sampler2D u_webcam;       // Webcam texture sampler
 uniform vec2 u_webcam_size;       // Webcam resolution in pixels
 uniform float u_dpi;              // Controls the density of the halftone pattern
 uniform int u_color_theme;        // Color mode (1=color, 2=grayscale, other=white)
-uniform float u_pattern_modulation; // Controls how much the halftone pattern is affected by brightness
+uniform float u_pattern_density;
+uniform float u_radius_modulation; // Controls how much the halftone pattern is affected by brightness
 uniform int u_invert_pattern;     // Whether to invert the halftone pattern (0=normal, 1=inverted)
 
 /**
@@ -97,7 +98,7 @@ void main() {
 
     // Calculate circle radius based on brightness and modulation
     // Higher brightness = larger circles when modulation is less than 1
-    float rad = u_pattern_modulation + (brightness * (1. - u_pattern_modulation));
+    float rad = (1. - u_radius_modulation + (brightness * u_radius_modulation)) * u_pattern_density;
 
     // Create a circle in each grid cell
     float d = length(halftoneUv);  // Distance from center of cell
