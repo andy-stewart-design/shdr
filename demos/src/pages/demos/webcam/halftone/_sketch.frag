@@ -1,75 +1,116 @@
 #ifdef GL_ES
-precision mediump float;
+precision mediump float;  // Set floating point precision to medium on mobile/WebGL ES
 #endif
 
-uniform vec2 u_resolution;
-uniform vec2 u_mouse;
-uniform float u_time;
-uniform sampler2D u_webcam;
-uniform vec2 u_webcam_size; // Added texture size uniform
-uniform float u_dpi;
-uniform int u_color_theme;
-uniform float u_pattern_modulation;
-uniform int u_invert_pattern;
+// Input uniforms provided by the rendering system
+uniform vec2 u_resolution;        // Canvas size in pixels
+uniform vec2 u_mouse;             // Mouse position in pixels
+uniform float u_time;             // Time in seconds since shader started
+uniform sampler2D u_webcam;       // Webcam texture sampler
+uniform vec2 u_webcam_size;       // Webcam resolution in pixels
+uniform float u_dpi;              // Controls the density of the halftone pattern
+uniform int u_color_theme;        // Color mode (1=color, 2=grayscale, other=white)
+uniform float u_pattern_modulation; // Controls how much the halftone pattern is affected by brightness
+uniform int u_invert_pattern;     // Whether to invert the halftone pattern (0=normal, 1=inverted)
 
+/**
+ * Adjusts UV coordinates to maintain aspect ratio when mapping a texture to canvas
+ * This ensures the image is "covered" properly without distortion
+ * 
+ * @param textureAR Aspect ratio of the texture (width/height)
+ * @param canvasAR Aspect ratio of the canvas (width/height)
+ * @param uv The original UV coordinates
+ * @return Adjusted UV coordinates that maintain proper aspect ratio
+ */
 vec2 adjustUV(float textureAR, float canvasAR, vec2 uv) {
-    bool isLandscape = canvasAR < textureAR;
-    float scale = isLandscape ? canvasAR / textureAR : textureAR / canvasAR;
-    float x = !isLandscape ? uv.x : (uv.x - 0.5) * scale + 0.5;
-    float y = isLandscape ? uv.y : (uv.y - 0.5) * scale + 0.5;
-    return vec2(x, y);
+    bool isLandscape = canvasAR < textureAR;  // Check if the canvas is wider than it is tall relative to texture
+    float scale = isLandscape ? canvasAR / textureAR : textureAR / canvasAR;  // Calculate scaling factor
+    float x = !isLandscape ? uv.x : (uv.x - 0.5) * scale + 0.5;  // Center and scale X if needed
+    float y = isLandscape ? uv.y : (uv.y - 0.5) * scale + 0.5;   // Center and scale Y if needed
+    return vec2(x, y);  // Return adjusted coordinates
 }
 
 void main() {
-    // Get normalized coordinates
+    // Convert fragment coordinate to normalized [0,1] UV space
     vec2 uv = gl_FragCoord.xy / u_resolution.xy;
 
-    // Calculate aspect ratios
-    float videoAR = u_webcam_size.x / u_webcam_size.y;
-    float canvasAR = u_resolution.x / u_resolution.y;
+    // Calculate aspect ratios for the webcam and canvas
+    float videoAR = u_webcam_size.x / u_webcam_size.y;  // Webcam aspect ratio
+    float canvasAR = u_resolution.x / u_resolution.y;    // Canvas aspect ratio
 
-    // Adjust UVs to maintain aspect ratio (cover)
+    // Adjust UVs to maintain proper aspect ratio using the "cover" approach
     vec2 adjustedUV = adjustUV(videoAR, canvasAR, uv);
-    // Flip Y coordinate for proper orientation
+    // Flip X coordinate to correct webcam mirroring
     adjustedUV.x = 1.0 - adjustedUV.x;
 
+    // Set up pixelation effect for the webcam image
     vec2 pixelatedUv = adjustedUV;
-    pixelatedUv = pixelatedUv * 2.0 - 1.0;
+    pixelatedUv = pixelatedUv * 2.0 - 1.0;  // Convert to [-1,1] range
+
+    // Determine if the canvas is being cropped horizontally
     bool isCroppedHor = canvasAR < videoAR;
+
+    // Calculate pixelated coordinates based on aspect ratio
+    // This creates a blocky/pixelated look by quantizing the UV coordinates
     float pixelX1 = floor(((pixelatedUv.x + 1.) / 2.) * u_dpi) / (u_dpi);
     float pixelY1 = (floor(pixelatedUv.y * u_dpi / videoAR / 2.) / (u_dpi / videoAR / 2.) + 1.) / 2.;
     float pixelX2 = (floor(pixelatedUv.x * u_dpi * videoAR / 2.) / (u_dpi * videoAR / 2.) + 1.) / 2.;
     float pixelY2 = floor(((pixelatedUv.y + 1.) / 2.) * u_dpi) / (u_dpi);
+
+    // Choose the appropriate pixelation based on the cropping direction
     float pixelX = isCroppedHor ? pixelX2 : pixelX1;
     float pixelY = isCroppedHor ? pixelY2 : pixelY1;
 
-    // Sample texture with adjusted coordinates
+    // Sample the webcam texture with pixelated coordinates
     vec4 texel = texture2D(u_webcam, vec2(pixelX, pixelY));
-    vec3 luma = vec3(0.2126, 0.7152, 0.0722);
-    float brightness = dot(texel.rgb, luma);
-    vec3 color = u_color_theme == 1 ? vec3(texel.rgb) : u_color_theme == 2 ? vec3(brightness) : vec3(1.);
 
+    // Calculate brightness using standard luminance weights
+    vec3 luma = vec3(0.2126, 0.7152, 0.0722);  // Standard RGB to luminance conversion weights
+    float brightness = dot(texel.rgb, luma);   // Calculate perceived brightness
+
+    // Apply color theme based on user selection
+    vec3 color = u_color_theme == 1 ? vec3(texel.rgb) :  // Original color
+    u_color_theme == 2 ? vec3(brightness) :  // Grayscale
+    vec3(1.);                                // White (default)
+
+    // Prepare UV coordinates for halftone pattern
     vec2 halftoneUv = uv;
-    halftoneUv = halftoneUv * 2.0 - 1.0;
+    halftoneUv = halftoneUv * 2.0 - 1.0;  // Convert to [-1,1] range
+
+    // Scale halftone pattern based on aspect ratio
     halftoneUv.x = isCroppedHor ? halftoneUv.x * u_resolution.x / u_resolution.y : halftoneUv.x;
     halftoneUv.y = isCroppedHor ? halftoneUv.y : halftoneUv.y * u_resolution.y / u_resolution.x;
 
-    // Divide the space into a repeating grid
-    float posOffX = isCroppedHor ? 0. : mod(u_dpi, 2.) / 2.;
-    float posOffY = isCroppedHor ? mod(u_dpi, 2.) / 2. : 0.;
+    // Create a repeating grid for the halftone pattern
+    float posOffX = isCroppedHor ? 0. : mod(u_dpi, 2.) / 2.;  // Offset X for even/odd DPI
+    float posOffY = isCroppedHor ? mod(u_dpi, 2.) / 2. : 0.;  // Offset Y for even/odd DPI
+
+    // Divide space into grid cells
     halftoneUv.x = fract(halftoneUv.x * u_dpi / 2. + posOffX);
     halftoneUv.y = fract(halftoneUv.y * u_dpi / 2. + posOffY);
-    // Remap the coordiante space of each cell
-    halftoneUv = halftoneUv * 2.0 - 1.0;
-    // Grid parameters
-    float blur = u_dpi * 0.0025;
-    float rad = u_pattern_modulation + (brightness * (1. - u_pattern_modulation));
-    // Create a grid of circles
-    float d = length(halftoneUv);
-    d = smoothstep(rad - blur, rad + blur, d);
-    d = u_invert_pattern == 1 ? d : (1. - d);
-    color = color * d;
-    // color = vec3(0., 0., 1.) * d;
 
+    // Remap each grid cell to [-1,1] range
+    halftoneUv = halftoneUv * 2.0 - 1.0;
+
+    // Set parameters for the halftone effect
+    float blur = u_dpi * 0.0025;  // Edge blur amount for the circles (scales with DPI)
+
+    // Calculate circle radius based on brightness and modulation
+    // Higher brightness = larger circles when modulation is less than 1
+    float rad = u_pattern_modulation + (brightness * (1. - u_pattern_modulation));
+
+    // Create a circle in each grid cell
+    float d = length(halftoneUv);  // Distance from center of cell
+
+    // Apply smoothstep to create a soft-edged circle
+    d = smoothstep(rad - blur, rad + blur, d);
+
+    // Apply pattern inversion if selected
+    d = u_invert_pattern == 1 ? d : (1. - d);
+
+    // Apply halftone pattern to the color
+    color = color * d;
+
+    // Output final color with original alpha
     gl_FragColor = vec4(color, texel.a);
 }
