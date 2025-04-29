@@ -59,6 +59,7 @@ declare class GlslRenderer extends GlslCanvas {
     private mousePos;
     private controller;
     private rafId;
+    private _paused;
     readonly assets: GlslAssetManager;
     constructor({ container, frag, uniforms, uniformPrefix, glVersion, }: GlslRendererConstructorProps);
     private render;
@@ -68,6 +69,7 @@ declare class GlslRenderer extends GlslCanvas {
     pause(): void;
     updateUniform(name: string, value: UniformValue): void;
     destroy(): void;
+    get paused(): boolean;
 }
 
 export { GlslRenderer as default };

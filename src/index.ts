@@ -15,6 +15,7 @@ export default class GlslRenderer extends GlslCanvas {
   private mousePos = [0, 0];
   private controller = new AbortController();
   private rafId: number | null = null;
+  private _paused = true;
   readonly assets: GlslAssetManager;
 
   constructor({
@@ -37,6 +38,7 @@ export default class GlslRenderer extends GlslCanvas {
   }
 
   private render(time: number) {
+    if (this._paused) return;
     this.gl.clearColor(0, 0, 0, 1);
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
@@ -58,7 +60,8 @@ export default class GlslRenderer extends GlslCanvas {
     // Draw
     this.gl.drawArrays(this.gl.TRIANGLES, 0, DEFAULT_VERTICES.length / 2);
 
-    requestAnimationFrame((t) => this.render(t));
+    if (!this._paused)
+      this.rafId = requestAnimationFrame((t) => this.render(t));
   }
 
   private handleResize() {
@@ -107,13 +110,29 @@ export default class GlslRenderer extends GlslCanvas {
   }
 
   public play() {
+    if (!this._paused) return;
+
+    this._paused = false;
     this.rafId = requestAnimationFrame((t) => this.render(t));
+
+    if (this.assets.dynamicTextures.size > 0) {
+      this.assets.dynamicTextures.forEach((texture) => {
+        texture.video.play();
+      });
+    }
   }
 
   public pause() {
-    if (typeof this.rafId === "number") {
-      cancelAnimationFrame(this.rafId);
-      this.rafId = null;
+    if (typeof this.rafId !== "number") return;
+
+    this._paused = true;
+    cancelAnimationFrame(this.rafId);
+    this.rafId = null;
+
+    if (this.assets.dynamicTextures.size > 0) {
+      this.assets.dynamicTextures.forEach((texture) => {
+        texture.video.pause();
+      });
     }
   }
 
@@ -132,5 +151,9 @@ export default class GlslRenderer extends GlslCanvas {
     super.destroy();
     this.assets.destroy();
     this.controller.abort();
+  }
+
+  get paused() {
+    return this._paused;
   }
 }

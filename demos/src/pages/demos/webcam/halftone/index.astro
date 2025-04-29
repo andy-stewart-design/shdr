@@ -22,6 +22,17 @@ import Layout from "@/layouts/Layout.astro";
 
   gl.play();
 
+  const button = document.querySelector<HTMLButtonElement>("button");
+  button?.addEventListener("click", () => {
+    if (gl.paused) {
+      gl.play();
+      button.innerText = "Pause";
+    } else {
+      gl.pause();
+      button.innerText = "Play";
+    }
+  });
+
   // Update custom uniforms
   const gui = new GUI();
 
@@ -58,11 +69,23 @@ import Layout from "@/layouts/Layout.astro";
 
 <Layout>
   <section id="wrapper"></section>
+  <button>Pause</button>
 </Layout>
 
 <style>
   section {
     height: 100svh;
     touch-action: none;
+  }
+  button {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: black;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 100vmax;
+    outline: 1px solid rgb(255 255 255 / 0.2);
   }
 </style>
