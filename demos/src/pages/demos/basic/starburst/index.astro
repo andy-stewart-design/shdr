@@ -14,11 +14,35 @@ import Layout from "@/layouts/Layout.astro";
 
 <Layout>
   <section id="wrapper"></section>
+  <span class="attribution">
+    by
+    <a href="https://www.shadertoy.com/view/XsXXDn" target="_blank">
+      Danilo Guanabara
+    </a>
+  </span>
 </Layout>
 
 <style>
   section {
     height: 100svh;
     touch-action: none;
+  }
+  .attribution {
+    position: fixed;
+    bottom: 2rem;
+    left: 2rem;
+    background: rgb(0 0 0 / 0.8);
+    color: rgb(255 255 255 / 0.7);
+    padding: 0.5rem 1rem 0.6rem;
+    outline: 1px solid rgb(255 255 255 / 0.1);
+    border-radius: 100vmax;
+    font-weight: 500;
+    font-size: 0.875rem;
+
+    a {
+      text-decoration: none;
+      color: white;
+      line-height: 1;
+    }
   }
 </style>
