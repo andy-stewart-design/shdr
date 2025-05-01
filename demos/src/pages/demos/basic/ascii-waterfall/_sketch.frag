@@ -16,6 +16,10 @@ vec2 cropImage(float imageAR, float containerAR, vec2 uv) {
     return vec2(x, y);
 }
 
+const float gridSize = 60.;
+const float textureCellCount = 10.;
+const float speedMultiplier = 8.;
+
 void main() {
     // Get normalized coordinates
     vec2 uv = gl_FragCoord.xy / u_resolution.xy;
@@ -26,14 +30,13 @@ void main() {
 
     // Adjust UVs to maintain aspect ratio (cover)
     vec2 adjustedUV = cropImage(videoAR, canvasAR, uv);
-    float foo = 50. / 10.;
-    float inc = floor(u_time * 10.) / 10.;
-    // inc = 0.;
-    float xIndex = mod(floor(adjustedUV.x * 50.) / 10., 1.);
-    float texX = fract(adjustedUV.x * 50.) / 50. * foo + xIndex;
-    // float yIndex = mod(floor(adjustedUV.y * 10.) / 10. + inc, 1.0);
-    float yIndex = mod(floor(adjustedUV.y * 50.) / 10. + inc + xIndex, 1.);
-    float texY = fract(adjustedUV.y * 50.) / 50. * foo + yIndex;
+    // TODO: Figure out what this should be called
+    float foo = gridSize / textureCellCount;
+    float inc = floor(u_time * speedMultiplier) / textureCellCount;
+    float xIndex = mod(floor(adjustedUV.x * gridSize) / textureCellCount, 1.);
+    float texX = fract(adjustedUV.x * gridSize) / gridSize * foo + xIndex;
+    float yIndex = mod(floor(adjustedUV.y * gridSize) / textureCellCount + inc + xIndex, 1.);
+    float texY = fract(adjustedUV.y * gridSize) / gridSize * foo + yIndex;
     vec2 texUV = vec2(texX, texY);
 
     // float foo = 100. / 10.;
