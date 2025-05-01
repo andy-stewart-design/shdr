@@ -33,10 +33,14 @@ function formatPaths(paths: string[]) {
         label,
       };
     })
-    .filter((path) => !path.href.includes("_archive"));
+    .filter(
+      (path) => !path.href.includes("_archive") && !path.id?.startsWith("_")
+    );
 }
 
 const pages = formatPaths(Object.keys(sketches));
+// console.log("pages", pages);
+
 const pagesByCategory = Object.groupBy(
   pages,
   (page) => page.category.id ?? "undefined"
