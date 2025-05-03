@@ -35,9 +35,9 @@ float noise(float x, float time) {
     return sum;
 }
 
-float wave_alpha(vec2 uv, float time) {
-    float sum = noise(uv.x, time);
-    float dist = uv.y - u_midline + sum;
+float wave_alpha(float x, float midline, float time) {
+    float sum = noise(x, time);
+    float dist = midline + sum;
     float alpha = (sign(dist) + 1.0) / 2.0;
     return alpha;
 }
@@ -58,9 +58,14 @@ void main() {
     // float blur = mix(0.0, (210. - u_blur), (1. - uv.x));
     // float alpha = clamp(dist, 0., 1.);
 
-    float alpha = wave_alpha(uv, u_time);
-
+    float alpha = wave_alpha(uv.x, uv.y - u_midline, u_time);
     bg_color = mix(bg_color, fg_color, alpha);
 
-    outColor = vec4(bg_color, 1.0);
+    float alpha_1 = wave_alpha(uv.x, uv.y - 0.333, u_time * 0.5);
+    float alpha_2 = wave_alpha(uv.x, uv.y - 0.666, u_time + PI * 1.333);
+    vec3 color = blue_3;
+    color = mix(color, blue_2, alpha_1);
+    color = mix(color, blue_1, alpha_2);
+
+    outColor = vec4(color, 1.0);
 }
