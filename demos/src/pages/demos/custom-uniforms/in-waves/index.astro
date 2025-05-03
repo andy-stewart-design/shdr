@@ -1,0 +1,50 @@
+---
+import Layout from "@/layouts/Layout.astro";
+---
+
+<script>
+  import GlslRenderer from "@glsl-ts";
+  import frag from "./_sketch.frag?raw";
+  import GUI from "lil-gui";
+
+  const container = document.querySelector("#wrapper") as HTMLElement;
+  const uniforms = {
+    amplitude: 0.125,
+    speed: 0.25,
+    wavelength: 1.5,
+    midline: 0.5,
+  };
+
+  const gl = new GlslRenderer({ container, frag, uniforms });
+  gl.play();
+
+  // Update custom uniforms
+  const gui = new GUI();
+
+  gui.add(uniforms, "amplitude", 0.02, 0.5, 0.01).onChange((value: number) => {
+    gl.updateUniform("amplitude", value);
+  });
+
+  gui.add(uniforms, "wavelength", 0.5, 5.0, 0.01).onChange((value: number) => {
+    gl.updateUniform("wavelength", value);
+  });
+
+  gui.add(uniforms, "speed", 0.0, 2.0, 0.1).onChange((value: number) => {
+    gl.updateUniform("speed", value);
+  });
+
+  gui.add(uniforms, "midline", 0.125, 0.875, 0.01).onChange((value: number) => {
+    gl.updateUniform("midline", value);
+  });
+</script>
+
+<Layout>
+  <section id="wrapper"></section>
+</Layout>
+
+<style>
+  section {
+    height: 100svh;
+    touch-action: none;
+  }
+</style>
