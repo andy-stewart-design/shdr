@@ -13,7 +13,7 @@ out vec4 outColor;
 
 const float TWO_PI = 2. * PI;
 const vec3 color_1 = vec3(0.97, 0.83, 0.21);
-const vec3 color_2 = vec3(0.94, 0.21, 0.62);
+const vec3 color_2 = vec3(0.93, 0.11, 0.57);
 
 float noise(float x, float time) {
     // Set up wave params
