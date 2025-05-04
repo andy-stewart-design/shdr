@@ -9,6 +9,7 @@ uniform float u_amplitude;
 uniform float u_wavelength;
 uniform float u_speed;
 // uniform float u_midline;
+out vec4 outColor;
 
 const float TWO_PI = 2. * PI;
 const vec3 color_1 = vec3(0.9, 0.6, 0.1);
@@ -40,8 +41,6 @@ float wave_alpha(float x, float midline, float time) {
     float alpha = (sign(dist) + 1.0) / 2.0;
     return alpha;
 }
-
-vec4 outColor;
 
 void main() {
     vec2 uv = gl_FragCoord.xy / u_resolution.xy;
