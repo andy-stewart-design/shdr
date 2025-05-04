@@ -8,7 +8,7 @@ uniform float u_time;
 uniform float u_amplitude;
 uniform float u_wavelength;
 uniform float u_speed;
-uniform float u_midline;
+// uniform float u_midline;
 out vec4 outColor;
 
 const float TWO_PI = 2. * PI;
@@ -46,26 +46,39 @@ void main() {
     vec2 uv = gl_FragCoord.xy / u_resolution.xy;
     uv.y = 1. - uv.y;
 
-    float bg_highpass = 0.;
-    float foo = 0.5 - abs(u_midline - 0.5);
-    float bg_lowpass = u_midline + foo / 2.;
-    float fg_highpass = u_midline - foo / 2.;
-    float fg_lowpass = 1.;
+    // float yOffset = 0.5 - abs(u_midline - 0.5);
+    // float bg_highpass = 0.;
+    // float bg_lowpass = u_midline + yOffset / 2.;
+    // float fg_highpass = u_midline - yOffset / 2.;
+    // float fg_lowpass = 1.;
 
-    vec3 bg_color = mix(color_1, color_2, max(min((uv.y - bg_highpass) / (bg_lowpass - bg_highpass), 1.0), 0.0));
-    vec3 fg_color = mix(color_1, color_2, max(min((uv.y - fg_highpass) / (fg_lowpass - fg_highpass), 1.0), 0.0));
+    // vec3 bg_color = mix(color_1, color_2, max(min((uv.y - bg_highpass) / (bg_lowpass - bg_highpass), 1.0), 0.0));
+    // vec3 fg_color = mix(color_1, color_2, max(min((uv.y - fg_highpass) / (fg_lowpass - fg_highpass), 1.0), 0.0));
+    // float yIndex = floor(uv.y * 3.) / 3.;
+
+    float hp_1 = 0.;
+    float lp_1 = 0.625;
+    vec3 gradient_1 = mix(color_1, color_2, max(min((uv.y - hp_1) / (lp_1 - hp_1), 1.0), 0.0));
+
+    float hp_2 = 0.25;
+    float lp_2 = 0.875;
+    vec3 gradient_2 = mix(color_1, color_2, max(min((uv.y - hp_2) / (lp_2 - hp_2), 1.0), 0.0));
+
+    float hp_3 = 0.5;
+    float lp_3 = 1.;
+    vec3 gradient_3 = mix(color_1, color_2, max(min((uv.y - hp_3) / (lp_3 - hp_3), 1.0), 0.0));
 
     // float blur = mix(0.0, (210. - u_blur), (1. - uv.x));
     // float alpha = clamp(dist, 0., 1.);
 
-    float alpha = wave_alpha(uv.x, uv.y - u_midline, u_time);
-    bg_color = mix(bg_color, fg_color, alpha);
+    // float alpha = wave_alpha(uv.x, uv.y - u_midline, u_time);
+    // bg_color = mix(bg_color, fg_color, alpha);
 
-    float alpha_1 = wave_alpha(uv.x, uv.y - 0.333, u_time * 0.5);
-    float alpha_2 = wave_alpha(uv.x, uv.y - 0.666, u_time + PI * 1.333);
-    vec3 color = blue_3;
-    color = mix(color, blue_2, alpha_1);
-    color = mix(color, blue_1, alpha_2);
+    float alpha_1 = wave_alpha(uv.x, uv.y - 0.3, u_time * 0.5);
+    float alpha_2 = wave_alpha(uv.x, uv.y - 0.6, u_time + PI * 1.333);
+    vec3 color = gradient_1;
+    color = mix(color, gradient_2, alpha_1);
+    color = mix(color, gradient_3, alpha_2);
 
     outColor = vec4(color, 1.0);
 }
