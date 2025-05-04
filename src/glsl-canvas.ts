@@ -24,6 +24,15 @@ class GlslCanvas {
     this.container.appendChild(this.canvas);
 
     this.gl = getContext(this.canvas);
+
+    this.gl.clearColor(0, 0, 0, 1);
+    if ("drawingBufferColorSpace" in this.gl) {
+      this.gl.drawingBufferColorSpace = "display-p3";
+    }
+    if ("unpackColorSpace" in this.gl) {
+      this.gl.unpackColorSpace = "display-p3";
+    }
+
     const fShader =
       version === 3 ? fragmentShaderSourceV3 : fragmentShaderSourceV1;
     const vShader = version === 3 ? vertexShaderSourceV3 : vertexShaderSourceV1;

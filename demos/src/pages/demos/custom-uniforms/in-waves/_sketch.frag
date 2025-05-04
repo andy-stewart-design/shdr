@@ -12,12 +12,8 @@ uniform float u_speed;
 out vec4 outColor;
 
 const float TWO_PI = 2. * PI;
-const vec3 color_1 = vec3(0.9, 0.6, 0.1);
-const vec3 color_2 = vec3(0.7, 0.1, 0.4);
-
-const vec3 blue_3 = vec3(0.102, 0.208, 0.761);
-const vec3 blue_2 = vec3(0.094, 0.502, 0.910);
-const vec3 blue_1 = vec3(0.384, 0.827, 0.898);
+const vec3 color_1 = vec3(0.97, 0.83, 0.21);
+const vec3 color_2 = vec3(0.94, 0.21, 0.62);
 
 float noise(float x, float time) {
     // Set up wave params
@@ -46,33 +42,20 @@ void main() {
     vec2 uv = gl_FragCoord.xy / u_resolution.xy;
     uv.y = 1. - uv.y;
 
-    // float yOffset = 0.5 - abs(u_midline - 0.5);
-    // float bg_highpass = 0.;
-    // float bg_lowpass = u_midline + yOffset / 2.;
-    // float fg_highpass = u_midline - yOffset / 2.;
-    // float fg_lowpass = 1.;
-
-    // vec3 bg_color = mix(color_1, color_2, max(min((uv.y - bg_highpass) / (bg_lowpass - bg_highpass), 1.0), 0.0));
-    // vec3 fg_color = mix(color_1, color_2, max(min((uv.y - fg_highpass) / (fg_lowpass - fg_highpass), 1.0), 0.0));
-    // float yIndex = floor(uv.y * 3.) / 3.;
-
     float hp_1 = 0.;
     float lp_1 = 0.625;
     vec3 gradient_1 = mix(color_1, color_2, max(min((uv.y - hp_1) / (lp_1 - hp_1), 1.0), 0.0));
 
-    float hp_2 = 0.25;
+    float hp_2 = 0.125;
     float lp_2 = 0.875;
     vec3 gradient_2 = mix(color_1, color_2, max(min((uv.y - hp_2) / (lp_2 - hp_2), 1.0), 0.0));
 
-    float hp_3 = 0.5;
+    float hp_3 = 0.375;
     float lp_3 = 1.;
     vec3 gradient_3 = mix(color_1, color_2, max(min((uv.y - hp_3) / (lp_3 - hp_3), 1.0), 0.0));
 
     // float blur = mix(0.0, (210. - u_blur), (1. - uv.x));
     // float alpha = clamp(dist, 0., 1.);
-
-    // float alpha = wave_alpha(uv.x, uv.y - u_midline, u_time);
-    // bg_color = mix(bg_color, fg_color, alpha);
 
     float alpha_1 = wave_alpha(uv.x, uv.y - 0.3, u_time * 0.5);
     float alpha_2 = wave_alpha(uv.x, uv.y - 0.6, u_time + PI * 1.333);
