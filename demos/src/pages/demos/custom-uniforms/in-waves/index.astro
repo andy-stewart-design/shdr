@@ -12,7 +12,6 @@ import Layout from "@/layouts/Layout.astro";
     amplitude: 0.125,
     speed: 0.25,
     wavelength: 1.5,
-    midline: 0.5,
   };
 
   const gl = new GlslRenderer({ container, frag, uniforms });
@@ -31,10 +30,6 @@ import Layout from "@/layouts/Layout.astro";
 
   gui.add(uniforms, "speed", 0.0, 2.0, 0.1).onChange((value: number) => {
     gl.updateUniform("speed", value);
-  });
-
-  gui.add(uniforms, "midline", 0.125, 0.875, 0.01).onChange((value: number) => {
-    gl.updateUniform("midline", value);
   });
 </script>
 
