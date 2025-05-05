@@ -44,8 +44,8 @@ import sourceCode from "./_sketch.frag?raw";
     gl.updateUniform("speed", value);
   });
 
-  gui.add(functions, "showCode").name("Show code");
   gui.add(functions, "togglePlay").name("Play/pause");
+  gui.add(functions, "showCode").name("Show code");
 
   const dialog = document.querySelector<HTMLDialogElement>("#code-dialog");
   const dialogClose =
@@ -58,9 +58,6 @@ import sourceCode from "./_sketch.frag?raw";
 
 <Layout>
   <section id="wrapper"></section>
-  <!-- <div class="dialog">
-    <Code code={foo} lang="glsl" theme="night-owl" />
-  </div> -->
   <dialog id="code-dialog">
     <div class="code-dialog-contents">
       <header>
