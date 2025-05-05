@@ -1,5 +1,7 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import { Code } from "astro:components";
+import sourceCode from "./_sketch.frag?raw";
 ---
 
 <script>
@@ -31,15 +33,82 @@ import Layout from "@/layouts/Layout.astro";
   gui.add(uniforms, "speed", 0.0, 2.0, 0.1).onChange((value: number) => {
     gl.updateUniform("speed", value);
   });
+
+  const dialog = document.querySelector<HTMLDialogElement>("#code-dialog");
+  const dialogTrigger =
+    document.querySelector<HTMLButtonElement>("#code-dialog-trig");
+  const dialogClose =
+    document.querySelector<HTMLButtonElement>("#code-dialog-close");
+
+  dialogTrigger?.addEventListener("click", () => {
+    dialog?.showModal();
+  });
+
+  dialogClose?.addEventListener("click", () => {
+    dialog?.close();
+  });
 </script>
 
 <Layout>
   <section id="wrapper"></section>
+  <!-- <div class="dialog">
+    <Code code={foo} lang="glsl" theme="night-owl" />
+  </div> -->
+  <button id="code-dialog-trig">Code</button>
+  <dialog id="code-dialog">
+    <div class="code-dialog-contents">
+      <header>
+        <span>Source code</span>
+        <button id="code-dialog-close">Close</button>
+      </header>
+      <Code code={sourceCode} lang="glsl" theme="night-owl" tabindex={-1} />
+    </div>
+  </dialog>
 </Layout>
 
 <style>
   section {
     height: 100svh;
     touch-action: none;
+  }
+
+  #code-dialog-trig {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+  }
+
+  #code-dialog {
+    width: 90vw;
+    max-width: 800px;
+    height: 100vh;
+    max-height: 100vh;
+    margin-right: 0;
+    border: none;
+    background-color: #011627;
+    padding: 0;
+    scrollbar-gutter: stable;
+
+    .code-dialog-contents {
+      display: grid;
+      gap: 1rem;
+      padding: 2rem;
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.875rem;
+      }
+
+      & > pre {
+        margin: 0;
+        scrollbar-gutter: stable;
+      }
+    }
+
+    &::backdrop {
+      background: rgb(255 255 255 / 0.25);
+    }
   }
 </style>
