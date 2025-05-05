@@ -42,17 +42,17 @@ void main() {
     vec2 uv = gl_FragCoord.xy / u_resolution.xy;
     uv.y = 1. - uv.y;
 
-    float hp_1 = 0.;
-    float lp_1 = 0.625;
-    vec3 gradient_1 = mix(color_1, color_2, max(min((uv.y - hp_1) / (lp_1 - hp_1), 1.0), 0.0));
+    float lp_1 = 0.;
+    float hp_1 = 0.625;
+    vec3 gradient_1 = mix(color_1, color_2, max(min((uv.y - lp_1) / (hp_1 - lp_1), 1.0), 0.0));
 
-    float hp_2 = 0.125;
-    float lp_2 = 0.875;
-    vec3 gradient_2 = mix(color_1, color_2, max(min((uv.y - hp_2) / (lp_2 - hp_2), 1.0), 0.0));
+    float lp_2 = 0.125;
+    float hp_2 = 0.875;
+    vec3 gradient_2 = mix(color_1, color_2, max(min((uv.y - lp_2) / (hp_2 - lp_2), 1.0), 0.0));
 
-    float hp_3 = 0.375;
-    float lp_3 = 1.;
-    vec3 gradient_3 = mix(color_1, color_2, max(min((uv.y - hp_3) / (lp_3 - hp_3), 1.0), 0.0));
+    float lp_3 = 0.375;
+    float hp_3 = 1.;
+    vec3 gradient_3 = mix(color_1, color_2, max(min((uv.y - lp_3) / (hp_3 - lp_3), 1.0), 0.0));
 
     // float blur = mix(0.0, (210. - u_blur), (1. - uv.x));
     // float alpha = clamp(dist, 0., 1.);
