@@ -1,10 +1,13 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import CodeDialog from "@/components/code-dialog/index.astro";
+import sourceCode from "./_sketch.frag?raw";
 ---
 
 <script>
   import GlslRenderer from "@glsl-ts";
   import frag from "./_sketch.frag?raw";
+  import { createGui } from "@/utils/create-gui";
 
   const container = document.querySelector("#wrapper") as HTMLElement;
   const uniforms = {
@@ -15,10 +18,13 @@ import Layout from "@/layouts/Layout.astro";
   const gl = new GlslRenderer({ container, frag, uniforms, glVersion: 1 });
 
   gl.play();
+
+  createGui({ gl, dialogClass: "code-dialog" });
 </script>
 
 <Layout>
   <section id="wrapper"></section>
+  <CodeDialog class="code-dialog" code={sourceCode} />
 </Layout>
 
 <style>

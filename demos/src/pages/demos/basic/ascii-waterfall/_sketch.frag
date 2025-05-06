@@ -1,5 +1,5 @@
 #ifdef GL_ES
-precision mediump float;  // Define precision for float calculations on OpenGL ES platforms
+precision mediump float;
 #endif
 
 // Uniform variables provided by the rendering environment
