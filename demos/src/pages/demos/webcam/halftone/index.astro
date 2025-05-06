@@ -1,11 +1,13 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import CodeDialog from "@/components/code-dialog/index.astro";
+import sourceCode from "./_sketch.frag?raw";
 ---
 
 <script>
   import GlslRenderer from "@glsl-ts";
   import frag from "./_sketch.frag?raw";
-  import GUI from "lil-gui";
+  import { createGui } from "@/utils/create-gui";
 
   const container = document.querySelector("#wrapper") as HTMLElement;
   const uniforms = {
@@ -22,70 +24,54 @@ import Layout from "@/layouts/Layout.astro";
 
   gl.play();
 
-  const button = document.querySelector<HTMLButtonElement>("button");
-  button?.addEventListener("click", () => {
-    if (gl.paused) {
-      gl.play();
-      button.innerText = "Pause";
-    } else {
-      gl.pause();
-      button.innerText = "Play";
-    }
-  });
-
   // Update custom uniforms
-  const gui = new GUI();
+  createGui({
+    gl,
+    dialogClass: "code-dialog",
+    setup: (gui) => {
+      gui
+        .add(uniforms, "color_theme", {
+          ["Natural"]: "1",
+          ["Grayscale"]: "2",
+          ["Monotone"]: "3",
+        })
+        .onChange((value: number) => {
+          gl.updateUniform("color_theme", value);
+        });
 
-  gui
-    .add(uniforms, "color_theme", {
-      ["Natural"]: "1",
-      ["Grayscale"]: "2",
-      ["Monotone"]: "3",
-    })
-    .onChange((value: number) => {
-      gl.updateUniform("color_theme", value);
-    });
+      gui.add(uniforms, "dpi", 4, 120, 1).onChange((value: number) => {
+        gl.updateUniform("dpi", parseFloat(value.toString()));
+      });
 
-  gui.add(uniforms, "dpi", 4, 120, 1).onChange((value: number) => {
-    gl.updateUniform("dpi", parseFloat(value.toString()));
-  });
+      gui
+        .add(uniforms, "pattern_density", 0.5, 1, 0.01)
+        .onChange((value: number) => {
+          gl.updateUniform("pattern_density", value);
+        });
 
-  gui
-    .add(uniforms, "pattern_density", 0.5, 1, 0.01)
-    .onChange((value: number) => {
-      gl.updateUniform("pattern_density", value);
-    });
+      gui
+        .add(uniforms, "radius_modulation", 0, 1, 0.01)
+        .onChange((value: number) => {
+          gl.updateUniform("radius_modulation", value);
+        });
 
-  gui
-    .add(uniforms, "radius_modulation", 0, 1, 0.01)
-    .onChange((value: number) => {
-      gl.updateUniform("radius_modulation", value);
-    });
-
-  gui.add(uniforms, "invert_pattern", 4, 120, 1).onChange((value: boolean) => {
-    gl.updateUniform("invert_pattern", value);
+      gui
+        .add(uniforms, "invert_pattern", 4, 120, 1)
+        .onChange((value: boolean) => {
+          gl.updateUniform("invert_pattern", value);
+        });
+    },
   });
 </script>
 
 <Layout>
   <section id="wrapper"></section>
-  <button>Pause</button>
+  <CodeDialog class="code-dialog" code={sourceCode} />
 </Layout>
 
 <style>
   section {
     height: 100svh;
     touch-action: none;
-  }
-  button {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    background: black;
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 100vmax;
-    outline: 1px solid rgb(255 255 255 / 0.2);
   }
 </style>

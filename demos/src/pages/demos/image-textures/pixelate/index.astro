@@ -1,11 +1,13 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import CodeDialog from "@/components/code-dialog/index.astro";
+import sourceCode from "./_sketch.frag?raw";
 ---
 
 <script>
   import GlslRenderer from "@glsl-ts";
   import frag from "./_sketch.frag?raw";
-  import GUI from "lil-gui";
+  import { createGui } from "@/utils/create-gui";
 
   const container = document.querySelector("#wrapper") as HTMLElement;
   const uniforms = {
@@ -19,15 +21,19 @@ import Layout from "@/layouts/Layout.astro";
   gl.play();
 
   // Update custom uniforms
-  const gui = new GUI();
-
-  gui.add(uniforms, "pixelation", 1, 120, 1).onChange((value: number) => {
-    gl.updateUniform("pixelation", value);
+  createGui({
+    dialogClass: "code-dialog",
+    setup: (gui) => {
+      gui.add(uniforms, "pixelation", 1, 120, 1).onChange((value: number) => {
+        gl.updateUniform("pixelation", value);
+      });
+    },
   });
 </script>
 
 <Layout>
   <section id="wrapper"></section>
+  <CodeDialog class="code-dialog" code={sourceCode} />
 </Layout>
 
 <style>

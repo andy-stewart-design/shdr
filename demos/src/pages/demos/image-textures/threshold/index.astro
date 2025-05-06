@@ -1,11 +1,13 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import CodeDialog from "@/components/code-dialog/index.astro";
+import sourceCode from "./_sketch.frag?raw";
 ---
 
 <script>
   import GlslRenderer from "@glsl-ts";
   import frag from "./_sketch.frag?raw";
-  import GUI from "lil-gui";
+  import { createGui } from "@/utils/create-gui";
 
   const container = document.querySelector("#wrapper") as HTMLElement;
   const uniforms = {
@@ -22,31 +24,35 @@ import Layout from "@/layouts/Layout.astro";
   gl.play();
 
   // Update custom uniforms
-  const gui = new GUI();
+  createGui({
+    dialogClass: "code-dialog",
+    setup: (gui) => {
+      gui.add(uniforms, "stepCount", 2, 10, 1).onChange((value: number) => {
+        gl.updateUniform("stepCount", value);
+      });
 
-  gui.add(uniforms, "stepCount", 2, 10, 1).onChange((value: number) => {
-    gl.updateUniform("stepCount", value);
+      gui.add(uniforms, "offset", -0.5, 0.5, 0.1).onChange((value: number) => {
+        gl.updateUniform("offset", value);
+      });
+
+      gui.add(uniforms, "noise").onChange((value: boolean) => {
+        gl.updateUniform("noise", value);
+        noiseAmountController.disable(!value);
+      });
+
+      const noiseAmountController = gui
+        .add(uniforms, "noiseAmount", 0, 1, 0.01)
+        .onChange((value: number) => {
+          gl.updateUniform("noiseAmount", value);
+        })
+        .disable(!uniforms.noise);
+    },
   });
-
-  gui.add(uniforms, "offset", -0.5, 0.5, 0.1).onChange((value: number) => {
-    gl.updateUniform("offset", value);
-  });
-
-  gui.add(uniforms, "noise").onChange((value: boolean) => {
-    gl.updateUniform("noise", value);
-    noiseAmountController.disable(!value);
-  });
-
-  const noiseAmountController = gui
-    .add(uniforms, "noiseAmount", 0, 1, 0.01)
-    .onChange((value: number) => {
-      gl.updateUniform("noiseAmount", value);
-    })
-    .disable(!uniforms.noise);
 </script>
 
 <Layout>
   <section id="wrapper"></section>
+  <CodeDialog class="code-dialog" code={sourceCode} />
 </Layout>
 
 <style>
