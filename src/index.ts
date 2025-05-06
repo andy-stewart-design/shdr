@@ -15,7 +15,9 @@ export default class GlslRenderer extends GlslCanvas {
   private mousePos = [0, 0];
   private controller = new AbortController();
   private rafId: number | null = null;
-  private _paused = true;
+  private startTime: number | null = null;
+  private pauseStartTime: number | null = null;
+  private totalPausedTime: number = 0;
   readonly assets: GlslAssetManager;
 
   constructor({
@@ -38,14 +40,17 @@ export default class GlslRenderer extends GlslCanvas {
   }
 
   private render(time: number) {
-    if (this._paused) return;
+    if (this.paused || this.startTime === null) return;
 
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
     // Pass uniforms
     const uTime = this.assets.uniforms.get(`${this.assets.uniformPrefix}time`);
     if (uTime) {
-      this.gl.uniform1f(uTime.location, time * 0.001); // Time in seconds
+      // Calculate elapsed time with pause compensation
+      const adjustedTimestamp = time - this.totalPausedTime;
+      const elapsedTime = adjustedTimestamp - this.startTime;
+      this.gl.uniform1f(uTime.location, elapsedTime * 0.001); // Time in seconds
     }
     const uMouse = this.assets.uniforms.get(
       `${this.assets.uniformPrefix}mouse`
@@ -60,8 +65,7 @@ export default class GlslRenderer extends GlslCanvas {
     // Draw
     this.gl.drawArrays(this.gl.TRIANGLES, 0, DEFAULT_VERTICES.length / 2);
 
-    if (!this._paused)
-      this.rafId = requestAnimationFrame((t) => this.render(t));
+    this.rafId = requestAnimationFrame((t) => this.render(t));
   }
 
   private handleResize() {
@@ -110,22 +114,31 @@ export default class GlslRenderer extends GlslCanvas {
   }
 
   public play() {
-    if (!this._paused) return;
+    if (!this.paused) return;
 
-    this._paused = false;
-    this.rafId = requestAnimationFrame((t) => this.render(t));
+    if (this.pauseStartTime !== null) {
+      this.totalPausedTime += performance.now() - this.pauseStartTime;
+      this.pauseStartTime = null;
+    }
+
+    if (this.startTime === null) {
+      this.startTime = performance.now();
+    }
 
     if (this.assets.dynamicTextures.size > 0) {
       this.assets.dynamicTextures.forEach((texture) => {
         texture.video.play();
       });
     }
+
+    this.rafId = requestAnimationFrame((t) => this.render(t));
   }
 
   public pause() {
-    if (typeof this.rafId !== "number") return;
+    if (typeof this.rafId !== "number" || this.paused) return;
 
-    this._paused = true;
+    this.pauseStartTime = performance.now();
+
     cancelAnimationFrame(this.rafId);
     this.rafId = null;
 
@@ -154,6 +167,6 @@ export default class GlslRenderer extends GlslCanvas {
   }
 
   get paused() {
-    return this._paused;
+    return this.rafId === null;
   }
 }

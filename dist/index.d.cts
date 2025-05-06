@@ -59,7 +59,9 @@ declare class GlslRenderer extends GlslCanvas {
     private mousePos;
     private controller;
     private rafId;
-    private _paused;
+    private startTime;
+    private pauseStartTime;
+    private totalPausedTime;
     readonly assets: GlslAssetManager;
     constructor({ container, frag, uniforms, uniformPrefix, glVersion, }: GlslRendererConstructorProps);
     private render;

@@ -1,11 +1,13 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import CodeDialog from "@/components/code-dialog/index.astro";
+import sourceCode from "./_sketch.frag?raw";
 ---
 
 <script>
   import GlslRenderer from "@glsl-ts";
   import frag from "./_sketch.frag?raw";
-  import GUI from "lil-gui";
+  import { createGui } from "@/utils/create-gui";
 
   const container = document.querySelector("#wrapper") as HTMLElement;
   const uniforms = {
@@ -17,24 +19,30 @@ import Layout from "@/layouts/Layout.astro";
   const gl = new GlslRenderer({ container, frag, uniforms });
   gl.play();
 
-  // Update custom uniforms
-  const gui = new GUI();
-
-  gui.add(uniforms, "amplitude", 0.02, 0.5, 0.01).onChange((value: number) => {
-    gl.updateUniform("amplitude", value);
-  });
-
-  gui.add(uniforms, "wavelength", 0.5, 5.0, 0.01).onChange((value: number) => {
-    gl.updateUniform("wavelength", value);
-  });
-
-  gui.add(uniforms, "speed", 0.0, 2.0, 0.1).onChange((value: number) => {
-    gl.updateUniform("speed", value);
+  createGui({
+    gl,
+    dialogClass: "code-dialog",
+    setup: (gui) => {
+      gui
+        .add(uniforms, "amplitude", 0.02, 0.5, 0.01)
+        .onChange((value: number) => {
+          gl.updateUniform("amplitude", value);
+        });
+      gui
+        .add(uniforms, "wavelength", 0.5, 5.0, 0.01)
+        .onChange((value: number) => {
+          gl.updateUniform("wavelength", value);
+        });
+      gui.add(uniforms, "speed", 0.0, 2.0, 0.1).onChange((value: number) => {
+        gl.updateUniform("speed", value);
+      });
+    },
   });
 </script>
 
 <Layout>
   <section id="wrapper"></section>
+  <CodeDialog class="code-dialog" code={sourceCode} />
 </Layout>
 
 <style>
