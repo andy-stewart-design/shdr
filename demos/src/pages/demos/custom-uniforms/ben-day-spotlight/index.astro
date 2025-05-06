@@ -7,7 +7,7 @@ import sourceCode from "./_sketch.frag?raw";
 <script>
   import GlslRenderer from "@glsl-ts";
   import frag from "./_sketch.frag?raw";
-  import GUI from "lil-gui";
+  import { createGui } from "@/utils/create-gui";
 
   const container = document.querySelector("#wrapper") as HTMLElement;
   const uniforms = {
@@ -18,22 +18,14 @@ import sourceCode from "./_sketch.frag?raw";
   const gl = new GlslRenderer({ container, frag, uniforms, glVersion: 1 });
   gl.play();
 
-  // Update custom uniforms
-  const gui = new GUI();
-
-  const functions = {
-    showCode: () => {
-      document
-        .querySelector<HTMLDialogElement>("dialog.code-dialog")
-        ?.showModal();
+  createGui({
+    dialogClass: "code-dialog",
+    setup: (gui) => {
+      gui.add(uniforms, "dpi", 4, 20, 1).onChange((value: number) => {
+        gl.updateUniform("dpi", value);
+      });
     },
-  };
-
-  gui.add(uniforms, "dpi", 4, 20, 1).onChange((value: number) => {
-    gl.updateUniform("dpi", value);
   });
-
-  gui.add(functions, "showCode").name("Show code");
 </script>
 
 <Layout>

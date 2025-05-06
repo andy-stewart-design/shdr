@@ -7,7 +7,7 @@ import sourceCode from "./_sketch.frag?raw";
 <script>
   import GlslRenderer from "@glsl-ts";
   import frag from "./_sketch.frag?raw";
-  import GUI from "lil-gui";
+  import { createGui } from "@/utils/create-gui";
 
   const container = document.querySelector("#wrapper") as HTMLElement;
   const uniforms = {
@@ -19,35 +19,25 @@ import sourceCode from "./_sketch.frag?raw";
   const gl = new GlslRenderer({ container, frag, uniforms });
   gl.play();
 
-  // Update custom uniforms
-  const gui = new GUI();
-
-  const functions = {
-    togglePlay: () => {
-      if (gl.paused) gl.play();
-      else gl.pause();
+  createGui({
+    gl,
+    dialogClass: "code-dialog",
+    setup: (gui) => {
+      gui
+        .add(uniforms, "amplitude", 0.02, 0.5, 0.01)
+        .onChange((value: number) => {
+          gl.updateUniform("amplitude", value);
+        });
+      gui
+        .add(uniforms, "wavelength", 0.5, 5.0, 0.01)
+        .onChange((value: number) => {
+          gl.updateUniform("wavelength", value);
+        });
+      gui.add(uniforms, "speed", 0.0, 2.0, 0.1).onChange((value: number) => {
+        gl.updateUniform("speed", value);
+      });
     },
-    showCode: () => {
-      document
-        .querySelector<HTMLDialogElement>("dialog.code-dialog")
-        ?.showModal();
-    },
-  };
-
-  gui.add(uniforms, "amplitude", 0.02, 0.5, 0.01).onChange((value: number) => {
-    gl.updateUniform("amplitude", value);
   });
-
-  gui.add(uniforms, "wavelength", 0.5, 5.0, 0.01).onChange((value: number) => {
-    gl.updateUniform("wavelength", value);
-  });
-
-  gui.add(uniforms, "speed", 0.0, 2.0, 0.1).onChange((value: number) => {
-    gl.updateUniform("speed", value);
-  });
-
-  gui.add(functions, "togglePlay").name("Play/pause");
-  gui.add(functions, "showCode").name("Show code");
 </script>
 
 <Layout>
