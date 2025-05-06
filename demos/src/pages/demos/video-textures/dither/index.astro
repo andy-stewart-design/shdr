@@ -1,5 +1,7 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import CodeDialog from "@/components/code-dialog/index.astro";
+import sourceCode from "./_sketch.frag?raw";
 ---
 
 <script>
@@ -23,6 +25,18 @@ import Layout from "@/layouts/Layout.astro";
   // Update custom uniforms
   const gui = new GUI();
 
+  const functions = {
+    togglePlay: () => {
+      if (gl.paused) gl.play();
+      else gl.pause();
+    },
+    showCode: () => {
+      document
+        .querySelector<HTMLDialogElement>("dialog.code-dialog")
+        ?.showModal();
+    },
+  };
+
   gui
     .add(uniforms, "ditherType", {
       ["Bayer 2x2"]: "2",
@@ -36,10 +50,13 @@ import Layout from "@/layouts/Layout.astro";
   gui.add(uniforms, "monotone").onChange((value: boolean) => {
     gl.updateUniform("monotone", value);
   });
+  gui.add(functions, "togglePlay").name("Play/pause");
+  gui.add(functions, "showCode").name("Show code");
 </script>
 
 <Layout>
   <section id="wrapper"></section>
+  <CodeDialog class="code-dialog" code={sourceCode} />
 </Layout>
 
 <style>

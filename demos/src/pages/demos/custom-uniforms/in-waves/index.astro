@@ -1,6 +1,6 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import { Code } from "astro:components";
+import CodeDialog from "@/components/code-dialog/index.astro";
 import sourceCode from "./_sketch.frag?raw";
 ---
 
@@ -28,7 +28,9 @@ import sourceCode from "./_sketch.frag?raw";
       else gl.pause();
     },
     showCode: () => {
-      document.querySelector<HTMLDialogElement>("#code-dialog")?.showModal();
+      document
+        .querySelector<HTMLDialogElement>("dialog.code-dialog")
+        ?.showModal();
     },
   };
 
@@ -46,104 +48,16 @@ import sourceCode from "./_sketch.frag?raw";
 
   gui.add(functions, "togglePlay").name("Play/pause");
   gui.add(functions, "showCode").name("Show code");
-
-  const dialog = document.querySelector<HTMLDialogElement>("#code-dialog");
-  const dialogClose =
-    document.querySelector<HTMLButtonElement>("#code-dialog-close");
-
-  dialogClose?.addEventListener("click", () => {
-    dialog?.close();
-  });
 </script>
 
 <Layout>
   <section id="wrapper"></section>
-  <dialog id="code-dialog">
-    <div class="code-dialog-contents">
-      <header>
-        <span>Source code</span>
-        <button id="code-dialog-close" aria-label="Close dialog">
-          <svg viewBox="0 0 16 16" height="16" width="16">
-            <line
-              x1="2"
-              y1="2"
-              x2="14"
-              y2="14"
-              stroke="currentColor"
-              stroke-width="1.5"></line>
-            <line
-              x1="2"
-              y1="14"
-              x2="14"
-              y2="2"
-              stroke="currentColor"
-              stroke-width="1.5"></line>
-          </svg>
-        </button>
-      </header>
-      <Code code={sourceCode} lang="glsl" theme="night-owl" tabindex={-1} />
-    </div>
-  </dialog>
+  <CodeDialog class="code-dialog" code={sourceCode} />
 </Layout>
 
 <style>
   section {
     height: 100svh;
     touch-action: none;
-  }
-
-  #code-dialog-trig {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-  }
-
-  #code-dialog {
-    width: 90vw;
-    max-width: 800px;
-    height: 100vh;
-    max-height: 100vh;
-    margin-right: 0;
-    border: none;
-    background-color: #011627;
-    padding: 0;
-    scrollbar-gutter: stable;
-
-    .code-dialog-contents {
-      display: grid;
-      gap: 1rem;
-      padding: 2rem;
-
-      header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 0.875rem;
-
-        span {
-          font-weight: 600;
-          opacity: 0.6;
-        }
-
-        button {
-          background: none;
-          border: none;
-          cursor: pointer;
-          padding: 0.5rem;
-          svg {
-            vertical-align: bottom;
-          }
-        }
-      }
-
-      & > pre {
-        margin: 0;
-        scrollbar-gutter: stable;
-      }
-    }
-
-    &::backdrop {
-      background: rgb(255 255 255 / 0.25);
-    }
   }
 </style>
