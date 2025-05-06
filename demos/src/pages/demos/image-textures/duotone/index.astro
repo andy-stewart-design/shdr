@@ -1,11 +1,13 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import CodeDialog from "@/components/code-dialog/index.astro";
+import sourceCode from "./_sketch.frag?raw";
 ---
 
 <script>
   import GlslRenderer from "@glsl-ts";
   import frag from "./_sketch.frag?raw";
-  import GUI from "lil-gui";
+  import { createGui } from "@/utils/create-gui";
 
   const container = document.querySelector("#wrapper") as HTMLElement;
   const uniforms = {
@@ -19,20 +21,22 @@ import Layout from "@/layouts/Layout.astro";
 
   gl.play();
 
-  // Update custom uniforms
-  const gui = new GUI();
-
   const guiOptions = {
     highColor: `rgb(${Math.floor(255 * 0)}, ${Math.floor(255 * 0.5)}, ${Math.floor(255 * 1)})`,
     lowColor: `rgb(${Math.floor(255 * 0)}, ${Math.floor(255 * 0)}, ${Math.floor(255 * 0)})`,
   };
 
-  gui.addColor(guiOptions, "highColor").onChange((value: string) => {
-    gl.updateUniform("highColor", hexToRgb(value));
-  });
+  createGui({
+    dialogClass: "code-dialog",
+    setup: (gui) => {
+      gui.addColor(guiOptions, "highColor").onChange((value: string) => {
+        gl.updateUniform("highColor", hexToRgb(value));
+      });
 
-  gui.addColor(guiOptions, "lowColor").onChange((value: string) => {
-    gl.updateUniform("lowColor", hexToRgb(value));
+      gui.addColor(guiOptions, "lowColor").onChange((value: string) => {
+        gl.updateUniform("lowColor", hexToRgb(value));
+      });
+    },
   });
 
   function hexToRgb(hex: string): [number, number, number] {
@@ -64,6 +68,7 @@ import Layout from "@/layouts/Layout.astro";
 
 <Layout>
   <section id="wrapper"></section>
+  <CodeDialog class="code-dialog" code={sourceCode} />
 </Layout>
 
 <style>
