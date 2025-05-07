@@ -50,7 +50,7 @@ const pagesByCategory = Object.groupBy(
 <Layout>
   <main>
     <section>
-      <h1>GLSL.<span class="nudge">TS</span> Demos</h1>
+      <h1>Shdr.</h1>
     </section>
     {
       Object.entries(pagesByCategory).map(([category, pages]) => (
@@ -95,6 +95,10 @@ const pagesByCategory = Object.groupBy(
     &:first-of-type {
       padding: 2rem 0 1.25rem;
     }
+  }
+
+  h1 {
+    font-size: 3rem;
   }
 
   .category {
