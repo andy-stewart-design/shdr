@@ -1,5 +1,5 @@
 #ifdef GL_ES
-precision mediump float;
+precision highp float;
 #endif
 
 // Uniform variables provided by the rendering environment

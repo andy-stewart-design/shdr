@@ -48,35 +48,52 @@ const pagesByCategory = Object.groupBy(
 ---
 
 <Layout>
-  <section>
-    <h1>GLSL.<span class="nudge">TS</span> Demos</h1>
-  </section>
-  {
-    Object.entries(pagesByCategory).map(([category, pages]) => (
-      <section>
-        <p class="category">{formatPathSegment(category)}</p>
-        <ul>
-          {pages?.map((page) => (
-            <li>
-              <a href={page.href}>{page.label}</a>
-            </li>
-          ))}
-        </ul>
-      </section>
-    ))
-  }
+  <main>
+    <section>
+      <h1>GLSL.<span class="nudge">TS</span> Demos</h1>
+    </section>
+    {
+      Object.entries(pagesByCategory).map(([category, pages]) => (
+        <section class="demo-section">
+          <p class="category">{formatPathSegment(category)}</p>
+          <ul>
+            {pages?.map((page) => (
+              <li>
+                <a
+                  href={page.href}
+                  style="display: flex; align-items: center; gap: 1rem;"
+                >
+                  <img
+                    src={`/sketch-thumbnails/${page.id}.png`}
+                    style="width: 64px; aspect-ratio: 1/1; border-radius: 0.75rem; vertical-align: bottom;"
+                  />
+                  {page.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+  </main>
 </Layout>
 
 <style>
-  section {
-    padding: 1.5rem 2rem 0;
+  main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 0;
+  }
 
-    &:first-of-type {
-      padding: 2rem 2rem 0;
+  section {
+    padding: 1.75rem 0 2.25rem;
+
+    &.demo-section {
+      border-top: 1px solid rgb(255 255 255 / 0.15);
     }
 
-    &:last-of-type {
-      padding: 1.5rem 2rem 2rem;
+    &:first-of-type {
+      padding: 2rem 0 1.25rem;
     }
   }
 
@@ -84,11 +101,15 @@ const pagesByCategory = Object.groupBy(
     font-size: 0.9375rem;
     font-weight: 500;
     opacity: 0.6;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
   }
 
   ul {
     display: grid;
-    gap: 0.5rem;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 1rem;
+    row-gap: 1.5rem;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -101,6 +122,10 @@ const pagesByCategory = Object.groupBy(
 
     &:visited {
       color: CanvasText;
+    }
+
+    img {
+      outline: 1px solid rgb(255 255 255 / 0.1);
     }
   }
 
