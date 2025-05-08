@@ -3,7 +3,9 @@ import Layout from "@/layouts/Layout.astro";
 import { getMetadata } from "@/utils/get-sketches";
 
 const sketches = import.meta.glob("@/pages/**/_sketch.frag", { query: "?raw" });
-const metaImports = import.meta.glob("@/pages/**/meta.json", { query: "?raw" });
+const metaImports = import.meta.glob("@/pages/**/_meta.json", {
+  query: "?raw",
+});
 const metadata = await getMetadata(metaImports);
 
 function formatPathSegment(seg?: string) {
@@ -57,7 +59,7 @@ const pagesByCategory = Object.groupBy(
 <Layout>
   <main>
     <section>
-      <h1>Shdr.</h1>
+      <h1>Shdr<span>.</span></h1>
     </section>
     {
       Object.entries(pagesByCategory).map(([category, pages]) => (
@@ -106,12 +108,17 @@ const pagesByCategory = Object.groupBy(
 
   h1 {
     font-size: 3rem;
+    font-weight: 900;
+
+    span {
+      margin-left: -0.1em;
+    }
   }
 
   .category {
     font-size: 0.9375rem;
     font-weight: 500;
-    opacity: 0.6;
+    opacity: 0.7;
     margin-top: 0;
     margin-bottom: 1.5rem;
   }
