@@ -17,8 +17,9 @@ const sketchesByCategory = Object.groupBy(
 
 <Layout>
   <main>
-    <section>
-      <h1>Shdr<span>.</span></h1>
+    <section class="header">
+      <h1>Shdr<span>_</span></h1>
+      <p>WebGL + Typescript</p>
     </section>
     {
       Object.entries(sketchesByCategory).map(([category, pages]) => (
@@ -61,16 +62,35 @@ const sketchesByCategory = Object.groupBy(
     }
 
     &:first-of-type {
-      padding: 2rem 0 1.25rem;
+      padding: 5rem 0 1.5rem;
     }
   }
 
-  h1 {
-    font-size: 4rem;
-    font-weight: 900;
+  .header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
 
-    span {
-      margin-left: -0.1em;
+    h1 {
+      font-family: "CabinetGrotesk";
+      font-size: 3.5rem;
+      font-weight: 850;
+      margin: 0;
+
+      span {
+        margin-left: -0.2em;
+      }
+
+      @media (min-width: 640px) {
+        font-size: 4rem;
+      }
+    }
+
+    p {
+      font-size: 0.875rem;
+      font-weight: 500;
+      opacity: 0.7;
+      margin: 0;
     }
   }
 

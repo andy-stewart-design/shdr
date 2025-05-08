@@ -5,7 +5,14 @@
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    <title>GLSL.TS</title>
+    <link
+      rel="preload"
+      href="/fonts/CabinetGrotesk-Variable.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <title>Shdr.</title>
   </head>
   <body>
     <slot />
@@ -13,6 +20,17 @@
 </html>
 
 <style>
+  @font-face {
+    font-family: "CabinetGrotesk";
+    src:
+      url("/fonts/CabinetGrotesk-Variable.woff2") format("woff2"),
+      url("/fonts/CabinetGrotesk-Variable.woff") format("woff"),
+      url("/fonts/CabinetGrotesk-Variable.ttf") format("truetype");
+    font-weight: 100 900;
+    font-display: swap;
+    font-style: normal;
+  }
+
   html,
   body {
     margin: 0;
