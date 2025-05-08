@@ -1,57 +1,16 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import { getMetadata } from "@/utils/get-sketches";
+import { getSketches, formatPathSegment } from "@/utils/get-sketches";
 
-const sketches = import.meta.glob("@/pages/**/_sketch.frag", { query: "?raw" });
+const sketchImports = import.meta.glob("@/pages/**/_sketch.frag", {
+  query: "?raw",
+});
 const metaImports = import.meta.glob("@/pages/**/_meta.json", {
   query: "?raw",
 });
-const metadata = await getMetadata(metaImports);
-
-function formatPathSegment(seg?: string) {
-  return seg
-    ?.split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-}
-
-function formatPaths(paths: string[]) {
-  return paths
-    .map((path) => {
-      const segments = path.split("/");
-
-      const id = segments.at(-2);
-      const label = formatPathSegment(id);
-      const categoryId = segments.at(-3);
-      const categoryLabel = formatPathSegment(categoryId);
-
-      const href = segments.reduce<string>((acc, seg, i) => {
-        if (i <= 2 || i === segments.length - 1) {
-          return acc;
-        }
-        return `${acc}/${seg}`;
-      }, "");
-
-      const data = metadata[id ?? ""];
-      const imgSrc = data?.imgSrc ?? `/sketch-thumbnails/${id}.png`;
-
-      return {
-        id,
-        href,
-        category: { id: categoryId, label: categoryLabel },
-        label,
-        imgSrc,
-      };
-    })
-    .filter(
-      (path) => !path.href.includes("_archive") && !path.id?.startsWith("_")
-    );
-}
-
-const pages = formatPaths(Object.keys(sketches));
-
-const pagesByCategory = Object.groupBy(
-  pages,
+const sketches = await getSketches(sketchImports, metaImports);
+const sketchesByCategory = Object.groupBy(
+  sketches,
   (page) => page.category.id ?? "undefined"
 );
 ---
@@ -62,7 +21,7 @@ const pagesByCategory = Object.groupBy(
       <h1>Shdr<span>.</span></h1>
     </section>
     {
-      Object.entries(pagesByCategory).map(([category, pages]) => (
+      Object.entries(sketchesByCategory).map(([category, pages]) => (
         <section class="demo-section">
           <p class="category">{formatPathSegment(category)}</p>
           <ul>
@@ -107,7 +66,7 @@ const pagesByCategory = Object.groupBy(
   }
 
   h1 {
-    font-size: 3rem;
+    font-size: 4rem;
     font-weight: 900;
 
     span {
