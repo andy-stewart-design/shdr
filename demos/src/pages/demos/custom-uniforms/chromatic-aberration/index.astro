@@ -1,0 +1,77 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import CodeDialog from "@/components/code-dialog/index.astro";
+import sourceCode from "./_sketch.frag?raw";
+---
+
+<script>
+  import GlslRenderer from "@glsl-ts";
+  import frag from "./_sketch.frag?raw";
+  import { createGui } from "@/utils/create-gui";
+
+  const container = document.querySelector("#wrapper") as HTMLElement;
+  const uniforms = {
+    webcam: "webcam",
+    dpi: 20,
+    color_theme: "1",
+    pattern_density: 0.75,
+    radius_modulation: 0.75,
+    invert_pattern: false,
+  };
+
+  // Initialize webcam as a texture
+  const gl = new GlslRenderer({ container, frag, uniforms, glVersion: 1 });
+
+  gl.play();
+
+  // Update custom uniforms
+  createGui({
+    gl,
+    dialogClass: "code-dialog",
+    setup: (gui) => {
+      gui
+        .add(uniforms, "color_theme", {
+          ["Natural"]: "1",
+          ["Grayscale"]: "2",
+          ["Monotone"]: "3",
+        })
+        .onChange((value: number) => {
+          gl.updateUniform("color_theme", value);
+        });
+
+      gui.add(uniforms, "dpi", 4, 120, 1).onChange((value: number) => {
+        gl.updateUniform("dpi", parseFloat(value.toString()));
+      });
+
+      gui
+        .add(uniforms, "pattern_density", 0.5, 1, 0.01)
+        .onChange((value: number) => {
+          gl.updateUniform("pattern_density", value);
+        });
+
+      gui
+        .add(uniforms, "radius_modulation", 0, 1, 0.01)
+        .onChange((value: number) => {
+          gl.updateUniform("radius_modulation", value);
+        });
+
+      gui
+        .add(uniforms, "invert_pattern", 4, 120, 1)
+        .onChange((value: boolean) => {
+          gl.updateUniform("invert_pattern", value);
+        });
+    },
+  });
+</script>
+
+<Layout>
+  <section id="wrapper"></section>
+  <CodeDialog class="code-dialog" code={sourceCode} />
+</Layout>
+
+<style>
+  section {
+    height: 100svh;
+    touch-action: none;
+  }
+</style>
