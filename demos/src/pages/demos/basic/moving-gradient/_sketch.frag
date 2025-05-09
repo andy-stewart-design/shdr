@@ -21,7 +21,10 @@ float rand(vec2 n) {
 }
 
 void main() {
-    vec2 uv = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / u_resolution.y;
+    // Normalize the coordinate space
+    vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+    // Remap the coordinate space from 0,1 to -1,1
+    uv = uv * 2.0 - 1.0;
 
     uv *= 0.06;
     uv -= 0.03;
@@ -30,15 +33,14 @@ void main() {
 
     for(int n = 1; n < 2; n++) {
         float i = float(n);
-        uv += vec2(sin(uv.x * 6.0 + sin(u_time + uv.y * 10.0) * 0.2), sin(uv.y * 6.0 + sin(u_time + uv.x * 10.0) * 0.2));
+        uv += vec2(sin(uv.x * 6.0 + sin(u_time + uv.y * 6.0) * 0.2), sin(uv.y * 6.0 + sin(u_time + uv.x * 6.0) * 0.2));
     }
 
     vec3 black = vec3(0.0, 0.0, 0.0);
-
-    vec3 colorGrained = palette(uv.x * sin(1.0) + uv.y + grain);
     vec3 color = palette(uv.x * sin(1.0) + uv.y);
+    vec3 colorGrained = palette(uv.x * sin(1.0) + uv.y + grain);
 
-    color = mix(colorGrained, color, 0.96);
+    color = mix(colorGrained, color, 0.925);
     color = mix(black, color, 0.9);
 
     outColor = vec4(color, 1.0);

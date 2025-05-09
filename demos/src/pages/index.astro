@@ -9,17 +9,14 @@ const metaImports = import.meta.glob("@/pages/**/_meta.json", {
   query: "?raw",
 });
 const sketches = await getSketches(sketchImports, metaImports);
-const sketchesByCategory = Object.groupBy(
-  sketches,
-  (page) => page.category.id ?? "undefined"
-);
+const sketchesByCategory = Object.groupBy(sketches, (page) => page.category.id);
 ---
 
 <Layout>
   <main>
     <section class="header">
       <h1>Shdr<span>_</span></h1>
-      <p>WebGL + Typescript</p>
+      <p>A lil WebGL library</p>
     </section>
     {
       Object.entries(sketchesByCategory).map(([category, pages]) => (

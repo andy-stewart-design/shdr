@@ -5,11 +5,11 @@ type GlobImport = Record<string, () => Promise<unknown>>;
 // MARK: FORMATTING METADATA ------------------------------------------------------------
 
 async function getMetadata(glob: GlobImport) {
-  const metaPromises = Object.entries(glob).map(async ([slug, content]) => {
-    const id = slug.split("/").at(-2);
+  const metaPromises = Object.entries(glob).map(async ([path, content]) => {
+    const id = path.split("/").at(-2);
 
     if (!id) {
-      const msg = `[SHDR]: could not derive an id for ${slug} when importing meta.json`;
+      const msg = `[GET METADATA]: could not derive an id for ${path} when importing meta.json`;
       throw new Error(msg);
     }
 
@@ -47,8 +47,14 @@ async function getSketches(sketchGlob: GlobImport, metaGlob: GlobImport) {
       const segments = path.split("/");
 
       const id = segments.at(-2);
-      const label = formatPathSegment(id);
       const categoryId = segments.at(-3);
+
+      if (!id || !categoryId) {
+        const msg = `[GET SKETCHES]: could not derive an id for ${path} when importing _sketch.frag`;
+        throw new Error(msg);
+      }
+
+      const label = formatPathSegment(id);
       const categoryLabel = formatPathSegment(categoryId);
 
       const href = segments.reduce<string>((acc, seg, i) => {
@@ -58,7 +64,7 @@ async function getSketches(sketchGlob: GlobImport, metaGlob: GlobImport) {
         return `${acc}/${seg}`;
       }, "");
 
-      const data = metadata[id ?? ""];
+      const data = metadata[id];
       const imgSrc = data?.imgSrc ?? `/sketch-thumbnails/${id}.png`;
 
       return {
@@ -74,9 +80,9 @@ async function getSketches(sketchGlob: GlobImport, metaGlob: GlobImport) {
     );
 }
 
-function formatPathSegment(seg?: string) {
+function formatPathSegment(seg: string) {
   return seg
-    ?.split("-")
+    .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 }
