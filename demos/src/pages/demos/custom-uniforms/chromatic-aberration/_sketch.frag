@@ -42,7 +42,7 @@ void main() {
     halftoneUv = halftoneUv * 2.0 - 1.0;
 
     // Set parameters for the halftone effect
-    float blur = u_dpi * 0.00125;  // Edge blur amount for the circles (scales with DPI)
+    float blur = u_dpi * 0.005;  // Edge blur amount for the circles (scales with DPI)
 
     // Calculate circle radius based on brightness and modulation
     // Higher brightness = larger circles when modulation is less than 1
@@ -60,9 +60,10 @@ void main() {
     color1 = color1 * d1;
 
      // Create a circle in each grid cell
-    float signX = sign(uv.x - 0.5);
-    float signY = sign(uv.y - 0.5);
-    vec2 foo = vec2(length(uv - 0.5) * 0.35 * signX, length(uv - 0.5) * 0.35 * signY);
+    vec2 center = vec2(0.5, 0.5);
+    float signX = sign(uv.x - center.x);
+    float signY = sign(uv.y - center.y);
+    vec2 foo = vec2(length(vec2(uv.x, center.x) - center.x) * 1. * signX, length(vec2(center.y, uv.y) - center.y) * 1. * signY);
     float d2 = length(halftoneUv - foo);  // Distance from center of cell
     // Apply smoothstep to create a soft-edged circle
     d2 = smoothstep(rad - blur, rad + blur, d2);
