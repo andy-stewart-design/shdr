@@ -14,23 +14,6 @@ uniform float u_pattern_density;
 uniform float u_radius_modulation; // Controls how much the halftone pattern is affected by brightness
 uniform int u_invert_pattern;     // Whether to invert the halftone pattern (0=normal, 1=inverted)
 
-/**
- * Adjusts UV coordinates to maintain aspect ratio when mapping a texture to canvas
- * This ensures the image is "covered" properly without distortion
- * 
- * @param textureAR Aspect ratio of the texture (width/height)
- * @param canvasAR Aspect ratio of the canvas (width/height)
- * @param uv The original UV coordinates
- * @return Adjusted UV coordinates that maintain proper aspect ratio
- */
-vec2 adjustUV(float textureAR, float canvasAR, vec2 uv) {
-    bool isLandscape = canvasAR < textureAR;  // Check if the canvas is wider than it is tall relative to texture
-    float scale = isLandscape ? canvasAR / textureAR : textureAR / canvasAR;  // Calculate scaling factor
-    float x = !isLandscape ? uv.x : (uv.x - 0.5) * scale + 0.5;  // Center and scale X if needed
-    float y = isLandscape ? uv.y : (uv.y - 0.5) * scale + 0.5;   // Center and scale Y if needed
-    return vec2(x, y);  // Return adjusted coordinates
-}
-
 void main() {
     // Convert fragment coordinate to normalized [0,1] UV space
     vec2 uv = gl_FragCoord.xy / u_resolution.xy;
@@ -66,18 +49,32 @@ void main() {
     float rad = u_pattern_density;
 
     // Create a circle in each grid cell
-    float d = length(halftoneUv);  // Distance from center of cell
-
+    float d1 = length(halftoneUv);  // Distance from center of cell
     // Apply smoothstep to create a soft-edged circle
-    d = smoothstep(rad - blur, rad + blur, d);
-
+    d1 = smoothstep(rad - blur, rad + blur, d1);
     // Apply pattern inversion if selected
-    d = u_invert_pattern == 1 ? d : (1. - d);
+    d1 = u_invert_pattern == 1 ? d1 : (1. - d1);
 
     // Apply halftone pattern to the color
-    vec3 color = vec3(1.);
-    color = color * d;
+    vec3 color1 = vec3(1., 0., 0.);
+    color1 = color1 * d1;
+
+     // Create a circle in each grid cell
+    float signX = sign(uv.x - 0.5);
+    float signY = sign(uv.y - 0.5);
+    vec2 foo = vec2(length(uv - 0.5) * 0.35 * signX, length(uv - 0.5) * 0.35 * signY);
+    float d2 = length(halftoneUv - foo);  // Distance from center of cell
+    // Apply smoothstep to create a soft-edged circle
+    d2 = smoothstep(rad - blur, rad + blur, d2);
+    // Apply pattern inversion if selected
+    d2 = u_invert_pattern == 1 ? d2 : (1. - d2);
+
+    vec3 color2 = vec3(0., 1., 0.);
+    color2 = color2 * d2;
+
+    vec3 color3 = vec3(0., 0., 1.);
+    color3 = color3 * d2;
 
     // Output final color with original alpha
-    gl_FragColor = vec4(color, 1.0);
+    gl_FragColor = vec4((color1 + color2 + color3), 1.0);
 }
