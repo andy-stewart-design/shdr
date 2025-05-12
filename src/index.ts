@@ -17,6 +17,7 @@ export default class GlslRenderer extends GlslCanvas {
   private rafId: number | null = null;
   private startTime: number | null = null;
   private pauseStartTime: number | null = null;
+  private lastRenderTime: number = 0;
   private totalPausedTime: number = 0;
   readonly assets: GlslAssetManager;
 
@@ -44,6 +45,7 @@ export default class GlslRenderer extends GlslCanvas {
     if (this.startTime === null) return;
 
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+    this.lastRenderTime = time;
 
     // Pass uniforms
     const uTime = this.assets.uniforms.get(`${this.assets.uniformPrefix}time`);
@@ -88,7 +90,7 @@ export default class GlslRenderer extends GlslCanvas {
     this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
     this.gl.uniform2f(uRes.location, this.canvas.width, this.canvas.height);
 
-    this.render(performance.now(), false);
+    this.render(this.lastRenderTime, false);
   }
 
   private addEventListeners() {
@@ -121,9 +123,13 @@ export default class GlslRenderer extends GlslCanvas {
   public play(loop = true) {
     if (!this.paused) return;
 
+    console.log(this.pauseStartTime);
+
     if (this.pauseStartTime !== null) {
       this.totalPausedTime += performance.now() - this.pauseStartTime;
       this.pauseStartTime = null;
+    } else {
+      this.totalPausedTime = performance.now();
     }
 
     if (this.startTime === null) {

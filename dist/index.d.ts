@@ -61,6 +61,7 @@ declare class GlslRenderer extends GlslCanvas {
     private rafId;
     private startTime;
     private pauseStartTime;
+    private lastRenderTime;
     private totalPausedTime;
     readonly assets: GlslAssetManager;
     constructor({ container, frag, uniforms, uniformPrefix, glVersion, }: GlslRendererConstructorProps);
