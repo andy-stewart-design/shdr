@@ -67,7 +67,7 @@ declare class GlslRenderer extends GlslCanvas {
     private render;
     private handleResize;
     private addEventListeners;
-    play(): void;
+    play(loop?: boolean): void;
     pause(): void;
     updateUniform(name: string, value: UniformValue): void;
     destroy(): void;

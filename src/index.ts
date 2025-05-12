@@ -39,8 +39,9 @@ export default class GlslRenderer extends GlslCanvas {
     this.addEventListeners();
   }
 
-  private render(time: number) {
-    if (this.paused || this.startTime === null) return;
+  private render(time: number, loop = true) {
+    // if (this.paused || this.startTime === null) return;
+    if (this.startTime === null) return;
 
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
@@ -65,7 +66,9 @@ export default class GlslRenderer extends GlslCanvas {
     // Draw
     this.gl.drawArrays(this.gl.TRIANGLES, 0, DEFAULT_VERTICES.length / 2);
 
-    this.rafId = requestAnimationFrame((t) => this.render(t));
+    if (loop) {
+      this.rafId = requestAnimationFrame((t) => this.render(t));
+    }
   }
 
   private handleResize() {
@@ -84,6 +87,8 @@ export default class GlslRenderer extends GlslCanvas {
 
     this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
     this.gl.uniform2f(uRes.location, this.canvas.width, this.canvas.height);
+
+    this.render(performance.now(), false);
   }
 
   private addEventListeners() {
@@ -113,7 +118,7 @@ export default class GlslRenderer extends GlslCanvas {
     window.addEventListener("resize", () => this.handleResize(), { signal });
   }
 
-  public play() {
+  public play(loop = true) {
     if (!this.paused) return;
 
     if (this.pauseStartTime !== null) {
@@ -131,7 +136,11 @@ export default class GlslRenderer extends GlslCanvas {
       });
     }
 
-    this.rafId = requestAnimationFrame((t) => this.render(t));
+    if (loop) {
+      this.rafId = requestAnimationFrame((t) => this.render(t, loop));
+    } else {
+      this.render(performance.now(), loop);
+    }
   }
 
   public pause() {

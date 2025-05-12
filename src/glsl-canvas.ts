@@ -37,12 +37,8 @@ class GlslCanvas {
       version === 3 ? fragmentShaderSourceV3 : fragmentShaderSourceV1;
     const vShader = version === 3 ? vertexShaderSourceV3 : vertexShaderSourceV1;
 
-    const vertexShader = this.compileShader(this.gl.VERTEX_SHADER, vShader);
-
-    const fragmentShader = this.compileShader(
-      this.gl.FRAGMENT_SHADER,
-      frag ?? fShader
-    );
+    const vertexShader = this.compileShader(vShader, "vert");
+    const fragmentShader = this.compileShader(frag ?? fShader, "frag");
 
     this.program = this.createProgram(vertexShader, fragmentShader);
     this.gl.useProgram(this.program);
@@ -53,8 +49,10 @@ class GlslCanvas {
     this.gl.vertexAttribPointer(a_Position, 2, this.gl.FLOAT, false, 0, 0);
   }
 
-  private compileShader(type: number, source: string) {
-    const shader = this.gl.createShader(type);
+  private compileShader(source: string, type: "frag" | "vert") {
+    const shader = this.gl.createShader(
+      type === "frag" ? this.gl.FRAGMENT_SHADER : this.gl.VERTEX_SHADER
+    );
     if (!shader) throw new Error("Shader creation failed");
 
     this.gl.shaderSource(shader, source);
@@ -76,17 +74,16 @@ class GlslCanvas {
     fragmentShader: WebGLShader
   ) {
     const program = this.gl.createProgram();
-    if (!program) {
-      throw new Error(`Error creating WebGL Program`);
-    }
     this.gl.attachShader(program, vertexShader);
     this.gl.attachShader(program, fragmentShader);
     this.gl.linkProgram(program);
+
     if (!this.gl.getProgramParameter(program, this.gl.LINK_STATUS)) {
       throw new Error(
         `Program linking error: ${this.gl.getProgramInfoLog(program)}`
       );
     }
+
     return program;
   }
 
