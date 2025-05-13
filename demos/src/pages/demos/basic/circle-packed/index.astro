@@ -12,7 +12,10 @@ import sourceCode from "./_sketch.frag?raw";
   const container = document.querySelector("#wrapper") as HTMLElement;
 
   const gl = new GlslRenderer({ container, frag, glVersion: 1 });
-  gl.play(false);
+
+  const isReduced = window.matchMedia("(prefers-reduced-motion)").matches;
+  gl.play(!isReduced);
+
   createGui({ gl, dialogClass: "code-dialog" });
 </script>
 
