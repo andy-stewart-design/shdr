@@ -1,6 +1,6 @@
 {
   "name": "shdr",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A zero-dependency shader renderer for the web, written in TypeScript",
   "author": "Andy Stewart <andy.stewart1170@gmail.com> (andystew.art)",
   "homepage": "https://glsl-ts.vercel.app/",
