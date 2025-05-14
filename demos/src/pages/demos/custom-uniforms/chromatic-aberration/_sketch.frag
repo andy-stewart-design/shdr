@@ -11,7 +11,6 @@ uniform vec2 u_webcam_size;       // Webcam resolution in pixels
 uniform float u_dpi;              // Controls the density of the halftone pattern
 uniform int u_color_theme;        // Color mode (1=color, 2=grayscale, other=white)
 uniform float u_pattern_density;
-uniform float u_radius_modulation; // Controls how much the halftone pattern is affected by brightness
 uniform int u_invert_pattern;     // Whether to invert the halftone pattern (0=normal, 1=inverted)
 
 void main() {
@@ -64,7 +63,8 @@ void main() {
     float signX = sign(uv.x - center.x);
     float signY = sign(uv.y - center.y);
     vec2 foo = vec2(length(vec2(uv.x, center.x) - center.x) * 1. * signX, length(vec2(center.y, uv.y) - center.y) * 1. * signY);
-    float d2 = length(halftoneUv - foo);  // Distance from center of cell
+    float nSin = sin(u_time) / 2. + 0.5;
+    float d2 = length(halftoneUv - (foo - nSin * foo));  // Distance from center of cell
     // Apply smoothstep to create a soft-edged circle
     d2 = smoothstep(rad - blur, rad + blur, d2);
     // Apply pattern inversion if selected

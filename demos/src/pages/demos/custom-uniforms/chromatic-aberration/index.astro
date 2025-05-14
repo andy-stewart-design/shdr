@@ -15,7 +15,6 @@ import sourceCode from "./_sketch.frag?raw";
     dpi: 20,
     color_theme: "1",
     pattern_density: 0.75,
-    radius_modulation: 0.75,
     invert_pattern: false,
   };
 
@@ -47,12 +46,6 @@ import sourceCode from "./_sketch.frag?raw";
         .add(uniforms, "pattern_density", 0.5, 1, 0.01)
         .onChange((value: number) => {
           gl.updateUniform("pattern_density", value);
-        });
-
-      gui
-        .add(uniforms, "radius_modulation", 0, 1, 0.01)
-        .onChange((value: number) => {
-          gl.updateUniform("radius_modulation", value);
         });
 
       gui
