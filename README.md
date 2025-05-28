@@ -1,16 +1,21 @@
 # Shdr: a lil WebGL library
 
-Shdr is a zero-dependency shader renderer for the web, written in TypeScript.
+Shdr is a small, zero-dependency shader renderer for the web, written in TypeScript. Get started by installing it with your package manager of choice:
 
-```ts
+```bash
 npm install shdr
 pnpm add shdr
+yarn add shdr
 ```
 
-The simplest way to get started is to create a new Shdr instance, passing in a reference to a fragment shader and a container (HTMLElement) in which to render the shader:
+To render your first shader, create a new `GlslRenderer` instance, passing in a reference to a fragment shader and a container (HTMLElement) in which to append the HTML canvas. You can set the size of the canvas by styling your container element with CSS—the generated canvas will automatically conform to the size its container.
+
+```html
+<section id="container" style="width: 100vw; height: 100svh;"></section>
+```
 
 ```ts
-import Shdr from "shdr";
+import GlslRenderer from "shdr";
 
 const frag = `#version 300 es
     precision highp float;
@@ -21,9 +26,28 @@ const frag = `#version 300 es
         outColor = vec4(1.0,0.0,1.0,1.0);
     }`;
 
-const container = document.querySelector("#wrapper") as HTMLElement;
-const gl = new Shdr({ container, frag });
+const container = document.querySelector("#container") as HTMLElement;
+const gl = new GlslRenderer({ container, frag });
 gl.play();
 ```
 
-Better documentation coming soon. In the meantime, you check out [some live demos](https://shdr.andystew.art/).
+## Instance Options
+
+The following options can be passed to a `GlslRenderer` when it is intialized:
+
+| Name          | Description                                                                  |
+| ------------- | ---------------------------------------------------------------------------- |
+| container     | The HTMLElement where the canvas should be appended                          |
+| frag          | The fragment shader to be rendered                                           |
+| vert          | The vertex shader to be rendered (By default, it’s a flat rectangle)         |
+| uniforms      | Any custom uniforms that should be passed to the fragment shader (Read more) |
+| uniformPrefix | The prefix that should be appended to uniform names (default to "u\_")       |
+| glVersion     | The OpenGl version to use (can be either 3 or 1, default to 3)               |
+
+## Custom Uniforms
+
+TKTKTK
+
+## Demos
+
+Check out [some live demos](https://shdr.andystew.art/).
