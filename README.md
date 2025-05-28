@@ -35,14 +35,14 @@ gl.play();
 
 The following options can be passed to a `GlslRenderer` when it is intialized:
 
-| Name          | Description                                                                  |
-| ------------- | ---------------------------------------------------------------------------- |
-| container     | The HTMLElement where the canvas should be appended                          |
-| frag          | The fragment shader to be rendered                                           |
-| vert          | The vertex shader to be rendered (By default, it’s a flat rectangle)         |
-| uniforms      | Any custom uniforms that should be passed to the fragment shader (Read more) |
-| uniformPrefix | The prefix that should be appended to uniform names (default to "u\_")       |
-| glVersion     | The OpenGl version to use (can be either 3 or 1, default to 3)               |
+| Name          | Description                                                                                                                                                |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| container     | The HTMLElement where the canvas should be appended                                                                                                        |
+| frag          | The fragment shader to be rendered                                                                                                                         |
+| vert          | The vertex shader to be rendered (By default, it’s a flat rectangle)                                                                                       |
+| uniforms      | Custom uniforms that should be passed to the fragment shader ([Read more](https://github.com/andy-stewart-design/shdr?tab=readme-ov-file#custom-uniforms)) |
+| uniformPrefix | The prefix that should be appended to uniform names (default to "u\_")                                                                                     |
+| glVersion     | The OpenGl version to use (can be either 3 or 1, default to 3)                                                                                             |
 
 ## Custom Uniforms
 
