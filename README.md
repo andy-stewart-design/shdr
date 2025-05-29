@@ -134,13 +134,17 @@ Importantly, you **should not** add a prefix to the keys in the unform object. I
 
 The types assigned to each uniform will be automatically inferred by the library. By default all numbers will be treated as floats. If you specifically need a number to be an integer instead, pass it in as a string.
 
+If you create a `sampler2D` texture uniform, Shdr will automatically create an associated resolution uniform for the asset. This will be of type `vec2` and will be the name of your uniform appended with the word "resolution." So, for example, if your uniform is named `u_image`, the corresponding uniform will be name `u_texture_resolution`.
+
+Here is a breakdown of how to initialize each type of variable:
+
 - Floats: `0.25`, `12`, or `"0.25"`
 - Ints: `"12"`
 - Vec2: `[0, 1]`
 - Vec3: `[0, 1, 1]`
 - Vec4: `[0, 1, 1, 0.5]`
 - Bool: `true` or `false`
-- sampler2D: `"/assets/dancer.(jpg|mp4|etc)"`, or `"webcam"`
+- sampler2D: `"/path/to/your/file.(jpg|mp4|etc)"`, or `"webcam"`
   - images: a string ending in ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".svg", ".tiff", or ".ico"
   - videos: a string ending in ".mp4", ".avi", ".mov", ".mkv", ".wmv", ".flv", ".webm", ".ts",
   - webcam: the keyword `"webcam"` ([read more](https://github.com/andy-stewart-design/shdr?tab=readme-ov-file#accessing-the-webcam))
@@ -162,30 +166,28 @@ const uniforms = {
 const gl = new GlslRenderer({ container, frag, uniforms });
 ```
 
-### Updating Uniforms
-
-Shdr is designed to work well with popular gui libraries like lil-gui and leva.
-
-```ts
-import GUI from "lil-gui";
-
-const uniforms = { speed: 0.25 };
-
-const gui = new GUI();
-const gl = new GlslRenderer({ container, frag, uniforms });
-
-gui.add(uniforms, "speed", 0, 1, 0.01).onChange((value: number) => {
-  gl.updateUniform("speed", value);
-});
+```glsl
+// default uniforms
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+// custom uniforms
+uniform float speed
+uniform float size
+uniform int dpi
+uniform vec2 position
+uniform vec3 colorRGB
+uniform vec4 colorRGBA
+uniform bool invert
+uniform sampler2D imageTxtr
+uniform sampler2D VideoTxtr
+uniform sampler2D webcam
 ```
-
-## Accessing the webcam
-
-TKTKTK
 
 ## Library Todo
 
 - Add a uniformCase option to renderer class
+- for sampler2D textures, change `u_texure_size` to `u_texture_resolution`
 - update name of default export to Shdr
 - test if all of the specified image files actually render a texture
 - test if all of the specified video files actually render a texture
