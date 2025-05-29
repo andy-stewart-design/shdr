@@ -11,7 +11,7 @@ uniform vec2 u_webcam_size;       // Webcam resolution in pixels
 uniform float u_dpi;              // Controls the density of the halftone pattern
 uniform int u_color_theme;        // Color mode (1=color, 2=grayscale, other=white)
 uniform float u_pattern_density;
-uniform int u_invert_pattern;     // Whether to invert the halftone pattern (0=normal, 1=inverted)
+uniform bool u_invert_pattern;     // Whether to invert the halftone pattern (0=normal, 1=inverted)
 
 void main() {
     // Convert fragment coordinate to normalized [0,1] UV space
@@ -52,7 +52,7 @@ void main() {
     // Apply smoothstep to create a soft-edged circle
     d1 = smoothstep(rad - blur, rad + blur, d1);
     // Apply pattern inversion if selected
-    d1 = u_invert_pattern == 1 ? d1 : (1. - d1);
+    d1 = u_invert_pattern ? d1 : (1. - d1);
 
     // Apply halftone pattern to the color
     vec3 color1 = vec3(1., 0., 0.);
@@ -68,7 +68,7 @@ void main() {
     // Apply smoothstep to create a soft-edged circle
     d2 = smoothstep(rad - blur, rad + blur, d2);
     // Apply pattern inversion if selected
-    d2 = u_invert_pattern == 1 ? d2 : (1. - d2);
+    d2 = u_invert_pattern ? d2 : (1. - d2);
 
     vec3 color2 = vec3(0., 1., 0.);
     color2 = color2 * d2;

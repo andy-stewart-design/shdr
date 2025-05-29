@@ -10,7 +10,7 @@ uniform vec2 u_texture_size;
 uniform float u_threshold;
 uniform float u_stepCount;
 uniform float u_offset;
-uniform int u_noise;
+uniform bool u_noise;
 uniform float u_noiseAmount;
 
 vec4 desaturate(vec4 color) {
@@ -52,7 +52,7 @@ void main() {
 
     vec4 texColor = texture2D(u_texture, adjustedUV);
     vec4 gray = desaturate(texColor);
-    float inColor = u_noise == 1 ? gray.r + rand(adjustedUV) * u_noiseAmount : gray.r;
+    float inColor = u_noise ? gray.r + rand(adjustedUV) * u_noiseAmount : gray.r;
     vec3 outRgb = vec3(threshold(inColor));
 
     gl_FragColor = vec4(outRgb, 1.);

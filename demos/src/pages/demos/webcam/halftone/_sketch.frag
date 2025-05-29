@@ -12,7 +12,7 @@ uniform float u_dpi;              // Controls the density of the halftone patter
 uniform int u_color_theme;        // Color mode (1=color, 2=grayscale, other=white)
 uniform float u_pattern_density;
 uniform float u_radius_modulation; // Controls how much the halftone pattern is affected by brightness
-uniform int u_invert_pattern;     // Whether to invert the halftone pattern (0=normal, 1=inverted)
+uniform bool u_invert_pattern;     // Whether to invert the halftone pattern (0=normal, 1=inverted)
 
 /**
  * Adjusts UV coordinates to maintain aspect ratio when mapping a texture to canvas
@@ -107,7 +107,7 @@ void main() {
     d = smoothstep(rad - blur, rad + blur, d);
 
     // Apply pattern inversion if selected
-    d = u_invert_pattern == 1 ? d : (1. - d);
+    d = u_invert_pattern ? d : (1. - d);
 
     // Apply halftone pattern to the color
     color = color * d;
