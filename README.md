@@ -37,14 +37,14 @@ Check out [some live demos](https://shdr.andystew.art/).
 
 The following options can be passed to a `GlslRenderer` when it is intialized:
 
-| Name          | Description                                                                                     |
-| ------------- | ----------------------------------------------------------------------------------------------- |
-| container     | The HTMLElement where the canvas should be appended                                             |
-| frag          | The fragment shader to be rendered                                                              |
-| vert          | The vertex shader to be rendered (By default, it’s a flat rectangle)                            |
-| uniforms      | Custom uniforms that should be passed to the fragment shader ([read more](https://TKTKTK.com/)) |
-| uniformPrefix | The prefix that should be appended to uniform names (default to "u\_")                          |
-| glVersion     | The OpenGl version to use (can be either 3 or 1, default to 3)                                  |
+| Name          | Description                                                                       |
+| ------------- | --------------------------------------------------------------------------------- |
+| container     | The HTMLElement where the canvas should be appended                               |
+| frag          | The fragment shader to be rendered                                                |
+| vert          | The vertex shader to be rendered (By default, it’s a flat rectangle)              |
+| uniforms      | Custom uniforms that should be passed to the fragment shader. More on that below. |
+| uniformPrefix | The prefix that should be appended to uniform names (default to "u\_")            |
+| glVersion     | The OpenGl version to use (can be either 3 or 1, default to 3)                    |
 
 ## Instance Properties
 
@@ -78,11 +78,11 @@ function togglePaused {
 
 ### updateUniform
 
-TKTKTK
+Used to update a uniform that was declared during initialization. [Read more](https://github.com/andy-stewart-design/shdr?tab=readme-ov-file#updating-uniforms).
 
 ### Destroy
 
-TKTKTK
+When using this library in the context of a frontend framework like React, Svelte, or Solid, call the destroy method when a component is unmounted to clean up resources associated with the program.
 
 ## Uniforms
 
@@ -95,12 +95,7 @@ By default, the fragment shader receives three custom uniforms:
 Any custom uniforms that you need access to during the life of your program can be added by passing a `uniforms` object during initialization. For each item in this object, the key will be the name of the uniform (minus the prefix) and the value will be value assigned to the uniform.
 
 ```ts
-const uniforms = {
-  texture: "/assets/dancer.jpg", // image texture
-  speed: 0.25, //float
-  dpi: "12", // int
-  color: [0, 0.5, 1], // vec3
-};
+const uniforms = { speed: 0.25 };
 
 const gl = new GlslRenderer({ container, frag, uniforms });
 ```
@@ -109,7 +104,7 @@ Importantly, you **should not** add a prefix to the keys in the unform object. I
 
 ### Uniform Types
 
-The types assigned to each uniform will be automatically inferred by the library. By default all numbers will be treated as floats. If you specifically need a number to be an interger instead, pass it in as a string.
+The types assigned to each uniform will be automatically inferred by the library. By default all numbers will be treated as floats. If you specifically need a number to be an integer instead, pass it in as a string.
 
 - Floats: `0.25`, `12`, or `"0.25"`
 - Ints: `"12"`
@@ -120,11 +115,37 @@ The types assigned to each uniform will be automatically inferred by the library
 - sampler2D: `"/assets/dancer.(jpg|mp4|etc)"`, or `"webcam"`
   - images: a string ending in ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".svg", ".tiff", or ".ico"
   - videos: a string ending in ".mp4", ".avi", ".mov", ".mkv", ".wmv", ".flv", ".webm", ".ts",
-  - webcam: the keyword `"webcam"` ([read more](https://TKTKTK.com/))
+  - webcam: the keyword `"webcam"` ([read more](https://github.com/andy-stewart-design/shdr?tab=readme-ov-file#accessing-the-webcam))
+
+```ts
+const uniforms = {
+  speed: 0.25, // float
+  size: "0.75", // also a float
+  dpi: "12", // int
+  color: [0, 0.5, 1], // vec3 float
+  invert: false,
+  texture: "/assets/dancer.jpg", // sampler2D (image)
+};
+
+const gl = new GlslRenderer({ container, frag, uniforms });
+```
 
 ### Updating Uniforms
 
-TKTKTK
+Shdr is designed to work well with popular gui libraries like lil-gui and leva.
+
+```ts
+import GUI from "lil-gui";
+
+const uniforms = { speed: 0.25 };
+
+const gui = new GUI();
+const gl = new GlslRenderer({ container, frag, uniforms });
+
+gui.add(uniforms, "speed", 0, 1, 0.01).onChange((value: number) => {
+  gl.updateUniform("speed", value);
+});
+```
 
 ## Accessing the webcam
 
@@ -132,7 +153,6 @@ TKTKTK
 
 ## Library Todo
 
-- Switch boolean uniforms to be actual booleans (rather than 1s and 0s)
 - Add a uniformCase option to renderer class
 - update name of default export to Shdr
 - test if all of the specified image files actually render a texture
