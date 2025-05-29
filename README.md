@@ -50,18 +50,19 @@ The following options can be passed to a `GlslRenderer` when it is intialized:
 
 ### Paused
 
-A readonly property that indicates the current play state of the renderer.
+A readonly property (boolean) that indicates the current play state of the renderer.
 
 ## Instance Methods
 
 ### Play
 
-Initiates or resumes playback of the shader. The function accepts one argument: a boolean, which defaults to true, that determines whether or not to create animation loop. However, if you would like to render the shader without creating a loop (for example, if you want to respect users’ motion preferences), pass false into the play function.
+Initiates or resumes playback of the shader. The function accepts one, optional argument: a boolean, which defaults to true, that determines whether or not to create an animation loop. However, if you would like to render the shader without creating a loop (for example, if you want to respect users’ motion preferences), pass false into the play function.
 
 ```ts
 const gl = new GlslRenderer({ container, frag });
+// will be true if the user has indicated that they prefer reduced motion
 const prefersReduced = window.matchMedia("(prefers-reduced-motion)").matches;
-// if the user prefers reduced motion, the animation will not loop
+// if the user prefers reduced motion, set "loop" argument to false
 gl.play(!prefersReduced);
 ```
 
@@ -78,11 +79,36 @@ function togglePaused {
 
 ### updateUniform
 
-Used to update a uniform that was declared during initialization. [Read more](https://github.com/andy-stewart-design/shdr?tab=readme-ov-file#updating-uniforms).
+Used to update any uniforms that were [declared during initialization](https://github.com/andy-stewart-design/shdr?tab=readme-ov-file#custom-uniforms). Shdr is designed to work well with popular gui libraries like lil-gui and leva, so you can use the same uniform object that you pass into your Shdr class to create your gui controls.
+
+The `updateUniform` method requires two arguments: a string indicating the name of the uniform you want to update (which should match the key in your uniform object) and the updated value (which must match the initial value of the uniform.)
+
+```ts
+import GUI from "lil-gui";
+
+const uniforms = { speed: 0.25 };
+
+const gui = new GUI();
+const gl = new GlslRenderer({ container, frag, uniforms });
+gl.play();
+
+gui.add(uniforms, "speed", 0, 1, 0.01).onChange((value: number) => {
+  gl.updateUniform("speed", value);
+});
+```
 
 ### Destroy
 
 When using this library in the context of a frontend framework like React, Svelte, or Solid, call the destroy method when a component is unmounted to clean up resources associated with the program.
+
+```ts
+useEffect(() => {
+  const gl = new GlslRenderer({ container, frag });
+  gl.play();
+
+  return () => gl.destroy();
+}, []);
+```
 
 ## Uniforms
 
@@ -91,6 +117,8 @@ By default, the fragment shader receives three custom uniforms:
 - **Time:** the current time (in seconds)
 - **Resolution:** the current resolution of the canvas (in pixels), which is responsive to changes in the size of the canvas
 - **Mouse:** the current position of the mouse (in pixels)
+
+### Custom Uniforms
 
 Any custom uniforms that you need access to during the life of your program can be added by passing a `uniforms` object during initialization. For each item in this object, the key will be the name of the uniform (minus the prefix) and the value will be value assigned to the uniform.
 
@@ -122,9 +150,13 @@ const uniforms = {
   speed: 0.25, // float
   size: "0.75", // also a float
   dpi: "12", // int
-  color: [0, 0.5, 1], // vec3 float
-  invert: false,
-  texture: "/assets/dancer.jpg", // sampler2D (image)
+  position: [0, 0.25], // vec2 float
+  colorRGB: [0, 0.5, 1], // vec3 float
+  colorRGBA: [0, 0.5, 1, 1], // vec4 float
+  invert: false, // bool
+  imageTxtr: "/assets/dancer.jpg", // sampler2D (image)
+  VideoTxtr: "/assets/dancer.mp4", // sampler2D (video)
+  webcam: "webcam", // sampler2D (webcam)
 };
 
 const gl = new GlslRenderer({ container, frag, uniforms });
