@@ -18,7 +18,7 @@ To render your first shader, create a new `GlslRenderer` instance, passing in a 
 import GlslRenderer from "shdr";
 
 const frag = `#version 300 es
-    precision highp float;
+    precision mediump float;
 
     out vec4 outColor;
 
@@ -37,20 +37,54 @@ Check out [some live demos](https://shdr.andystew.art/).
 
 The following options can be passed to a `GlslRenderer` when it is intialized:
 
-| Name          | Description                                                                                                                                                |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| container     | The HTMLElement where the canvas should be appended                                                                                                        |
-| frag          | The fragment shader to be rendered                                                                                                                         |
-| vert          | The vertex shader to be rendered (By default, it’s a flat rectangle)                                                                                       |
-| uniforms      | Custom uniforms that should be passed to the fragment shader ([Read more](https://github.com/andy-stewart-design/shdr?tab=readme-ov-file#custom-uniforms)) |
-| uniformPrefix | The prefix that should be appended to uniform names (default to "u\_")                                                                                     |
-| glVersion     | The OpenGl version to use (can be either 3 or 1, default to 3)                                                                                             |
+| Name          | Description                                                                                     |
+| ------------- | ----------------------------------------------------------------------------------------------- |
+| container     | The HTMLElement where the canvas should be appended                                             |
+| frag          | The fragment shader to be rendered                                                              |
+| vert          | The vertex shader to be rendered (By default, it’s a flat rectangle)                            |
+| uniforms      | Custom uniforms that should be passed to the fragment shader ([read more](https://TKTKTK.com/)) |
+| uniformPrefix | The prefix that should be appended to uniform names (default to "u\_")                          |
+| glVersion     | The OpenGl version to use (can be either 3 or 1, default to 3)                                  |
+
+## Instance Properties
+
+### Paused
+
+A readonly property that indicates the current play state of the renderer.
 
 ## Instance Methods
 
-TKTKTK (play, pause, updateUniform, destroy)
+### Play
 
-## Default/Custom Uniforms
+Initiates or resumes playback of the shader. The function accepts one argument: a boolean, which defaults to true, that determines whether or not to create animation loop. However, if you would like to render the shader without creating a loop (for example, if you want to respect users’ motion preferences), pass false into the play function.
+
+```ts
+const gl = new GlslRenderer({ container, frag });
+const prefersReduced = window.matchMedia("(prefers-reduced-motion)").matches;
+// if the user prefers reduced motion, the animation will not loop
+gl.play(!prefersReduced);
+```
+
+### Pause
+
+Pauses playback of the program. Can be used in conjunction with the `paused` property and `play` method to control playback.
+
+```ts
+function togglePaused {
+    if (gl.paused) gl.play();
+    else gl.pause();
+},
+```
+
+### updateUniform
+
+TKTKTK
+
+### Destroy
+
+TKTKTK
+
+## Uniforms
 
 By default, the fragment shader receives three custom uniforms:
 
@@ -62,7 +96,7 @@ Any custom uniforms that you need access to during the life of your program can 
 
 ```ts
 const uniforms = {
-  texture: "/dancer.jpg", // image texture
+  texture: "/assets/dancer.jpg", // image texture
   speed: 0.25, //float
   dpi: "12", // int
   color: [0, 0.5, 1], // vec3
@@ -71,7 +105,7 @@ const uniforms = {
 const gl = new GlslRenderer({ container, frag, uniforms });
 ```
 
-Importantly, you **should not** add a prefix to you unform names. Instead, that should be set during initialization using the `uniformPrefix` option, which defaults to "u\_".
+Importantly, you **should not** add a prefix to the keys in the unform object. Instead, you should set a `uniformPrefix` during initialization (defaults to "u\_"), which will be prepended to each uniform before being passed to the shader.
 
 ### Uniform Types
 
@@ -83,9 +117,10 @@ The types assigned to each uniform will be automatically inferred by the library
 - Vec3: `[0, 1, 1]`
 - Vec4: `[0, 1, 1, 0.5]`
 - Bool: `true` or `false`
-- sampler2D (images): a string ending in ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".svg", ".tiff", or ".ico"
-- sampler2D (videos): a string ending in ".mp4", ".avi", ".mov", ".mkv", ".wmv", ".flv", ".webm", ".ts",
-- sampler2D (webcam): the keyword `"webcam"` (read more)
+- sampler2D: `"/assets/dancer.(jpg|mp4|etc)"`, or `"webcam"`
+  - images: a string ending in ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".svg", ".tiff", or ".ico"
+  - videos: a string ending in ".mp4", ".avi", ".mov", ".mkv", ".wmv", ".flv", ".webm", ".ts",
+  - webcam: the keyword `"webcam"` ([read more](https://TKTKTK.com/))
 
 ### Updating Uniforms
 
