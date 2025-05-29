@@ -172,16 +172,16 @@ uniform vec2 u_resolution;
 uniform vec2 u_mouse;
 uniform float u_time;
 // custom uniforms
-uniform float speed
-uniform float size
-uniform int dpi
-uniform vec2 position
-uniform vec3 colorRGB
-uniform vec4 colorRGBA
-uniform bool invert
-uniform sampler2D imageTxtr
-uniform sampler2D VideoTxtr
-uniform sampler2D webcam
+uniform float u_speed
+uniform float u_size
+uniform int u_dpi
+uniform vec2 u_position
+uniform vec3 u_colorRGB
+uniform vec4 u_colorRGBA
+uniform bool u_invert
+uniform sampler2D u_imageTxtr
+uniform sampler2D u_VideoTxtr
+uniform sampler2D u_webcam
 ```
 
 ## Library Todo
