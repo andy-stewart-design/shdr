@@ -1,6 +1,8 @@
 # Shdr: a lil WebGL library
 
-Shdr is a small, zero-dependency shader renderer for the web, written in TypeScript. Get started by installing it with your package manager of choice:
+Shdr is a small, zero-dependency shader renderer for the web, written in TypeScript. Check out [some live demos](https://shdr.andystew.art/).
+
+To get started, install the library with your package manager of choice:
 
 ```bash
 npm install shdr
@@ -31,8 +33,6 @@ const gl = new GlslRenderer({ container, frag });
 gl.play();
 ```
 
-Check out [some live demos](https://shdr.andystew.art/).
-
 ## Instance Options
 
 The following options can be passed to a `GlslRenderer` when it is intialized:
@@ -54,7 +54,7 @@ A readonly property (boolean) that indicates the current play state of the rende
 
 ## Instance Methods
 
-### Play
+### GlslRenderer.play
 
 Initiates or resumes playback of the shader. The function accepts one, optional argument: a boolean, which defaults to true, that determines whether or not to create an animation loop. However, if you would like to render the shader without creating a loop (for example, if you want to respect users’ motion preferences), pass false into the play function.
 
@@ -66,7 +66,7 @@ const prefersReduced = window.matchMedia("(prefers-reduced-motion)").matches;
 gl.play(!prefersReduced);
 ```
 
-### Pause
+### GlslRenderer.pause
 
 Pauses playback of the program. Can be used in conjunction with the `paused` property and `play` method to control playback.
 
@@ -77,9 +77,9 @@ function togglePaused {
 },
 ```
 
-### updateUniform
+### GlslRenderer.updateUniform
 
-Used to update any uniforms that were [declared during initialization](https://github.com/andy-stewart-design/shdr?tab=readme-ov-file#custom-uniforms). Shdr is designed to work well with popular gui libraries like lil-gui and leva, so you can use the same uniform object that you pass into your Shdr class to create your gui controls.
+Used to update any uniforms that were [declared during initialization](https://github.com/andy-stewart-design/shdr?tab=readme-ov-file#adding-custom-uniforms). Shdr is designed to work well with popular gui libraries like lil-gui and leva, so you can use the same uniform object that you pass into your Shdr class to create your gui controls.
 
 The `updateUniform` method requires two arguments: a string indicating the name of the uniform you want to update (which should match the key in your uniform object) and the updated value (which must match the initial value of the uniform.)
 
@@ -97,7 +97,7 @@ gui.add(uniforms, "speed", 0, 1, 0.01).onChange((value: number) => {
 });
 ```
 
-### Destroy
+### GlslRenderer.destroy
 
 When using this library in the context of a frontend framework like React, Svelte, or Solid, call the destroy method when a component is unmounted to clean up resources associated with the program.
 
@@ -118,7 +118,7 @@ By default, the fragment shader receives three custom uniforms:
 - **Resolution:** the current resolution of the canvas (in pixels), which is responsive to changes in the size of the canvas
 - **Mouse:** the current position of the mouse (in pixels)
 
-### Custom Uniforms
+### Adding Custom Uniforms
 
 Any custom uniforms that you need access to during the life of your program can be added by passing a `uniforms` object during initialization. For each item in this object, the key will be the name of the uniform (minus the prefix) and the value will be value assigned to the uniform.
 
@@ -149,7 +149,10 @@ Here is a breakdown of how to initialize each type of variable:
   - videos: a string ending in ".mp4", ".avi", ".mov", ".mkv", ".wmv", ".flv", ".webm", ".ts",
   - webcam: the keyword `"webcam"` ([read more](https://github.com/andy-stewart-design/shdr?tab=readme-ov-file#accessing-the-webcam))
 
+And here is an example of working with each of these uniform types in practice, from initializing them in typescript to accessing them in glsl:
+
 ```ts
+// custom uniforms
 const uniforms = {
   speed: 0.25, // float
   size: "0.75", // also a float
@@ -171,6 +174,7 @@ const gl = new GlslRenderer({ container, frag, uniforms });
 uniform vec2 u_resolution;
 uniform vec2 u_mouse;
 uniform float u_time;
+
 // custom uniforms
 uniform float u_speed
 uniform float u_size
@@ -184,7 +188,7 @@ uniform sampler2D u_VideoTxtr
 uniform sampler2D u_webcam
 ```
 
-## Library Todo
+## Library Todos
 
 - Add a uniformCase option to renderer class
 - for sampler2D textures, change `u_texure_size` to `u_texture_resolution`
