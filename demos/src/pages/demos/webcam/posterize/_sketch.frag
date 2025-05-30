@@ -6,7 +6,7 @@ uniform vec2 u_resolution;
 uniform vec2 u_mouse;
 uniform float u_time;
 uniform sampler2D u_webcam;
-uniform vec2 u_webcam_size; // Added texture size uniform
+uniform vec2 u_webcam_resolution; // Added texture size uniform
 
 vec3 rgb2hsv(vec3 c) {
     vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
@@ -46,7 +46,7 @@ void main() {
     vec2 uv = gl_FragCoord.xy / u_resolution.xy;
 
     // Calculate aspect ratios
-    float texAspect = u_webcam_size.x / u_webcam_size.y;
+    float texAspect = u_webcam_resolution.x / u_webcam_resolution.y;
     float canvasAspect = u_resolution.x / u_resolution.y;
 
     // Adjust UVs to maintain aspect ratio (cover)

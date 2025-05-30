@@ -6,7 +6,7 @@ uniform vec2 u_resolution;
 uniform vec2 u_mouse;
 uniform float u_time;
 uniform sampler2D u_texture;
-uniform vec2 u_texture_size;
+uniform vec2 u_texture_resolution;
 
 vec2 cropImage(float imageAR, float containerAR, vec2 uv) {
     bool isLandscape = containerAR < imageAR;
@@ -21,7 +21,7 @@ void main() {
     vec2 uv = gl_FragCoord.xy / u_resolution.xy;
 
     // Calculate aspect ratios
-    float videoAR = u_texture_size.x / u_texture_size.y;
+    float videoAR = u_texture_resolution.x / u_texture_resolution.y;
     float canvasAR = u_resolution.x / u_resolution.y;
 
     // Adjust UVs to maintain aspect ratio (cover)

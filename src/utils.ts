@@ -100,7 +100,8 @@ function formatUniform(name: string, prefix: string, textCase: UniformCase) {
   if (textCase === "snake") {
     return `${prefix}_${name}`;
   } else {
-    return `${prefix}${name}`;
+    const ccName = name.charAt(0).toUpperCase() + name.slice(1);
+    return `${prefix}${ccName}`;
   }
 }
 

@@ -138,9 +138,9 @@ Importantly, you **should not** add a prefix to the keys in the unform object. I
 
 The types assigned to each uniform will be automatically inferred by the library. By default all numbers will be treated as floats. If you specifically need a number to be an integer instead, pass it in as a string.
 
-If you create a `sampler2D` texture uniform, Shdr will automatically create an associated resolution uniform for the asset. This will be of type `vec2` and will be the name of your uniform appended with the word "resolution." So, for example, if your uniform is named `u_image`, the corresponding uniform will be name `u_texture_resolution`.
+If you create a `sampler2D` texture uniform, Shdr will automatically create an associated resolution uniform for the asset. This will be of type `vec2` and will be the name of your uniform appended with the word "resolution." So, for example, if your uniform is named `u_image`, the corresponding uniform will be name `u_image_resolution`.
 
-Here is a breakdown of how to initialize each type of variable:
+Here is a quick overview of how to initialize each type of variable:
 
 - Floats: `0.25`, `12`, or `"0.25"`
 - Ints: `"12"`
@@ -188,8 +188,11 @@ uniform vec3 u_colorRGB
 uniform vec4 u_colorRGBA
 uniform bool u_invert
 uniform sampler2D u_imageTxtr
+uniform vec2 u_imageTxtr_resolution
 uniform sampler2D u_VideoTxtr
+uniform vec2 u_VideoTxtr_resolution
 uniform sampler2D u_webcam
+uniform vec2 u_webcam_resolution
 ```
 
 ## Library Todos

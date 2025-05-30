@@ -6,7 +6,7 @@ uniform vec2 u_resolution;
 uniform vec2 u_mouse;
 uniform float u_time;
 uniform sampler2D u_texture;
-uniform vec2 u_texture_size;
+uniform vec2 u_texture_resolution;
 uniform vec3 u_highColor;
 uniform vec3 u_lowColor;
 
@@ -38,7 +38,7 @@ void main() {
     vec2 uv = gl_FragCoord.xy / u_resolution.xy;
 
     // Calculate aspect ratios
-    float textureAR = u_texture_size.x / u_texture_size.y;
+    float textureAR = u_texture_resolution.x / u_texture_resolution.y;
     float canvasAR = u_resolution.x / u_resolution.y;
     vec2 adjustedUV = adjustUV(textureAR, canvasAR, uv);
 

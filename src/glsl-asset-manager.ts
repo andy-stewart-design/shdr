@@ -210,7 +210,9 @@ class GlslAssetManager {
       try {
         const texture = this.staticTextures.get(name);
         const sizeName =
-          this.uniformCase === "snake" ? `${name}_size` : `${name}Size`;
+          this.uniformCase === "snake"
+            ? `${name}_resolution`
+            : `${name}Resolution`;
         const sizeLocation = this.gl.getUniformLocation(this.program, sizeName);
 
         if (texture) {
@@ -266,7 +268,9 @@ class GlslAssetManager {
       try {
         const texture = this.dynamicTextures.get(name);
         const sizeName =
-          this.uniformCase === "snake" ? `${name}_size` : `${name}Size`;
+          this.uniformCase === "snake"
+            ? `${name}_resolution`
+            : `${name}Resolution`;
         const sizeLocation = this.gl.getUniformLocation(this.program, sizeName);
         this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
 

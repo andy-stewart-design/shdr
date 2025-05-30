@@ -7,7 +7,7 @@ uniform vec2 u_resolution;        // Canvas size in pixels
 uniform vec2 u_mouse;             // Mouse position in pixels
 uniform float u_time;             // Time in seconds since shader started
 uniform sampler2D u_webcam;       // Webcam texture sampler
-uniform vec2 u_webcam_size;       // Webcam resolution in pixels
+uniform vec2 u_webcam_resolution;       // Webcam resolution in pixels
 uniform float u_dpi;              // Controls the density of the halftone pattern
 uniform int u_color_theme;        // Color mode (1=color, 2=grayscale, other=white)
 uniform float u_pattern_density;
@@ -36,7 +36,7 @@ void main() {
     vec2 uv = gl_FragCoord.xy / u_resolution.xy;
 
     // Calculate aspect ratios for the webcam and canvas
-    float videoAR = u_webcam_size.x / u_webcam_size.y;  // Webcam aspect ratio
+    float videoAR = u_webcam_resolution.x / u_webcam_resolution.y;  // Webcam aspect ratio
     float canvasAR = u_resolution.x / u_resolution.y;    // Canvas aspect ratio
 
     // Adjust UVs to maintain proper aspect ratio using the "cover" approach
