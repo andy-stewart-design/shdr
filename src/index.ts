@@ -41,6 +41,7 @@ export default class GlslRenderer extends GlslCanvas {
 
     this.handleResize();
     this.addEventListeners();
+    setTimeout(() => console.log(this.uniforms), 1000);
   }
 
   private render(time: number, loop = true) {

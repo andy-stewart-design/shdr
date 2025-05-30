@@ -48,9 +48,13 @@ The following options can be passed to a `GlslRenderer` when it is intialized:
 
 ## Instance Properties
 
-### Paused
+### GlslRenderer.paused
 
 A readonly property (boolean) that indicates the current play state of the renderer.
+
+### GlslRenderer.uniforms
+
+TKTKTK
 
 ## Instance Methods
 
@@ -190,8 +194,9 @@ uniform sampler2D u_webcam
 
 ## Library Todos
 
-- Add a uniformCase option to renderer class
 - for sampler2D textures, change `u_texure_size` to `u_texture_resolution`
 - update name of default export to Shdr
-- test if all of the specified image files actually render a texture
-- test if all of the specified video files actually render a texture
+- test that uniformCase option works as intended
+- test if all of the specified image file types actually render a texture
+- test if all of the specified video file types actually render a texture
+- add tests
