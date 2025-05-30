@@ -1,40 +1,3 @@
-type UniformType = "float" | "int" | "vec2" | "vec3" | "vec4" | "bool" | "image" | "video" | "webcam";
-type UniformValue = number | number[] | boolean | string;
-interface UniformMap {
-    [key: string]: UniformValue;
-}
-
-interface WebGLUniform {
-    type: UniformType;
-    location: WebGLUniformLocation;
-}
-interface StaticTexture {
-    asset: WebGLTexture;
-    unit: number;
-}
-interface DynamicTexture extends StaticTexture {
-    video: HTMLVideoElement;
-}
-declare class GlslAssetManager {
-    readonly gl: WebGL2RenderingContext;
-    readonly program: WebGLProgram;
-    readonly uniforms: Map<string, WebGLUniform>;
-    readonly staticTextures: Map<string, StaticTexture>;
-    readonly dynamicTextures: Map<string, DynamicTexture>;
-    readonly uniformPrefix: string;
-    constructor(gl: WebGL2RenderingContext, program: WebGLProgram, initialUniforms: UniformMap, uniformPrefix: string);
-    private initializeDefaultUniforms;
-    private initializeCustomUniforms;
-    setUniformValue(_name: string, value: UniformValue): void;
-    private getTextureUnit;
-    private getUniformLocation;
-    private initializeTexture;
-    private loadStaticTexture;
-    private loadDynamicTexture;
-    renderDynamicTextures(): void;
-    destroy(): void;
-}
-
 declare class GlslCanvas {
     readonly container: HTMLElement;
     readonly canvas: HTMLCanvasElement;
@@ -48,11 +11,19 @@ declare class GlslCanvas {
     destroy(): void;
 }
 
+type UniformValue = number | number[] | boolean | string;
+interface UniformMap {
+    [key: string]: UniformValue;
+}
+
+type UniformCase = "snake" | "camel";
+
 interface GlslRendererConstructorProps {
     container: HTMLElement;
     frag?: string;
     uniforms?: UniformMap;
     uniformPrefix?: string;
+    uniformCase?: UniformCase;
     glVersion?: 1 | 3;
 }
 declare class GlslRenderer extends GlslCanvas {
@@ -63,8 +34,8 @@ declare class GlslRenderer extends GlslCanvas {
     private pauseStartTime;
     private lastRenderTime;
     private totalPausedTime;
-    readonly assets: GlslAssetManager;
-    constructor({ container, frag, uniforms, uniformPrefix, glVersion, }: GlslRendererConstructorProps);
+    private assets;
+    constructor({ container, frag, uniforms, uniformPrefix, uniformCase, glVersion, }: GlslRendererConstructorProps);
     private render;
     private handleResize;
     private addEventListeners;
@@ -73,6 +44,7 @@ declare class GlslRenderer extends GlslCanvas {
     updateUniform(name: string, value: UniformValue): void;
     destroy(): void;
     get paused(): boolean;
+    get uniforms(): any;
 }
 
 export { GlslRenderer as default };

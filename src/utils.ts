@@ -94,4 +94,21 @@ function setUniformWarning(name: string, type: string) {
   return `[GLSL.TS]: Couldn't update ${name}, value must be a ${type}`;
 }
 
-export { getContext, updateTexture, setTextureParams, getUniformType };
+type UniformCase = "snake" | "camel";
+
+function formatUniform(name: string, prefix: string, textCase: UniformCase) {
+  if (textCase === "snake") {
+    return `${prefix}_${name}`;
+  } else {
+    return `${prefix}${name}`;
+  }
+}
+
+export {
+  getContext,
+  updateTexture,
+  setTextureParams,
+  getUniformType,
+  formatUniform,
+  type UniformCase,
+};

@@ -1,13 +1,14 @@
 import GlslAssetManager from "./glsl-asset-manager";
 import GlslCanvas, { DEFAULT_VERTICES } from "./glsl-canvas";
 import type { UniformValue, UniformMap } from "./types";
-import { getUniformType } from "./utils";
+import { getUniformType, type UniformCase } from "./utils";
 
 interface GlslRendererConstructorProps {
   container: HTMLElement;
   frag?: string;
   uniforms?: UniformMap;
   uniformPrefix?: string;
+  uniformCase?: UniformCase;
   glVersion?: 1 | 3;
 }
 
@@ -19,13 +20,14 @@ export default class GlslRenderer extends GlslCanvas {
   private pauseStartTime: number | null = null;
   private lastRenderTime: number = 0;
   private totalPausedTime: number = 0;
-  readonly assets: GlslAssetManager;
+  private assets: GlslAssetManager;
 
   constructor({
     container,
     frag,
     uniforms = {},
-    uniformPrefix = "u_",
+    uniformPrefix = "u",
+    uniformCase = "snake",
     glVersion = 3,
   }: GlslRendererConstructorProps) {
     super(container, glVersion, frag);
@@ -33,7 +35,8 @@ export default class GlslRenderer extends GlslCanvas {
       this.gl,
       this.program,
       uniforms,
-      uniformPrefix
+      uniformPrefix,
+      uniformCase
     );
 
     this.handleResize();
@@ -48,16 +51,14 @@ export default class GlslRenderer extends GlslCanvas {
     this.lastRenderTime = time;
 
     // Pass uniforms
-    const uTime = this.assets.uniforms.get(`${this.assets.uniformPrefix}time`);
+    const uTime = this.assets.uniforms.get(this.assets.formatUniform("time"));
     if (uTime) {
       // Calculate elapsed time with pause compensation
       const adjustedTimestamp = time - this.totalPausedTime;
       const elapsedTime = adjustedTimestamp - this.startTime;
       this.gl.uniform1f(uTime.location, elapsedTime * 0.001); // Time in seconds
     }
-    const uMouse = this.assets.uniforms.get(
-      `${this.assets.uniformPrefix}mouse`
-    );
+    const uMouse = this.assets.uniforms.get(this.assets.formatUniform("mouse"));
     if (uMouse) {
       this.gl.uniform2f(uMouse.location, this.mousePos[0], this.mousePos[1]);
     }
@@ -76,19 +77,18 @@ export default class GlslRenderer extends GlslCanvas {
   private handleResize() {
     super.resizeCanvas();
 
-    const uRes =
-      this.assets.uniforms.get(`${this.assets.uniformPrefix}resolution`) ??
-      null;
+    const resName = this.assets.formatUniform("resolution");
+    const resUnif = this.assets.uniforms.get(resName) ?? null;
 
-    if (!uRes) {
+    if (!resUnif) {
       console.warn(
-        `Could not find resolution uniform (${this.assets.uniformPrefix}resolution) location when resizing canvas`
+        `Could not find resolution uniform (${resName}) location when resizing canvas`
       );
       return;
     }
 
     this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-    this.gl.uniform2f(uRes.location, this.canvas.width, this.canvas.height);
+    this.gl.uniform2f(resUnif.location, this.canvas.width, this.canvas.height);
 
     this.render(this.lastRenderTime, false);
   }
@@ -122,8 +122,6 @@ export default class GlslRenderer extends GlslCanvas {
 
   public play(loop = true) {
     if (!this.paused) return;
-
-    console.log(this.pauseStartTime);
 
     if (this.pauseStartTime !== null) {
       this.totalPausedTime += performance.now() - this.pauseStartTime;
@@ -183,5 +181,30 @@ export default class GlslRenderer extends GlslCanvas {
 
   get paused() {
     return this.rafId === null;
+  }
+
+  get uniforms() {
+    const _uniformData = Object.fromEntries(this.assets.uniforms);
+    const uniformData = Object.entries(_uniformData);
+    const uniformValuesArray = uniformData.map(([name, { location, type }]) => {
+      switch (type) {
+        case "vec2":
+        case "vec3":
+        case "vec4":
+          const vecValue = this.gl.getUniform(this.program, location);
+          return [name, Array.from(vecValue)];
+        case "image":
+          const imgValue = this.assets.staticTextures.get(name);
+          return [name, imgValue?.asset];
+        case "video":
+        case "webcam":
+          const vidValue = this.assets.dynamicTextures.get(name);
+          return [name, vidValue?.asset];
+        default:
+          const value = this.gl.getUniform(this.program, location);
+          return [name, value];
+      }
+    });
+    return Object.fromEntries(uniformValuesArray);
   }
 }

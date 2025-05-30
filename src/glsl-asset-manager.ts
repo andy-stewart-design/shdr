@@ -1,4 +1,10 @@
-import { getUniformType, setTextureParams, updateTexture } from "./utils";
+import {
+  getUniformType,
+  setTextureParams,
+  updateTexture,
+  formatUniform,
+  type UniformCase,
+} from "./utils";
 import type { UniformType, UniformValue, UniformMap } from "./types";
 import {
   isBool,
@@ -30,17 +36,20 @@ class GlslAssetManager {
   readonly uniforms: Map<string, WebGLUniform> = new Map();
   readonly staticTextures: Map<string, StaticTexture> = new Map();
   readonly dynamicTextures: Map<string, DynamicTexture> = new Map();
-  readonly uniformPrefix: string = "u_";
+  readonly uniformPrefix: string = "u";
+  readonly uniformCase: UniformCase = "snake";
 
   constructor(
     gl: WebGL2RenderingContext,
     program: WebGLProgram,
     initialUniforms: UniformMap,
-    uniformPrefix: string
+    uniformPrefix: string,
+    uniformCase: UniformCase
   ) {
     this.gl = gl;
     this.program = program;
     this.uniformPrefix = uniformPrefix;
+    this.uniformCase = uniformCase;
 
     this.initializeDefaultUniforms();
     this.initializeCustomUniforms(initialUniforms);
@@ -49,46 +58,29 @@ class GlslAssetManager {
   // UNIFORM METHODS ----------------------------------------------------
 
   private initializeDefaultUniforms() {
-    const uTime = this.gl.getUniformLocation(
-      this.program,
-      `${this.uniformPrefix}time`
-    );
-    if (uTime) {
-      this.uniforms.set(`${this.uniformPrefix}time`, {
-        type: "float",
-        location: uTime,
-      });
+    const timeName = this.formatUniform("time");
+    const timeLocation = this.gl.getUniformLocation(this.program, timeName);
+    if (timeLocation) {
+      this.uniforms.set(timeName, { type: "float", location: timeLocation });
     }
 
-    const uRes = this.gl.getUniformLocation(
-      this.program,
-      `${this.uniformPrefix}resolution`
-    );
-    if (uRes) {
-      this.uniforms.set(`${this.uniformPrefix}resolution`, {
-        type: "vec2",
-        location: uRes,
-      });
+    const resName = this.formatUniform("resolution");
+    const resLocation = this.gl.getUniformLocation(this.program, resName);
+    if (resLocation) {
+      this.uniforms.set(resName, { type: "vec2", location: resLocation });
     }
 
-    const uMouse = this.gl.getUniformLocation(
-      this.program,
-      `${this.uniformPrefix}mouse`
-    );
-    if (uMouse) {
-      this.uniforms.set(`${this.uniformPrefix}mouse`, {
-        type: "vec2",
-        location: uMouse,
-      });
+    const mouseName = this.formatUniform("mouse");
+    const mouseLocation = this.gl.getUniformLocation(this.program, mouseName);
+    if (mouseLocation) {
+      this.uniforms.set(mouseName, { type: "vec2", location: mouseLocation });
     }
   }
 
   private initializeCustomUniforms(uniforms: UniformMap) {
-    for (const [name, val] of Object.entries(uniforms)) {
-      const location = this.gl.getUniformLocation(
-        this.program,
-        `${this.uniformPrefix}${name}`
-      );
+    for (const [_name, val] of Object.entries(uniforms)) {
+      const name = this.formatUniform(_name);
+      const location = this.gl.getUniformLocation(this.program, name);
       if (!location) {
         console.warn(
           `[GLSL.TS]: couldn't init uniform (${name}). Most likely, it was not used in shader and was optimized out.`
@@ -104,19 +96,18 @@ class GlslAssetManager {
       }
 
       this.uniforms.set(name, { type: inferred.type, location });
-
-      this.setUniformValue(name, inferred.value);
+      this.setUniformValue(_name, inferred.value);
     }
   }
 
   public setUniformValue(_name: string, value: UniformValue) {
-    const uni = this.uniforms.get(_name);
+    const name = this.formatUniform(_name);
+    const uni = this.uniforms.get(name);
+
     if (!uni) {
       console.warn(`[GLSL.TS]: uniform ${_name} not found`);
       return;
     }
-
-    const name = `${this.uniformPrefix}${_name}`;
 
     const { type, location } = uni;
 
@@ -168,6 +159,10 @@ class GlslAssetManager {
       default:
         console.warn(`Unsupported uniform type for ${name}`);
     }
+  }
+
+  public formatUniform(name: string) {
+    return formatUniform(name, this.uniformPrefix, this.uniformCase);
   }
 
   // TEXTURE METHODS ----------------------------------------------------
