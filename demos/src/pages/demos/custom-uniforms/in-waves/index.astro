@@ -5,7 +5,7 @@ import sourceCode from "./_sketch.frag?raw";
 ---
 
 <script>
-  import GlslRenderer from "@glsl-ts";
+  import Shdr from "@shdr";
   import frag from "./_sketch.frag?raw";
   import { createGui } from "@/utils/create-gui";
 
@@ -16,7 +16,7 @@ import sourceCode from "./_sketch.frag?raw";
     wavelength: 1.5,
   };
 
-  const gl = new GlslRenderer({ container, frag, uniforms });
+  const gl = new Shdr({ container, frag, uniforms });
   gl.play();
 
   createGui({

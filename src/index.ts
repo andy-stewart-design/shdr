@@ -3,7 +3,7 @@ import GlslCanvas, { DEFAULT_VERTICES } from "./glsl-canvas";
 import type { UniformValue, UniformMap } from "./types";
 import { getUniformType, type UniformCase } from "./utils";
 
-interface GlslRendererConstructorProps {
+interface ShdrConstructorProps {
   container: HTMLElement;
   frag?: string;
   uniforms?: UniformMap;
@@ -12,7 +12,7 @@ interface GlslRendererConstructorProps {
   glVersion?: 1 | 3;
 }
 
-export default class GlslRenderer extends GlslCanvas {
+export default class Shdr extends GlslCanvas {
   private mousePos = [0, 0];
   private controller = new AbortController();
   private rafId: number | null = null;
@@ -29,7 +29,7 @@ export default class GlslRenderer extends GlslCanvas {
     uniformPrefix = "u",
     uniformCase = "snake",
     glVersion = 3,
-  }: GlslRendererConstructorProps) {
+  }: ShdrConstructorProps) {
     super(container, glVersion, frag);
     this.assets = new GlslAssetManager(
       this.gl,

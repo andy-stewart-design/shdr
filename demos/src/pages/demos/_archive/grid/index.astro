@@ -3,7 +3,7 @@ import Layout from "@/layouts/Layout.astro";
 ---
 
 <script>
-  import GlslRenderer from "@glsl-ts";
+  import Shdr from "@shdr";
   import frag from "./_sketch.frag?raw";
   import GUI from "lil-gui";
 
@@ -13,7 +13,7 @@ import Layout from "@/layouts/Layout.astro";
   };
 
   // Initialize custom uniforms
-  const gl = new GlslRenderer({ container, frag, uniforms, glVersion: 1 });
+  const gl = new Shdr({ container, frag, uniforms, glVersion: 1 });
   gl.play();
 
   // Update custom uniforms

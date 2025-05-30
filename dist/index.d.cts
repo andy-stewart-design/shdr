@@ -18,7 +18,7 @@ interface UniformMap {
 
 type UniformCase = "snake" | "camel";
 
-interface GlslRendererConstructorProps {
+interface ShdrConstructorProps {
     container: HTMLElement;
     frag?: string;
     uniforms?: UniformMap;
@@ -26,7 +26,7 @@ interface GlslRendererConstructorProps {
     uniformCase?: UniformCase;
     glVersion?: 1 | 3;
 }
-declare class GlslRenderer extends GlslCanvas {
+declare class Shdr extends GlslCanvas {
     private mousePos;
     private controller;
     private rafId;
@@ -35,7 +35,7 @@ declare class GlslRenderer extends GlslCanvas {
     private lastRenderTime;
     private totalPausedTime;
     private assets;
-    constructor({ container, frag, uniforms, uniformPrefix, uniformCase, glVersion, }: GlslRendererConstructorProps);
+    constructor({ container, frag, uniforms, uniformPrefix, uniformCase, glVersion, }: ShdrConstructorProps);
     private render;
     private handleResize;
     private addEventListeners;
@@ -47,4 +47,4 @@ declare class GlslRenderer extends GlslCanvas {
     get uniforms(): any;
 }
 
-export { GlslRenderer as default };
+export { Shdr as default };

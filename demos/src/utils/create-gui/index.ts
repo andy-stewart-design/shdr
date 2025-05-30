@@ -1,5 +1,5 @@
 import GUI from "lil-gui";
-import GlslRenderer from "@glsl-ts";
+import Shdr from "@shdr";
 
 interface CreateGuiArgs {
   gl?: GlslRenderer;

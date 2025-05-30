@@ -29,7 +29,7 @@ const frag = `#version 300 es
     }`;
 
 const container = document.querySelector("#container") as HTMLElement;
-const gl = new GlslRenderer({ container, frag });
+const gl = new Shdr({ container, frag });
 gl.play();
 ```
 
@@ -63,7 +63,7 @@ TKTKTK
 Initiates or resumes playback of the shader. The function accepts one, optional argument: a boolean, which defaults to true, that determines whether or not to create an animation loop. However, if you would like to render the shader without creating a loop (for example, if you want to respect users’ motion preferences), pass false into the play function.
 
 ```ts
-const gl = new GlslRenderer({ container, frag });
+const gl = new Shdr({ container, frag });
 // will be true if the user has indicated that they prefer reduced motion
 const prefersReduced = window.matchMedia("(prefers-reduced-motion)").matches;
 // if the user prefers reduced motion, set "loop" argument to false
@@ -93,7 +93,7 @@ import GUI from "lil-gui";
 const uniforms = { speed: 0.25 };
 
 const gui = new GUI();
-const gl = new GlslRenderer({ container, frag, uniforms });
+const gl = new Shdr({ container, frag, uniforms });
 gl.play();
 
 gui.add(uniforms, "speed", 0, 1, 0.01).onChange((value: number) => {
@@ -107,7 +107,7 @@ When using this library in the context of a frontend framework like React, Svelt
 
 ```ts
 useEffect(() => {
-  const gl = new GlslRenderer({ container, frag });
+  const gl = new Shdr({ container, frag });
   gl.play();
 
   return () => gl.destroy();
@@ -129,7 +129,7 @@ Any custom uniforms that you need access to during the life of your program can 
 ```ts
 const uniforms = { speed: 0.25 };
 
-const gl = new GlslRenderer({ container, frag, uniforms });
+const gl = new Shdr({ container, frag, uniforms });
 ```
 
 Importantly, you **should not** add a prefix to the keys in the unform object. Instead, you should set a `uniformPrefix` during initialization (defaults to "u\_"), which will be prepended to each uniform before being passed to the shader.
@@ -170,7 +170,7 @@ const uniforms = {
   webcam: "webcam", // sampler2D (webcam)
 };
 
-const gl = new GlslRenderer({ container, frag, uniforms });
+const gl = new Shdr({ container, frag, uniforms });
 ```
 
 ```glsl
@@ -197,7 +197,6 @@ uniform vec2 u_webcam_resolution
 
 ## Library Todos
 
-- for sampler2D textures, change `u_texure_size` to `u_texture_resolution`
 - update name of default export to Shdr
 - test that uniformCase option works as intended
 - test if all of the specified image file types actually render a texture

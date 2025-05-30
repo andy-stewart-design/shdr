@@ -5,14 +5,14 @@ import sourceCode from "./_sketch.frag?raw";
 ---
 
 <script>
-  import GlslRenderer from "@glsl-ts";
+  import Shdr from "@shdr";
   import frag from "./_sketch.frag?raw";
 
   import { createGui } from "@/utils/create-gui";
 
   const container = document.querySelector("#wrapper") as HTMLElement;
 
-  const gl = new GlslRenderer({ container, frag });
+  const gl = new Shdr({ container, frag });
   gl.play();
   createGui({ gl, dialogClass: "code-dialog" });
 </script>

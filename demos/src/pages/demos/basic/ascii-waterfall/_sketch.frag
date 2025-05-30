@@ -7,7 +7,7 @@ uniform vec2 u_resolution;     // Canvas resolution (width, height) in pixels
 uniform vec2 u_mouse;          // Mouse position (x, y) in pixels
 uniform float u_time;          // Time in seconds since the shader started running
 uniform sampler2D u_texture;   // Ascii sprite sheet
-uniform vec2 u_texture_size;   // Ascii sprite sheet size
+uniform vec2 u_texture_resolution;   // Ascii sprite sheet size
 
 /**
  * Function to adjust UV coordinates to maintain aspect ratio when displaying an image
@@ -43,7 +43,7 @@ void main() {
     vec2 uv = gl_FragCoord.xy / u_resolution.xy;
 
     // Calculate aspect ratios for the input texture and the canvas
-    float videoAR = u_texture_size.x / u_texture_size.y;
+    float videoAR = u_texture_resolution.x / u_texture_resolution.y;
     float canvasAR = u_resolution.x / u_resolution.y;
 
     // Adjust UVs to crop the image while maintaining aspect ratio

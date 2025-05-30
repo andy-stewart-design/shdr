@@ -5,7 +5,7 @@ import sourceCode from "./_sketch.frag?raw";
 ---
 
 <script>
-  import GlslRenderer from "@glsl-ts";
+  import Shdr from "@shdr";
   import frag from "./_sketch.frag?raw";
   import { createGui } from "@/utils/create-gui";
 
@@ -18,7 +18,7 @@ import sourceCode from "./_sketch.frag?raw";
   };
 
   // Initialize custom uniforms
-  const gl = new GlslRenderer({ container, frag, uniforms, glVersion: 3 });
+  const gl = new Shdr({ container, frag, uniforms, glVersion: 3 });
   gl.play();
 
   createGui({
