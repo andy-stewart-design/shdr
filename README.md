@@ -10,14 +10,14 @@ pnpm add shdr
 yarn add shdr
 ```
 
-To render your first shader, create a new `GlslRenderer` instance, passing in a reference to a fragment shader and a container (HTMLElement) in which to append the HTML canvas. You can set the size of the canvas by styling your container element with CSS—the generated canvas will automatically conform to the size its container.
+To render your first shader, create a new `Shdr` instance, passing in a reference to a fragment shader and a container (HTMLElement) in which to append the HTML canvas. You can set the size of the canvas by styling your container element with CSS—the generated canvas will automatically conform to the size its container.
 
 ```html
 <section id="container" style="width: 100vw; height: 100svh;"></section>
 ```
 
 ```ts
-import GlslRenderer from "shdr";
+import Shdr from "shdr";
 
 const frag = `#version 300 es
     precision mediump float;
@@ -29,13 +29,13 @@ const frag = `#version 300 es
     }`;
 
 const container = document.querySelector("#container") as HTMLElement;
-const gl = new Shdr({ container, frag });
-gl.play();
+const shdr = new Shdr({ container, frag });
+shdr.play();
 ```
 
 ## Instance Options
 
-The following options can be passed to a `GlslRenderer` when it is intialized:
+The following options can be passed to a `Shdr` when it is intialized:
 
 | Name          | Description                                                                       |
 | ------------- | --------------------------------------------------------------------------------- |
@@ -48,29 +48,29 @@ The following options can be passed to a `GlslRenderer` when it is intialized:
 
 ## Instance Properties
 
-### GlslRenderer.paused
+### Shdr.paused
 
 A readonly property (boolean) that indicates the current play state of the renderer.
 
-### GlslRenderer.uniforms
+### Shdr.uniforms
 
 TKTKTK
 
 ## Instance Methods
 
-### GlslRenderer.play
+### Shdr.play
 
 Initiates or resumes playback of the shader. The function accepts one, optional argument: a boolean, which defaults to true, that determines whether or not to create an animation loop. However, if you would like to render the shader without creating a loop (for example, if you want to respect users’ motion preferences), pass false into the play function.
 
 ```ts
-const gl = new Shdr({ container, frag });
+const shdr = new Shdr({ container, frag });
 // will be true if the user has indicated that they prefer reduced motion
 const prefersReduced = window.matchMedia("(prefers-reduced-motion)").matches;
 // if the user prefers reduced motion, set "loop" argument to false
-gl.play(!prefersReduced);
+shdr.play(!prefersReduced);
 ```
 
-### GlslRenderer.pause
+### Shdr.pause
 
 Pauses playback of the program. Can be used in conjunction with the `paused` property and `play` method to control playback.
 
@@ -81,7 +81,7 @@ function togglePaused {
 },
 ```
 
-### GlslRenderer.updateUniform
+### Shdr.updateUniform
 
 Used to update any uniforms that were [declared during initialization](https://github.com/andy-stewart-design/shdr?tab=readme-ov-file#adding-custom-uniforms). Shdr is designed to work well with popular gui libraries like lil-gui and leva, so you can use the same uniform object that you pass into your Shdr class to create your gui controls.
 
@@ -101,7 +101,7 @@ gui.add(uniforms, "speed", 0, 1, 0.01).onChange((value: number) => {
 });
 ```
 
-### GlslRenderer.destroy
+### Shdr.destroy
 
 When using this library in the context of a frontend framework like React, Svelte, or Solid, call the destroy method when a component is unmounted to clean up resources associated with the program.
 
