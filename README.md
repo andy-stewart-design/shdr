@@ -197,6 +197,4 @@ uniform vec2 u_webcam_resolution
 
 ## Library Todos
 
-- test if all of the specified image file types actually render a texture
-- test if all of the specified video file types actually render a texture
 - add vitest tests
