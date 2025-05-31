@@ -149,8 +149,8 @@ Here is a quick overview of how to initialize each type of variable:
 - Vec4: `[0, 1, 1, 0.5]`
 - Bool: `true` or `false`
 - sampler2D: `"/path/to/your/file.(jpg|mp4|etc)"`, or `"webcam"`
-  - images: a string ending in ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".svg", ".tiff", or ".ico"
-  - videos: a string ending in ".mp4", ".avi", ".mov", ".mkv", ".wmv", ".flv", ".webm", ".ts",
+  - images: a string ending in ".jpg", ".jpeg", ".png", ".webp", or "avif"
+  - videos: a string ending in ".mp4", ".webm", or ".mov"
   - webcam: the keyword `"webcam"` ([read more](https://github.com/andy-stewart-design/shdr?tab=readme-ov-file#accessing-the-webcam))
 
 And here is an example of working with each of these uniform types in practice, from initializing them in typescript to accessing them in glsl:
@@ -197,8 +197,6 @@ uniform vec2 u_webcam_resolution
 
 ## Library Todos
 
-- update name of default export to Shdr
-- test that uniformCase option works as intended
 - test if all of the specified image file types actually render a texture
 - test if all of the specified video file types actually render a texture
-- add tests
+- add vitest tests

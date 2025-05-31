@@ -3,6 +3,7 @@ import {
   setTextureParams,
   updateTexture,
   formatUniform,
+  setUniformWarning,
   type UniformCase,
 } from "./utils";
 import type { UniformType, UniformValue, UniformMap } from "./types";
@@ -14,7 +15,6 @@ import {
   isVec3,
   isVec4,
 } from "./validators";
-import { setUniformWarning } from "./warn";
 
 interface WebGLUniform {
   type: UniformType;
@@ -198,9 +198,18 @@ class GlslAssetManager {
 
   private loadStaticTexture(name: string, url: string) {
     const [texture, textureUnit] = this.initializeTexture(name);
+    const sizeName =
+      this.uniformCase === "snake" ? `${name}_resolution` : `${name}Resolution`;
+    const sizeLocation = this.gl.getUniformLocation(this.program, sizeName);
 
     // Track the texture
     this.staticTextures.set(name, { asset: texture, unit: textureUnit });
+    if (sizeLocation) {
+      this.uniforms.set(sizeName, {
+        type: "vec2",
+        location: sizeLocation,
+      });
+    }
 
     // Load the image
     const image = new Image();
@@ -209,11 +218,6 @@ class GlslAssetManager {
     image.onload = () => {
       try {
         const texture = this.staticTextures.get(name);
-        const sizeName =
-          this.uniformCase === "snake"
-            ? `${name}_resolution`
-            : `${name}Resolution`;
-        const sizeLocation = this.gl.getUniformLocation(this.program, sizeName);
 
         if (texture) {
           if (sizeLocation) {
@@ -259,6 +263,18 @@ class GlslAssetManager {
 
     video.onloadeddata = () => {
       const [asset, unit] = this.initializeTexture(name);
+      const sizeName =
+        this.uniformCase === "snake"
+          ? `${name}_resolution`
+          : `${name}Resolution`;
+      const sizeLocation = this.gl.getUniformLocation(this.program, sizeName);
+
+      if (sizeLocation) {
+        this.uniforms.set(sizeName, {
+          type: "vec2",
+          location: sizeLocation,
+        });
+      }
 
       // Track the texture
       this.dynamicTextures.set(name, { video, asset, unit });
@@ -267,11 +283,6 @@ class GlslAssetManager {
 
       try {
         const texture = this.dynamicTextures.get(name);
-        const sizeName =
-          this.uniformCase === "snake"
-            ? `${name}_resolution`
-            : `${name}Resolution`;
-        const sizeLocation = this.gl.getUniformLocation(this.program, sizeName);
         this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
 
         if (texture) {

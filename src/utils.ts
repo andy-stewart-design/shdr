@@ -111,5 +111,6 @@ export {
   setTextureParams,
   getUniformType,
   formatUniform,
+  setUniformWarning,
   type UniformCase,
 };
