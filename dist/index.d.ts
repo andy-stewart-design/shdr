@@ -29,6 +29,7 @@ interface ShdrConstructorProps {
 declare class Shdr extends GlslCanvas {
     private mousePos;
     private controller;
+    private resizeObserver;
     private rafId;
     private startTime;
     private pauseStartTime;

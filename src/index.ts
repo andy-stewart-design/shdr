@@ -15,6 +15,7 @@ interface ShdrConstructorProps {
 export default class Shdr extends GlslCanvas {
   private mousePos = [0, 0];
   private controller = new AbortController();
+  private resizeObserver: ResizeObserver | null = null;
   private rafId: number | null = null;
   private startTime: number | null = null;
   private pauseStartTime: number | null = null;
@@ -117,7 +118,11 @@ export default class Shdr extends GlslCanvas {
       { signal }
     );
 
-    window.addEventListener("resize", () => this.handleResize(), { signal });
+    // window.addEventListener("resize", () => this.handleResize(), { signal });
+    this.resizeObserver = new ResizeObserver(() => {
+      this.handleResize();
+    });
+    this.resizeObserver.observe(this.container);
   }
 
   public play(loop = true) {
@@ -177,6 +182,8 @@ export default class Shdr extends GlslCanvas {
     super.destroy();
     this.assets.destroy();
     this.controller.abort();
+    this.resizeObserver?.unobserve(this.container);
+    this.resizeObserver?.disconnect();
   }
 
   get paused() {
