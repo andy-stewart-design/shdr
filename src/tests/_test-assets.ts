@@ -27,15 +27,20 @@ const customUniformFrag = `#version 300 es
     uniform vec2 u_resolution;
     uniform vec2 u_mouse;
     uniform float u_test;
+    uniform float u_my_float;
+    uniform vec2 u_my_vector;
+    uniform sampler2D u_my_texture;
+    uniform vec2 u_my_texture_resolution;
 
     out vec4 outColor;
 
     void main() {
       vec2 st = gl_FragCoord.xy / u_resolution;
       vec2 mouse = u_mouse / u_resolution;
+      vec4 texColor = texture(u_my_texture, st);
 
       // Distance from the mouse
-      float dist = distance(st, mouse) * u_test;
+      float dist = distance(st, mouse) * u_test * u_my_float * u_my_vector.x * texColor.a * max(u_my_texture_resolution.x, 1.0);
       
       // Color based on time and distance
       vec3 color = vec3(0.5 + 0.5 * cos(u_time + dist * 10.0), dist, st.x);

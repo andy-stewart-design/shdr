@@ -197,4 +197,5 @@ uniform vec2 u_webcam_resolution
 
 ## Library Todos
 
+- figure out how to emit an event when images/videos are loaded
 - add vitest tests
