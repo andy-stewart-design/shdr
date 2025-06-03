@@ -308,12 +308,12 @@ class GlslAssetManager {
           updateTexture(this.gl, texture.video);
         }
       } catch (error) {
-        console.error(`Error loading texture ${name}:`, error);
+        console.error(`[GLSL.TS]: Error loading texture ${name}:`, error);
       }
     };
 
     video.onerror = () => {
-      console.error(`Failed to load texture: ${url}`);
+      console.error(`[GLSL.TS]: Failed to load texture: ${url}`);
     };
 
     if (!url) {

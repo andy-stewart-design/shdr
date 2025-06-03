@@ -1,7 +1,7 @@
 import { getContext } from "../utils";
 import { fragmentShaderSourceV3, vertexShaderSourceV3 } from "../shaders";
 import { customUniformFrag, tick } from "./_test-assets";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import type { UniformMap } from "../types";
 import GlslAssetManager from "../glsl-asset-manager";
 
@@ -54,6 +54,23 @@ describe("GlslAssetManager", () => {
     await tick(1000);
 
     expect(consoleError).not.toHaveBeenCalled();
+  });
+
+  it("should load a video", async () => {
+    // const consoleError = vi
+    //   .spyOn(console, "error")
+    //   .mockImplementation(() => {});
+
+    const { gl, program } = initWebGL(customUniformFrag);
+    const uniforms: UniformMap = {
+      my_texture:
+        "https://res.cloudinary.com/andystewartdesign/video/upload/v1731963042/blobs-clean.mp4",
+    };
+    new GlslAssetManager(gl, program, uniforms, "u", "snake");
+
+    await tick(1000);
+
+    // expect(consoleError).not.toHaveBeenCalled();
   });
 
   it("should throw an error when trying to load a fake image", async () => {
