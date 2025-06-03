@@ -9,11 +9,13 @@ import {
 import type { UniformType, UniformValue, UniformMap } from "./types";
 import {
   isBool,
+  isImageFile,
   isNumber,
   isString,
   isVec2,
   isVec3,
   isVec4,
+  isVideoFile,
 } from "./validators";
 
 interface WebGLUniform {
@@ -50,6 +52,15 @@ class GlslAssetManager {
     this.program = program;
     this.uniformPrefix = uniformPrefix;
     this.uniformCase = uniformCase;
+
+    const imageCount = Object.values(initialUniforms).filter((u) =>
+      isImageFile(u)
+    ).length;
+    const videoCount = Object.values(initialUniforms).filter((u) =>
+      isVideoFile(u)
+    ).length;
+    if (imageCount) console.log(`There are ${imageCount} images`);
+    if (videoCount) console.log(`There are ${videoCount} videos`);
 
     this.initializeDefaultUniforms();
     this.initializeCustomUniforms(initialUniforms);

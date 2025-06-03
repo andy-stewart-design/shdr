@@ -24,14 +24,16 @@ function isVec4(value: unknown): value is Vec4 {
   return Array.isArray(value) && value.length === 4 && value.every(isNumber);
 }
 
-function isImageFile(fileName: string): boolean {
+function isImageFile(fileName: unknown): boolean {
+  if (typeof fileName !== "string") return false;
   const imageExtensions = [".jpg", ".jpeg", ".png", ".avif", ".webp"];
   const lowerCaseFileName = fileName.toLowerCase();
 
   return imageExtensions.some((ext) => lowerCaseFileName.endsWith(ext));
 }
 
-function isVideoFile(fileName: string): boolean {
+function isVideoFile(fileName: unknown): boolean {
+  if (typeof fileName !== "string") return false;
   const videoExtensions = [".mp4", ".webm", ".mov"];
   const lowerCaseFileName = fileName.toLowerCase();
 
