@@ -214,4 +214,9 @@ export default class Shdr extends GlslCanvas {
     });
     return Object.fromEntries(uniformValuesArray);
   }
+
+  set onLoad(cb: () => void) {
+    if (this.assets.allAssetsLoaded) cb();
+    else this.assets.onLoad = cb;
+  }
 }

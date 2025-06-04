@@ -32,6 +32,16 @@ interface DynamicTexture extends StaticTexture {
   video: HTMLVideoElement;
 }
 
+interface AssetCount {
+  images: number;
+  videos: number;
+}
+
+interface OnErrorArgs {
+  type: "image" | "video";
+  src: string;
+}
+
 class GlslAssetManager {
   readonly gl: WebGL2RenderingContext;
   readonly program: WebGLProgram;
@@ -40,6 +50,11 @@ class GlslAssetManager {
   readonly dynamicTextures: Map<string, DynamicTexture> = new Map();
   readonly uniformPrefix: string = "u";
   readonly uniformCase: UniformCase = "snake";
+
+  public onLoad: (() => void) | undefined;
+  public onError: ((args: OnErrorArgs) => void) | undefined;
+  private totalAssetCount: AssetCount;
+  private loadedAssetCount: AssetCount = { images: 0, videos: 0 };
 
   constructor(
     gl: WebGL2RenderingContext,
@@ -53,14 +68,14 @@ class GlslAssetManager {
     this.uniformPrefix = uniformPrefix;
     this.uniformCase = uniformCase;
 
-    const imageCount = Object.values(initialUniforms).filter((u) =>
-      isImageFile(u)
-    ).length;
-    const videoCount = Object.values(initialUniforms).filter((u) =>
-      isVideoFile(u)
-    ).length;
-    if (imageCount) console.log(`There are ${imageCount} images`);
-    if (videoCount) console.log(`There are ${videoCount} videos`);
+    this.totalAssetCount = Object.values(initialUniforms).reduce<AssetCount>(
+      (acc, u) => {
+        if (isImageFile(u)) acc.images++;
+        if (isVideoFile(u) || u === "webcam") acc.videos++;
+        return acc;
+      },
+      { images: 0, videos: 0 }
+    );
 
     this.initializeDefaultUniforms();
     this.initializeCustomUniforms(initialUniforms);
@@ -251,16 +266,29 @@ class GlslAssetManager {
 
           const location = this.getUniformLocation(name);
           this.gl.uniform1i(location, texture.unit);
+
+          this.loadedAssetCount.images++;
+          if (this.allAssetsLoaded) this.onLoad?.();
         } else {
           console.warn(`[GLSL.TS]: no texture found for name: ${name}`);
         }
       } catch (error) {
-        console.error(`[GLSL.TS]: error loading texture ${name}:`, error);
+        console.error({
+          message: `[GLSL.TS]: error loading image texture ${name}`,
+          src: url,
+          error,
+        });
+        this.onError?.({ type: "image", src: url });
       }
     };
 
     image.onerror = (error) => {
-      console.error(`[GLSL.TS]: error loading texture ${name}:`, error);
+      console.error({
+        message: `[GLSL.TS]: error loading image texture ${name}`,
+        src: url,
+        error,
+      });
+      this.onError?.({ type: "image", src: url });
     };
 
     image.src = url;
@@ -318,13 +346,26 @@ class GlslAssetManager {
           setTextureParams(this.gl, texture.video);
           updateTexture(this.gl, texture.video);
         }
+
+        this.loadedAssetCount.videos++;
+        if (this.allAssetsLoaded) this.onLoad?.();
       } catch (error) {
-        console.error(`[GLSL.TS]: Error loading texture ${name}:`, error);
+        console.error({
+          message: `[GLSL.TS]: error loading video texture ${name}`,
+          src: url,
+          error,
+        });
+        this.onError?.({ type: "video", src: url || "webcam" });
       }
     };
 
-    video.onerror = () => {
-      console.error(`[GLSL.TS]: Failed to load texture: ${url}`);
+    video.onerror = (error) => {
+      console.error({
+        message: `[GLSL.TS]: error loading video texture ${name}`,
+        src: url,
+        error,
+      });
+      this.onError?.({ type: "video", src: url || "webcam" });
     };
 
     if (!url) {
@@ -366,6 +407,15 @@ class GlslAssetManager {
       }
     }
     this.dynamicTextures.clear();
+    this.onLoad = undefined;
+    this.onError = undefined;
+  }
+
+  get allAssetsLoaded() {
+    return (
+      this.totalAssetCount.images === this.loadedAssetCount.images &&
+      this.totalAssetCount.videos === this.loadedAssetCount.videos
+    );
   }
 }
 

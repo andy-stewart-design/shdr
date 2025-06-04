@@ -1,11 +1,11 @@
 import { getContext } from "../utils";
 import { fragmentShaderSourceV3, vertexShaderSourceV3 } from "../shaders";
-import { customUniformFrag, tick } from "./_test-assets";
+import { customUniformFrag, tick, mockVideoElement } from "./_test-assets";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import type { UniformMap } from "../types";
 import GlslAssetManager from "../glsl-asset-manager";
 
-describe("GlslAssetManager", () => {
+describe("GlslAssetManager: basic uniforms", () => {
   it("should initialize built-in uniforms", () => {
     const { gl, program } = initWebGL(fragmentShaderSourceV3);
     const uniforms: UniformMap = {};
@@ -40,67 +40,84 @@ describe("GlslAssetManager", () => {
       expect.stringContaining("[GLSL.TS]: couldn't init uniform")
     );
   });
+});
 
+describe("GlslAssetManager: image uniforms", () => {
   it("should load an image", async () => {
-    const consoleError = vi
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
+    const src =
+      "https://res.cloudinary.com/andystewartdesign/image/upload/v1729796260/lorem/99.jpg";
+    const events = { onLoad: () => {} };
+    const loadSpy = vi.spyOn(events, "onLoad");
+
     const { gl, program } = initWebGL(customUniformFrag);
-    const uniforms: UniformMap = {
-      my_texture: "https://picsum.photos/200/300.jpg",
-    };
-    new GlslAssetManager(gl, program, uniforms, "u", "snake");
+    const uniforms: UniformMap = { my_texture: src };
+    const mngr = new GlslAssetManager(gl, program, uniforms, "u", "snake");
+    mngr.onLoad = events.onLoad;
 
     await tick(1000);
 
-    expect(consoleError).not.toHaveBeenCalled();
-  });
-
-  it("should load a video", async () => {
-    // const consoleError = vi
-    //   .spyOn(console, "error")
-    //   .mockImplementation(() => {});
-
-    const { gl, program } = initWebGL(customUniformFrag);
-    const uniforms: UniformMap = {
-      my_texture:
-        "https://res.cloudinary.com/andystewartdesign/video/upload/v1731963042/blobs-clean.mp4",
-    };
-    new GlslAssetManager(gl, program, uniforms, "u", "snake");
-
-    await tick(1000);
-
-    // expect(consoleError).not.toHaveBeenCalled();
+    expect(loadSpy).toHaveBeenCalled();
   });
 
   it("should throw an error when trying to load a fake image", async () => {
-    const consoleError = vi
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
+    const src = "https://example.com/fake-image.png";
+    const events = { onError: () => {} };
+    const errorSpy = vi.spyOn(events, "onError");
+
     const { gl, program } = initWebGL(customUniformFrag);
-    const uniforms: UniformMap = {
-      my_texture: "https://example.com/fake-image.png",
-    };
+    const uniforms: UniformMap = { my_texture: src };
+    const mngr = new GlslAssetManager(gl, program, uniforms, "u", "snake");
+    mngr.onError = events.onError;
+
+    await tick(1000);
+
+    expect(errorSpy).toHaveBeenCalledWith({ type: "image", src });
+  });
+});
+
+describe("GlslAssetManager: video uniforms", () => {
+  beforeEach(mockVideoElement);
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("should load a video", async () => {
+    const src =
+      "https://res.cloudinary.com/andystewartdesign/video/upload/v1731963042/blobs-clean.mp4";
+    const consoleError = vi.spyOn(console, "error");
+
+    const { gl, program } = initWebGL(customUniformFrag);
+    const uniforms: UniformMap = { my_texture: src };
     new GlslAssetManager(gl, program, uniforms, "u", "snake");
 
     await tick(1000);
 
-    expect(consoleError).toHaveBeenCalled();
+    // Because of shortcomings in testing environments, the video will not actually be loaded
+    // and the program will throw a TypeError when it tries to assign the video to the uniform
+    expect(consoleError).toHaveBeenCalledWith({
+      message: "[GLSL.TS]: error loading video texture u_my_texture",
+      src,
+      error: expect.objectContaining({
+        message:
+          "Failed to execute 'texImage2D' on 'WebGL2RenderingContext': Overload resolution failed.",
+      }),
+    });
   });
 
   it("should throw an error when trying to load a fake video", async () => {
-    const consoleError = vi
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
+    const src = "https://example.com/fake-video.mp4";
+    const events = { onError: () => {} };
+    const errorSpy = vi.spyOn(events, "onError");
+
     const { gl, program } = initWebGL(customUniformFrag);
-    const uniforms: UniformMap = {
-      my_texture: "https://example.com/fake-video.mp4",
-    };
-    new GlslAssetManager(gl, program, uniforms, "u", "snake");
+    const uniforms: UniformMap = { my_texture: src };
+    const mngr = new GlslAssetManager(gl, program, uniforms, "u", "snake");
+    mngr.onError = events.onError;
 
     await tick(1000);
 
-    expect(consoleError).toHaveBeenCalled();
+    expect(errorSpy).toHaveBeenCalledWith({ type: "video", src });
   });
 });
 

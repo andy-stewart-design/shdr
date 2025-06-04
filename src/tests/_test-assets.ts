@@ -1,3 +1,5 @@
+import { vi } from "vitest";
+
 const camelCaseUniformFrag = `#version 300 es
     precision mediump float;
 
@@ -78,4 +80,52 @@ function tick(n = 0) {
   );
 }
 
-export { camelCaseUniformFrag, customUniformFrag, shadertoyUniformFrag, tick };
+let videoElementMock: Partial<HTMLVideoElement>;
+
+const mockVideoElement = () => {
+  const originalCreateElement = document.createElement;
+
+  vi.spyOn(document, "createElement").mockImplementation((tag: string) => {
+    if (tag === "video") {
+      const element: Partial<HTMLVideoElement> = {
+        set src(value: string) {
+          setTimeout(() => {
+            if (value.includes("fake-video")) {
+              element.onerror?.call(
+                element as GlobalEventHandlers,
+                new Event("error")
+              );
+            } else {
+              element.onloadeddata?.call(
+                element as GlobalEventHandlers,
+                new Event("loadeddata")
+              );
+            }
+          }, 10);
+        },
+        get src() {
+          return "";
+        },
+        play: vi.fn(),
+        pause: vi.fn(),
+        load: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        onloadeddata: null,
+        onerror: null,
+      };
+      videoElementMock = element;
+      return element as HTMLVideoElement;
+    }
+
+    return originalCreateElement.call(document, tag);
+  });
+};
+
+export {
+  camelCaseUniformFrag,
+  customUniformFrag,
+  shadertoyUniformFrag,
+  tick,
+  mockVideoElement,
+};

@@ -46,6 +46,7 @@ declare class Shdr extends GlslCanvas {
     destroy(): void;
     get paused(): boolean;
     get uniforms(): any;
+    set onLoad(cb: () => void);
 }
 
 export { Shdr as default };
