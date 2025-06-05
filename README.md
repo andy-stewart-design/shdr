@@ -114,6 +114,44 @@ useEffect(() => {
 }, []);
 ```
 
+## Instance Events
+
+### Shdr.onLoad
+
+Fired when all texture uniforms (images and videos) are loaded. For shaders that don’t rely on external assets, this function will be fired when the program has successfully initialized.
+
+```ts
+const gl = new Shdr({ container, frag });
+
+gl.onLoad = () => {
+  container.dataset.loaded = "true";
+  gl.play(); // This can also called outside of the load function—it doesn’t really matter
+};
+```
+
+### Shdr.onError
+
+Called if an external asset fails to load. One argument will be passed to the function—an object containing the `type` of error (`"image"` or `"video"`) and the original `src` of the errored asset.
+
+```ts
+const uniforms = { texture: "/assets/dancer.jpg" };
+
+const gl = new Shdr({ container, frag, uniforms });
+
+gl.onError = ({ type, src }) => {
+  console.log({ type, src }); // output: { type: image, src: "/assets/dancer.jpg" }
+};
+```
+
+```ts
+const gl = new Shdr({ container, frag });
+
+gl.onLoad = () => {
+  container.dataset.loaded = "true";
+  gl.play(); // This can also called outside of the load function—it doesn’t really matter
+};
+```
+
 ## Uniforms
 
 By default, the fragment shader receives three custom uniforms:
@@ -194,8 +232,3 @@ uniform vec2 u_VideoTxtr_resolution
 uniform sampler2D u_webcam
 uniform vec2 u_webcam_resolution
 ```
-
-## Library Todos
-
-- figure out how to emit an event when images/videos are loaded
-- add vitest tests
