@@ -28,6 +28,7 @@
     "dev:demo": "pnpm --dir demos dev",
     "dev:pack": "tsup --watch",
     "dev": "concurrently \"pnpm dev:pack\" \"pnpm dev:demo\"",
+    "test": "vitest run --coverage",
     "preview": "pnpm --dir demos preview",
     "astro": "pnpm --dir demos astro",
     "check-exports": "attw --pack ."
@@ -41,8 +42,12 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.17.4",
+    "@vitest/browser": "^3.1.4",
+    "@vitest/coverage-v8": "^3.1.4",
     "concurrently": "^9.1.2",
+    "playwright": "^1.52.0",
     "tsup": "^8.3.6",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "vitest": "^3.1.4"
   }
 }

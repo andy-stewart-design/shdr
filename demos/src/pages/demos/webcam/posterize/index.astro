@@ -14,8 +14,11 @@ import sourceCode from "./_sketch.frag?raw";
 
   // Initialize webcam as a texture
   const gl = new Shdr({ container, frag, uniforms, glVersion: 1 });
+  gl.onLoad = () => {
+    container.dataset.loaded = "true";
+    gl.play();
+  };
 
-  gl.play();
   // Update custom uniforms
   createGui({ gl, dialogClass: "code-dialog" });
 </script>
@@ -29,5 +32,11 @@ import sourceCode from "./_sketch.frag?raw";
   section {
     height: 100svh;
     touch-action: none;
+    opacity: 0;
+    transition: opacity 500ms ease-out;
+
+    &[data-loaded] {
+      opacity: 1;
+    }
   }
 </style>

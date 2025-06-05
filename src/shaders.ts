@@ -41,6 +41,8 @@ const fragmentShaderSourceV3 = `#version 300 es
     uniform vec2 u_resolution;
     uniform vec2 u_mouse;
 
+    out vec4 outColor;
+
     void main() {
       vec2 st = gl_FragCoord.xy / u_resolution;
       vec2 mouse = u_mouse / u_resolution;
@@ -50,7 +52,7 @@ const fragmentShaderSourceV3 = `#version 300 es
       
       // Color based on time and distance
       vec3 color = vec3(0.5 + 0.5 * cos(u_time + dist * 10.0), dist, st.x);
-      gl_FragColor = vec4(color, 1.0);
+      outColor = vec4(color, 1.0);
     }
   `;
 

@@ -29,6 +29,7 @@ interface ShdrConstructorProps {
 declare class Shdr extends GlslCanvas {
     private mousePos;
     private controller;
+    private resizeObserver;
     private rafId;
     private startTime;
     private pauseStartTime;
@@ -45,6 +46,7 @@ declare class Shdr extends GlslCanvas {
     destroy(): void;
     get paused(): boolean;
     get uniforms(): any;
+    set onLoad(cb: () => void);
 }
 
 export { Shdr as default };
