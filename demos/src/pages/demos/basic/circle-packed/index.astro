@@ -14,7 +14,10 @@ import sourceCode from "./_sketch.frag?raw";
   const gl = new Shdr({ container, frag, glVersion: 1 });
 
   const isReduced = window.matchMedia("(prefers-reduced-motion)").matches;
-  gl.play(!isReduced);
+  gl.onLoad = () => {
+    container.dataset.loaded = "true";
+    gl.play(!isReduced);
+  };
 
   createGui({ gl, dialogClass: "code-dialog" });
 </script>
@@ -28,5 +31,11 @@ import sourceCode from "./_sketch.frag?raw";
   section {
     height: 100svh;
     touch-action: none;
+    opacity: 0;
+    transition: opacity 500ms ease-out;
+
+    &[data-loaded] {
+      opacity: 1;
+    }
   }
 </style>
