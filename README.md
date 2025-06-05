@@ -54,7 +54,21 @@ A readonly property (boolean) that indicates the current play state of the rende
 
 ### Shdr.uniforms
 
-TKTKTK
+An object representing all of the active uniforms used in the program, where the keys are the uniform’s name and the values are the current value of the uniform. Please note that textures will be undefined until they finish loading.
+
+```ts
+shdr.onLoad = () => {
+  console.log(shdr.uniforms);
+  // Console output:
+  // {
+  //   u_threshold: 0.5,
+  //   u_resolution: (2) [897, 951],
+  //   u_texture: WebGLTexture {},
+  //   u_texture_resolution: (2) [1920, 1200],
+  //   etc..
+  // }
+};
+```
 
 ## Instance Methods
 
@@ -76,8 +90,8 @@ Pauses playback of the program. Can be used in conjunction with the `paused` pro
 
 ```ts
 function togglePaused {
-    if (gl.paused) gl.play();
-    else gl.pause();
+    if (shdr.paused) shdr.play();
+    else shdr.pause();
 },
 ```
 
@@ -93,11 +107,11 @@ import GUI from "lil-gui";
 const uniforms = { speed: 0.25 };
 
 const gui = new GUI();
-const gl = new Shdr({ container, frag, uniforms });
-gl.play();
+const shdr = new Shdr({ container, frag, uniforms });
+shdr.play();
 
 gui.add(uniforms, "speed", 0, 1, 0.01).onChange((value: number) => {
-  gl.updateUniform("speed", value);
+  shdr.updateUniform("speed", value);
 });
 ```
 
@@ -107,10 +121,10 @@ When using this library in the context of a frontend framework like React, Svelt
 
 ```ts
 useEffect(() => {
-  const gl = new Shdr({ container, frag });
-  gl.play();
+  const shdr = new Shdr({ container, frag });
+  shdr.play();
 
-  return () => gl.destroy();
+  return () => shdr.destroy();
 }, []);
 ```
 
@@ -121,11 +135,11 @@ useEffect(() => {
 Fired when all texture uniforms (images and videos) are loaded. For shaders that don’t rely on external assets, this function will be fired when the program has successfully initialized.
 
 ```ts
-const gl = new Shdr({ container, frag });
+const shdr = new Shdr({ container, frag });
 
-gl.onLoad = () => {
+shdr.onLoad = () => {
   container.dataset.loaded = "true";
-  gl.play(); // This can also called outside of the load function—it doesn’t really matter
+  shdr.play(); // This can also called outside of the load function—it doesn’t really matter
 };
 ```
 
@@ -136,19 +150,19 @@ Called if an external asset fails to load. One argument will be passed to the fu
 ```ts
 const uniforms = { texture: "/assets/dancer.jpg" };
 
-const gl = new Shdr({ container, frag, uniforms });
+const shdr = new Shdr({ container, frag, uniforms });
 
-gl.onError = ({ type, src }) => {
-  console.log({ type, src }); // output: { type: image, src: "/assets/dancer.jpg" }
+shdr.onError = ({ type, src }) => {
+  console.log({ type, src }); // Console output: { type: image, src: "/assets/dancer.jpg" }
 };
 ```
 
 ```ts
-const gl = new Shdr({ container, frag });
+const shdr = new Shdr({ container, frag });
 
-gl.onLoad = () => {
+shdr.onLoad = () => {
   container.dataset.loaded = "true";
-  gl.play(); // This can also called outside of the load function—it doesn’t really matter
+  shdr.play(); // This can also called outside of the load function—it doesn’t really matter
 };
 ```
 
@@ -167,7 +181,7 @@ Any custom uniforms that you need access to during the life of your program can 
 ```ts
 const uniforms = { speed: 0.25 };
 
-const gl = new Shdr({ container, frag, uniforms });
+const shdr = new Shdr({ container, frag, uniforms });
 ```
 
 Importantly, you **should not** add a prefix to the keys in the unform object. Instead, you should set a `uniformPrefix` during initialization (defaults to "u\_"), which will be prepended to each uniform before being passed to the shader.
@@ -194,7 +208,7 @@ Here is a quick overview of how to initialize each type of variable:
 And here is an example of working with each of these uniform types in practice, from initializing them in typescript to accessing them in glsl:
 
 ```ts
-// custom uniforms
+// Custom uniforms
 const uniforms = {
   speed: 0.25, // float
   size: "0.75", // also a float
@@ -208,7 +222,7 @@ const uniforms = {
   webcam: "webcam", // sampler2D (webcam)
 };
 
-const gl = new Shdr({ container, frag, uniforms });
+const shdr = new Shdr({ container, frag, uniforms });
 ```
 
 ```glsl
