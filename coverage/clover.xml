@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1749038309673" clover="3.2.0">
-  <project timestamp="1749038309673" name="All files">
-    <metrics statements="762" coveredstatements="645" conditionals="174" coveredconditionals="132" methods="57" coveredmethods="53" elements="993" coveredelements="830" complexity="0" loc="762" ncloc="762" packages="2" files="8" classes="8"/>
+<coverage generated="1749115809385" clover="3.2.0">
+  <project timestamp="1749115809385" name="All files">
+    <metrics statements="764" coveredstatements="647" conditionals="174" coveredconditionals="132" methods="57" coveredmethods="53" elements="995" coveredelements="832" complexity="0" loc="764" ncloc="764" packages="2" files="8" classes="8"/>
     <package name="src">
-      <metrics statements="707" coveredstatements="592" conditionals="165" coveredconditionals="123" methods="53" coveredmethods="50"/>
+      <metrics statements="709" coveredstatements="594" conditionals="165" coveredconditionals="123" methods="53" coveredmethods="50"/>
       <file name="glsl-asset-manager.ts" path="/Users/andystewart/Development/shdr/src/glsl-asset-manager.ts">
-        <metrics statements="319" coveredstatements="252" conditionals="54" coveredconditionals="29" methods="18" coveredmethods="18"/>
+        <metrics statements="321" coveredstatements="254" conditionals="54" coveredconditionals="29" methods="18" coveredmethods="18"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
@@ -137,8 +137,8 @@
         <line num="187" count="9" type="stmt"/>
         <line num="188" count="9" type="stmt"/>
         <line num="190" count="1" type="cond" truecount="1" falsecount="0"/>
-        <line num="191" count="406" type="stmt"/>
-        <line num="192" count="406" type="stmt"/>
+        <line num="191" count="402" type="stmt"/>
+        <line num="192" count="402" type="stmt"/>
         <line num="196" count="1" type="cond" truecount="1" falsecount="0"/>
         <line num="197" count="3" type="stmt"/>
         <line num="198" count="3" type="stmt"/>
@@ -318,13 +318,15 @@
         <line num="408" count="0" type="stmt"/>
         <line num="409" count="1" type="stmt"/>
         <line num="410" count="1" type="stmt"/>
-        <line num="412" count="1" type="cond" truecount="1" falsecount="0"/>
-        <line num="413" count="1" type="stmt"/>
-        <line num="414" count="1" type="stmt"/>
+        <line num="411" count="1" type="stmt"/>
+        <line num="412" count="1" type="stmt"/>
+        <line num="414" count="1" type="cond" truecount="1" falsecount="0"/>
         <line num="415" count="1" type="stmt"/>
+        <line num="416" count="1" type="stmt"/>
         <line num="417" count="1" type="stmt"/>
-        <line num="418" count="1" type="stmt"/>
+        <line num="419" count="1" type="stmt"/>
         <line num="420" count="1" type="stmt"/>
+        <line num="422" count="1" type="stmt"/>
       </file>
       <file name="glsl-canvas.ts" path="/Users/andystewart/Development/shdr/src/glsl-canvas.ts">
         <metrics statements="85" coveredstatements="75" conditionals="16" coveredconditionals="13" methods="6" coveredmethods="6"/>
