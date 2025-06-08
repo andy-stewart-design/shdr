@@ -1,16 +1,17 @@
 {
   "name": "shdr",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "A zero-dependency shader renderer for the web, written in TypeScript",
   "author": "Andy Stewart <andy.stewart1170@gmail.com> (andystew.art)",
-  "homepage": "https://glsl-ts.vercel.app/",
+  "homepage": "https://shdr.andystew.art/",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/andy-stewart-design/glsl-ts.git"
+    "url": "git+https://github.com/andy-stewart-design/shdr.git"
   },
   "license": "MIT",
   "keywords": [
     "glsl",
+    "webgl",
     "canvas",
     "shader",
     "fragment",
