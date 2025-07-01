@@ -22,6 +22,7 @@ export default class Shdr extends GlslCanvas {
   private lastRenderTime: number = 0;
   private totalPausedTime: number = 0;
   private assets: GlslAssetManager;
+  private _currentTime: number = 0;
 
   constructor({
     container,
@@ -57,7 +58,8 @@ export default class Shdr extends GlslCanvas {
       // Calculate elapsed time with pause compensation
       const adjustedTimestamp = time - this.totalPausedTime;
       const elapsedTime = adjustedTimestamp - this.startTime;
-      this.gl.uniform1f(uTime.location, elapsedTime * 0.001); // Time in seconds
+      this._currentTime = Math.max(elapsedTime, 0) * 0.001;
+      this.gl.uniform1f(uTime.location, this.currentTime); // Time in seconds
     }
     const uMouse = this.assets.uniforms.get(this.assets.formatUniform("mouse"));
     if (uMouse) {
@@ -213,6 +215,10 @@ export default class Shdr extends GlslCanvas {
       }
     });
     return Object.fromEntries(uniformValuesArray);
+  }
+
+  get currentTime() {
+    return this._currentTime;
   }
 
   set onLoad(cb: () => void) {

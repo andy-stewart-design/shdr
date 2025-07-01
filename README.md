@@ -70,6 +70,10 @@ shdr.onLoad = () => {
 };
 ```
 
+### Shdr.currentTime
+
+A readonly property (number) that represents the current elapsed time in seconds
+
 ## Instance Methods
 
 ### Shdr.play

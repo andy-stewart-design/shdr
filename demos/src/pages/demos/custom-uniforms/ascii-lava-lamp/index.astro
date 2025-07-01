@@ -18,23 +18,23 @@ import sourceCode from "./_sketch.frag?raw";
   };
 
   // Initialize custom uniforms
-  const gl = new Shdr({ container, frag, uniforms, glVersion: 3 });
-  gl.play();
+  const shdr = new Shdr({ container, frag, uniforms, glVersion: 3 });
+  shdr.play();
 
   createGui({
-    gl,
+    gl: shdr,
     dialogClass: "code-dialog",
     setup: (gui) => {
       gui.add(uniforms, "noiseScale", 1, 10, 0.1).onChange((value: number) => {
-        gl.updateUniform("noiseScale", value);
+        shdr.updateUniform("noiseScale", value);
       });
 
       gui.add(uniforms, "asciiScale", 4, 16, 1).onChange((value: number) => {
-        gl.updateUniform("asciiScale", value);
+        shdr.updateUniform("asciiScale", value);
       });
 
       gui.add(uniforms, "speed", 0, 1, 0.01).onChange((value: number) => {
-        gl.updateUniform("speed", value);
+        shdr.updateUniform("speed", value);
       });
     },
   });
